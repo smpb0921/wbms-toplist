@@ -1,0 +1,241 @@
+selection sort: least amount on the left side
+let arr2 = [9,8,4,7,5,6,2,1]
+
+0 1 [8,9,4,7,5,6,2,1]
+0 2 [4,9,8,7,5,6,2,1]
+0 3 [4,9,8,7,5,6,2,1]
+0 4 [4,9,8,7,5,6,2,1]
+0 5 [4,9,8,7,5,6,2,1]
+0 6 [2,9,8,7,5,6,4,1]
+0 7 [1,9,8,7,5,6,4,2]
+
+
+1 2 [1,8,9,7,5,6,4,2]
+1 3 [1,7,9,8,5,6,4,2]
+1 4 [1,5,9,8,7,6,4,2]
+1 5 [1,5,9,8,7,6,4,2]
+1 6 [1,4,9,8,7,6,5,2]
+1 7 [1,2,9,8,7,6,5,4]
+
+2 3 [1,2,8,9,7,6,5,4]
+2 4 [1,2,7,9,8,6,5,4]
+2 5 [1,2,6,9,8,7,5,4]
+2 6 [1,2,5,9,8,7,6,4]
+2 7 [1,2,4,9,8,7,6,5]
+
+3 4 [1,2,4,8,9,7,6,5]
+3 5 [1,2,4,7,9,8,6,5]
+3 6 [1,2,4,6,9,8,7,5]
+3 7 [1,2,4,5,9,8,7,6]
+
+4 5 [1,2,4,5,8,9,7,6]
+4 6 [1,2,4,5,7,9,8,6]
+4 7 [1,2,4,5,6,9,8,7]
+
+5 6 [1,2,4,5,6,8,9,7]
+5 7 [1,2,4,5,6,7,9,8]
+
+6 7 [1,2,4,5,6,7,8,9]
+
+
+Selection Sort 
+let arr = [9,8,4,7,5,6,2,1];
+console.log("Initial "+arr);
+
+for(let i = 0; i<=arr.length-1; i++){
+  for(let x = i+1; x<=arr.length-1; x++ ){
+      if(arr[i]>arr[x]){
+        let tempI = arr[i];
+        let tempX = arr[x];
+        
+        arr[i]=tempX;
+        arr[x]=tempI;
+        console.log(i+" "+x+" - "+arr);
+
+	//simplified: [arr[i], arr[x]] =  [arr[x], arr[i]]
+      }
+  }
+}
+
+
+Recursion:
+call a function within a function
+
+function recursion(x){
+  while(x!=1){
+    return x*recursion(x-1);
+  }
+  return 1;
+}
+
+
+
+Bubble Sort: highest amount on the right side
+
+condition first index > second index   = swap
+0 1 
+1 2 
+3 4 
+5 6 
+
+0 1
+1 2
+2 3
+3 4
+
+0 1 
+1 2 
+2 3
+
+let arr1 = [12, 345, 4, 546, 122, 84, 98, 64, 9, 1, 3223, 455, 23, 234, 213];
+function BubbleSort(arr){
+  let l = arr.length-1;
+  while(l>=0){
+    for(let x = 0; x<l; x++){
+      if(arr[x]>arr[x+1]){
+        [arr[x],arr[x+1]] = [arr[x+1],arr[x]];
+      }
+    }
+    l--;
+  }
+  return console.log(arr);
+}
+
+BubbleSort(arr1);
+
+
+Insertion Sort: 
+- starts at index 1
+- find lesser index 
+
+
+break if target index is greater than index to compare  then remove target and insert next to index to compare(right side of index to compare)
+
+function insertionSort(arr){
+  for(let t = 1; t<arr.length; t++){
+    let flag = true;
+    let x = 1;
+    while(flag===true){
+      if(arr[t]<arr[t-x]){
+        x++;
+      }
+      else{
+          let target = arr[t];
+          arr.splice(t,1);
+          arr.splice(t-x+1,0,target);
+          flag = false;
+      }
+    }
+  }
+}
+
+
+
+
+Linked List:
+class Node{
+  constructor(value){
+	this.value=value;
+	this.next = null;
+  }
+}
+
+class LinkedList{
+  constructor(value){
+  	this.head = new Node(value);
+  }
+  push(value){
+  	let newNode = new Node(value); 
+        let currentNode = this.head;
+        while(currentNode.next!==null){ 
+		currentNode = currentNode.next;
+	} 
+        currentNode.next = newNode;
+  }
+
+ pull(){
+	let currentNode = this.head;
+	while(currentNode.next.next!==null){
+		currentNode = currentNode.next;
+	}
+	currentNode.next = null;
+ }
+
+ 
+
+ print = () => {
+ 	let currentNode = this.head;
+        while(currentNode.next!==null){
+		currentNode = currentNode.next;
+	}
+ }
+ 
+ printRecursive = (currentNode = this.head) => {
+ 	if(currentNode===null){
+	   return;
+        }
+        else{
+	  return this.printRecursive(currentNode.next);
+	}
+ }
+}
+
+
+
+class TreeNode{
+   constructor(value){
+	this.value = value; 
+	this.left = null; 
+        this.right = null;
+   }
+}
+
+class Tree{
+	constructor(value){
+		this.root = new TreeNode(value);
+	}
+ 
+	insert = (currentNode = this.root) => {
+		let newTreeNode = new TreeNode(value); 
+                let currentNode = this.root;
+		if(value<=currentNode.value){
+			if(currentNode.left===null){
+				currentNode.left = newTreeNode;
+			}
+			else{
+				return this.insert(currentNode.left);
+			}
+			
+		}
+                else{
+			if(currentNode.right===null){
+				currentNode.right = newTreeNode;
+			}
+			else{
+				return this.insert(currentNode.right);
+			}
+		}
+	}
+
+	preOrder = (currentNode = this.root) =>{
+		if(currentNode==null){return;} 
+		console.log(currentNode.value);
+		this.preOrder(currentNode.left);
+                this.preOrder(currentNode.right);
+	}
+	inOrder = (currentNode = this.root) =>{
+		if(currentNode==null){return;} 
+		this.inOrder(currentNode.left);
+		console.log(currentNode.value);
+                this.inOrder(currentNode.right);
+	}
+
+	getMax = () => {
+	}
+
+	getMin = () => {
+	}
+	
+	search = () => {
+	}
+}

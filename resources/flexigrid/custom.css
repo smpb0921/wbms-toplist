@@ -1,0 +1,68 @@
+@charset "utf-8";
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+table {
+
+	font-size: 12px;
+}
+
+
+
+.flexigrid div.fbutton .add {
+	background: url(images/add.png) no-repeat center left;
+}
+
+.flexigrid div.fbutton .download {
+	background: url(images/download.png) no-repeat center left;
+}
+
+.flexigrid div.fbutton .delete {
+    background: url(images/close.png) no-repeat center left;
+}
+
+.flexigrid div.fbutton .edit {
+	background: url(images/edit.png) no-repeat center left;
+}
+
+.flexigrid div.fbutton .search {
+    background: url(images/search.png) no-repeat center left;
+}
+
+.flexigrid div.fbutton .refresh {
+	background: url(images/refresh.png) no-repeat center left;
+	background-size: 18px 18px;
+}
+
+.flexigrid div.fbutton .select1 {
+	background: url(images/select1.png) no-repeat center left;
+	background-size: 18px 18px;
+}
+
+.flexigrid div.fbutton .deselect1 {
+	background: url(images/deselect1.png) no-repeat center left;
+	background-size: 18px 18px;
+}
+
+
+.flexigrid div.fbutton .upload {
+	background: url(images/upload.png) no-repeat center left;
+	background-size: 16px 16px;
+}
+
+.flexigrid div.fbutton .barcode {
+	background: url(images/barcode.png) no-repeat center left;
+	background-size: 16px 16px;
+}
+
+.flexigrid div.fbutton .qrcode1 {
+	background: url(images/qrcode1.png) no-repeat center left;
+	background-size: 16px 16px;
+}
+
+.flexigrid div.fbutton .qrcode {
+	background: url(images/qrcode.png) no-repeat center left;
+}
+

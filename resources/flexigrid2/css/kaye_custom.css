@@ -1,0 +1,159 @@
+		.pageContent{
+			border: none;
+		}
+
+		/*** TABLE BUTTON IMG ***/
+		.flexigrid div.fbutton .add {
+			background: url(images/add.png) no-repeat center left;
+		}
+
+		.flexigrid div.fbutton .delete {
+		    background: url(images/close.png) no-repeat center left;
+		}
+
+		.flexigrid div.fbutton .edit {
+			background: url(images/edit.png) no-repeat center left;
+		}
+		/*** TABLE BUTTON IMG - END ***/
+
+
+		:root {
+		  --roweditbtnsize: 20px;
+		  --checkboxsize: 18px;
+
+		  /** TABLES CSS **/
+		  --tblbordercolor: #cbd7df;
+		  --tblfontcolor: #3A4E5D;
+		}
+		.flexigrid {
+		   
+		    border: 0px solid transparent;
+		    color: var(--tblfontcolor);
+		}
+
+		.flexigrid div.bDiv td div{
+			padding-bottom: 1px;
+			margin: auto;
+			text-align: center;
+			line-height: var(--roweditbtnsize);
+			vertical-align: middle;
+		}
+		.flexigrid  div.bDiv td  div{
+			padding-top: 2px;
+		}
+
+		input[type='checkbox']{
+			width: var(--checkboxsize);
+			height: var(--checkboxsize);
+			vertical-align:middle;
+		}
+
+		.rowcheckbox, .columnbutton{
+			cursor: pointer;
+		}
+
+		.columnbutton{
+			height: var(--roweditbtnsize);
+		}
+
+
+		/**** COLOR THEME ****/
+		
+		.flexigrid div.mDiv{
+			background: linear-gradient(#F9FBFB, #E7EDF1);
+			text-shadow: 1px 1px 0px rgba(255,255,255,1);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-bottom: 0px;
+		}
+
+		.flexigrid div.tDiv{
+			background: linear-gradient(#E7EDF1, #F9FBFB);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-bottom: 0px;
+			padding: 2px 5px;
+		}
+
+		.flexigrid div.fbutton span {
+		    font-size: 11px;
+		    font-weight: bold;
+		    color: var(--tblfontcolor);
+		    padding: 5px;
+		}
+
+		.flexigrid div.hDiv{
+			background: linear-gradient(to bottom, #f6f9fa 50%, #f1f4f6 50%);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-bottom: 0px;
+		}
+
+		.flexigrid div.hDiv th div {
+		    font-size: 11px;
+		    font-weight: bold;
+		    color: var(--tblfontcolor);
+    		text-shadow: 1px 1px 0px rgba(255,255,255,1);
+		}
+
+
+		.flexigrid div.hDiv th.sorted{
+			background: linear-gradient(#f8fcff, #c5dceb);
+		}
+
+		.flexigrid div.bDiv td{
+			border-bottom: 1px solid #eee;
+		}
+		.flexigrid tr td.sorted{
+			background: #d7e8f2;
+    		border-bottom: 1px solid #eee;
+		}
+
+		.flexigrid tr.erow td.sorted{
+			background: #ecf3f8;
+		}
+
+		.flexigrid div.sDiv{
+			    background: linear-gradient(#edf1f5, #F9FBFB);
+			    box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			    border: 1px solid var(--tblbordercolor);
+			    border-top: 0px;
+			    font-size: 11px;
+    			font-weight: bold;
+    			color: var(--tblfontcolor);
+    			text-shadow: 1px 1px 0px rgba(255,255,255,1);
+		}
+
+		.flexigrid div.pDiv{
+			background: linear-gradient(#F9FBFB, #E7EDF1);
+			text-shadow: 1px 1px 0px rgba(255,255,255,1);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-top: 0px;
+		}
+
+		.flexigrid div.bDiv{
+			border: 1px solid var(--tblbordercolor);
+			border-top: 0px;
+		}
+
+		.flexigrid tr.erow td {
+			background: #ecf3f8;
+		}
+
+		.flexigrid div.nBtn div{
+			background-color: #F9FBFB;
+		}
+		
+		.flexigrid div.nDiv{
+			background-color: #F9FBFB;
+		}
+
+		.flexigrid div.nDiv tr:hover td, .flexigrid div.nDiv tr.ndcolover td {
+		    background-color: #d6eefc;
+		}
+
+		.flexigrid div.bDiv tr:hover td,.flexigrid div.bDiv tr:hover td.sorted,.flexigrid div.bDiv tr.trOver td.sorted,.flexigrid div.bDiv tr.trOver td
+		{
+			background: #FFE5A0;
+		}

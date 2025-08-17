@@ -1,0 +1,23 @@
+.bootstrap-tagsinput {
+	border: 1px solid #ccc;
+    border-bottom: 1px solid #fff;
+    border-right: 1px solid #fff;
+    border-radius: 0px;
+    display: block;
+
+}
+
+.label-info {
+	background-color: #ffe195;
+
+}
+
+.bootstrap-tagsinput .tag {
+	color: #7d6537;
+}
+
+.label {
+	line-height: 2;
+	font-size: 90%;
+
+}

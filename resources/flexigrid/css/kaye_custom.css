@@ -1,0 +1,171 @@
+:root {
+		  --roweditbtnsize: 20px;
+		  --checkboxsize: 15px;
+
+		  /** TABLES CSS **/
+		  --tblbordercolor: #cbd7df;
+		}
+		.flexigrid div.bDiv td div{
+			padding-bottom: 1px;
+			margin: auto;
+			text-align: center;
+			line-height: var(--roweditbtnsize);
+			vertical-align: middle;
+		}
+		.flexigrid  div.bDiv td  div{
+			padding-top: 2px;
+			white-space: normal;
+		}
+
+		input[type='checkbox']{
+			width: var(--checkboxsize);
+			height: var(--checkboxsize);
+		}
+
+		.rowcheckbox, .roweditbtn{
+			cursor: pointer;
+		}
+
+		.roweditbtn{
+			height: var(--roweditbtnsize);
+		}
+
+
+		/**** COLOR THEME ****/
+		
+		.flexigrid div.mDiv{
+			background: linear-gradient(#F9FBFB, #E7EDF1);
+			text-shadow: 1px 1px 0px rgba(255,255,255,1);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-bottom: 0px;
+			color: #3A4E5D;
+		}
+
+		.flexigrid div.tDiv{
+			background: linear-gradient(#E7EDF1, #F9FBFB);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-bottom: 0px;
+		}
+
+		.flexigrid div.hDiv{
+			background: linear-gradient(to bottom, #f6f9fa 50%, #f1f4f6 50%);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-bottom: 0px;
+		}
+
+		.flexigrid div.hDiv th.sorted{
+			background: linear-gradient(#f8fcff, #c5dceb);
+		}
+
+		.flexigrid tr td.sorted{
+			background: #d7e8f2;
+			/*border-right: 1px solid #afc0ca;*/
+    		border-bottom: 1px solid #f3f3f3;
+		}
+
+		.flexigrid tr.erow td.sorted{
+			background: #ecf3f8;
+		}
+
+		.flexigrid div.sDiv{
+			    background: linear-gradient(#edf1f5, #F9FBFB);
+			    box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			    border: 1px solid var(--tblbordercolor);
+			    border-top: 0px;
+		}
+
+		.flexigrid div.pDiv{
+			background: linear-gradient(#F9FBFB, #E7EDF1);
+			text-shadow: 1px 1px 0px rgba(255,255,255,1);
+			box-shadow: inset 1px 1px 0px rgb(255, 255, 255);
+			border: 1px solid var(--tblbordercolor);
+			border-top: 0px;
+		}
+
+		.flexigrid div.bDiv{
+			border: 1px solid var(--tblbordercolor);
+			border-top: 0px;
+		}
+
+		.flexigrid tr.erow td {
+			background: #ecf3f8;
+		}
+
+		.flexigrid div.nBtn div{
+			background-color: #F9FBFB;
+		}
+		
+		.flexigrid div.nDiv{
+			background-color: #F9FBFB;
+		}
+
+		.flexigrid div.nDiv tr:hover td, .flexigrid div.nDiv tr.ndcolover td {
+		    background-color: #d6eefc;
+		}
+
+		.flexigrid div.bDiv tr:hover td,.flexigrid div.bDiv tr:hover td.sorted,.flexigrid div.bDiv tr.trOver td.sorted,.flexigrid div.bDiv tr.trOver td
+		{
+			background: #FFE5A0;
+		}
+
+		.flexigrid div.bDiv tr.trSelected:hover td, .flexigrid div.bDiv tr.trSelected:hover td.sorted, .flexigrid div.bDiv tr.trOver.trSelected td.sorted, .flexigrid div.bDiv tr.trOver.trSelected td, .flexigrid tr.trSelected td.sorted, .flexigrid tr.trSelected td {
+		    /*background: #d5effc url(images/hl.png) repeat-x top;
+		    background: -webkit-linear-gradient(#F9FBFB, #E7EDF1);
+		    background: -o-linear-gradient(#F9FBFB, #E7EDF1);
+		    background: -moz-linear-gradient(#F9FBFB, #E7EDF1);
+		    background: linear-gradient(#F9FBFB, #E7EDF1);*/
+		    background: #ffe8ab;
+		    border-right: 1px solid #d2e3ec;
+		    border-left: 1px solid #d2e3ec;
+		    border-bottom: 1px solid #d2e3ec;
+		}
+
+
+		.flexigrid div.sDiv2{
+			font-size: 14px;
+		}
+		.flexigrid div.sDiv2 input, .flexigrid div.sDiv2 select {
+		    height: 22px;
+		    font-size: 13px;
+		}
+		.flexigrid div.sDiv2 input{
+			width: 500px;
+			margin-left: 5px;
+			padding: 5px;
+		}
+
+		@media(max-width: 640px){
+			.flexigrid div.sDiv2 input{
+				width: 92vw;
+				margin-left: 0px;
+				padding: 5px;
+				display: block;
+			}
+			.flexigrid div.sDiv2 select {
+				display: block;
+				margin-top: 5px;
+				width: 92vw;
+
+			}
+		}
+
+		.flexigrid div.tDiv {
+			font-size: 12px;
+		    color: #3A4E5D;
+		    font-weight: bold;
+		}
+
+		.flexigrid div.fbutton div {
+		    float: left;
+		    padding: 2px 5px;
+		}
+
+		.flexigrid div.hDiv th div {
+		    font-weight: 600;
+		}
+
+
+

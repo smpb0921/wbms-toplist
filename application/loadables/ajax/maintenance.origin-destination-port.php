@@ -1,0 +1,117 @@
+<?php
+	include('../../../config/connection.php');
+	include('../../../config/functions.php');
+
+
+
+
+	$page = 1;	// The current page
+	$sortname = '';	// Sort column
+	$sortorder = '';	// Sort order
+	$qtype = '';	// Search column
+	$query = '';	// Search string
+
+	// Get posted data
+	if (isset($_POST['page'])) {
+		$page = mysql_real_escape_string($_POST['page']);
+	}
+	if (isset($_POST['sortname'])) {
+		$sortname = mysql_real_escape_string($_POST['sortname']);
+	}
+	if (isset($_POST['sortorder'])) {
+		$sortorder = mysql_real_escape_string($_POST['sortorder']);
+	}
+	if (isset($_POST['qtype'])) {
+		$qtype = mysql_real_escape_string($_POST['qtype']);
+	}
+	if (isset($_POST['query'])) {
+		$query = mysql_real_escape_string($_POST['query']);
+	}
+	if (isset($_POST['rp'])) {
+		$rp = mysql_real_escape_string($_POST['rp']);
+	}
+
+	// Setup sort and search SQL using posted data
+	$sortSql = "order by $sortname $sortorder";
+	$searchSql = ($qtype != '' && $query != '') ? "where $qtype like '%$query%'" : '';
+
+
+	// Get total count of records
+	$sql = "select * from origin_destination_port $searchSql";
+	$result = mysql_query($sql);
+	$row = mysql_fetch_array($result);
+	$total = mysql_num_rows($result);
+
+	// Setup paging SQL
+	$pageStart = ($page-1)*$rp;
+	$limitSql = "limit $pageStart, $rp";
+
+	// Return JSON data
+	$data = array();
+	$data['page'] = $page;
+	$data['total'] = $total;
+	$data['rows'] = array();
+	$sql = "select *
+			from (
+			        select origin_destination_port.id,
+						   origin_destination_port.code, 
+						   origin_destination_port.description,
+						   origin_destination_port.created_date,
+						   concat(cuser.first_name,' ',cuser.last_name) as created_by,
+						   origin_destination_port.updated_date,
+						   concat(uuser.first_name,' ',uuser.last_name) as updated_by,
+						   origin_destination_port.country_id,
+						   origin_destination_port.zone_id,
+						   origin_destination_port.lead_time,
+						   zone.description as zone,
+						   country_name
+					from origin_destination_port
+					left join user as cuser on cuser.id=origin_destination_port.created_by
+					left join user as uuser on uuser.id=origin_destination_port.updated_by
+					left join countries on countries.id=origin_destination_port.country_id
+					left join zone on zone.id=origin_destination_port.zone_id
+				  ) as tbl
+			$searchSql
+			$sortSql
+			$limitSql";
+
+		
+	
+			
+	$results = mysql_query($sql);
+	$line = 1;
+	while ($obj = mysql_fetch_object($results)) {
+		$code = utfEncode($obj->code);
+		$desc = utfEncode($obj->description);
+		$leadtime = utfEncode($obj->lead_time);
+		$createdby = utfEncode($obj->created_by);
+		$createddate = $obj->created_date;
+		$updatedby = utfEncode($obj->updated_by);
+		$updateddate = $obj->updated_date;
+		$id = $obj->id;
+		$editbtn = (userAccess(USERID,'.editorigindestinationportbtn')==false)?"<img src='../resources/flexigrid/images/edit.png' rowid='$id' code='$code' desc='$desc' desc='$leadtime' zoneid='$obj->zone_id' zone='$obj->zone' countryid='$obj->country_id' countryname='$obj->country_name' title='Edit Port' class='editorigindestinationportbtn pointer' leadtime='$obj->lead_time' data-toggle='modal' href='#editorigindestinationportmodal' height='20px'>":'';
+
+		$data['rows'][] = array(
+									'id' => $id,
+									'cell' => array(
+													 $editbtn,
+													 $id, 
+													 $code,
+													 $desc,
+													 utfEncode($obj->zone),
+													 utfEncode($obj->country_name),
+													 utfEncode($obj->lead_time),
+													 $createdby,
+													 $createddate,
+													 $updatedby,
+													 $updateddate
+
+													),
+									'rowAttr'=>array(
+													   'rowid'=>$id
+													)
+								);
+		$line++;
+	}
+	echo json_encode($data);
+?>
