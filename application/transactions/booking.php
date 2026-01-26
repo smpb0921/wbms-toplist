@@ -245,6 +245,13 @@
 							                                                        <fieldset>
 							                                                        	<legend>Shipper Information</legend>
 							                                                        	<div class='form-horizontal'>
+																							<div class="form-group">
+																								<label class='control-label col-md-3'>Shipment Type / Mode</label>
+																								<div class='col-md-9'>
+																									<select class='form-control inputslctfld booking-shipper-shiptypemode addrdropregion addshiptypemodedropdownselect'  disabled="false"></select>
+																									
+																								</div>
+																							</div>
 							                                                        		<div class="form-group">
 																								<label class='control-label col-md-3'>Account No.</label>
 																								<div class='col-md-5'>
@@ -1105,6 +1112,42 @@
     </div>
 </div>
 
+<div class="modal fade" id="bookingprintingmodal">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class='page-title'>
+					Print
+					<button class="close" data-dismiss="modal">&times;</button>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class='col-md-12'>
+					<div class='form-horizontal'>
+						<input type='hidden' id='booking-trans-printbtn'>
+						<div class='modal-errordiv'></div>
+						<div class="form-group">
+							<label class='control-label col-sm-4'>Form Type</label>
+							<div class='col-sm-8'>
+								<select class='form-control bookingprintingmodal-formtype select2'>
+									<option value="BOOKINGCONFIRMATION">Booking Confirmation</option>
+									<option value="BOOKINGRECEIPTNOTICE">Booking Receipt Notice</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='modal-footer'>
+				<div class="text-center">
+					<button class='btn btn-blue2 mybtn' id='bookingprintingmodal-printbtn'>Print</button>
+					<button class='btn btn-blue2 mybtn modal-cancelbtn'>Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 
 <div class="modal fade" id="booking-resetvehicleinformationmodal">
     <div class="modal-dialog modal-md">
@@ -1613,6 +1656,30 @@
 		    $(tabBK+" .addressregiondropdownselect").select2({
 		            ajax: {
 		                    url: "loadables/dropdown/address-region.php",
+		                    dataType: 'json',
+		                    delay: 100,
+		                    data: function (params) {
+		                        return {
+		                            q: params.term // search term
+		                        };
+		                    },
+		                    processResults: function (data) {
+		                        // parse the results into the format expected by Select2.
+		                        // since we are using custom formatting functions we do not need to
+		                        // alter the remote JSON data
+		                        return {
+		                            results: data
+		                        };
+		                    },
+		                    cache: true
+		                },
+		                minimumInputLength: 0,
+		                width:'100%'
+		    });
+
+			$(tabBK+" .addshiptypemodedropdownselect").select2({
+		            ajax: {
+		                    url: "loadables/dropdown/shipment-type-mode.php",
 		                    dataType: 'json',
 		                    delay: 100,
 		                    data: function (params) {
