@@ -75,7 +75,9 @@
 						   published_rate.created_date,
 						   concat(cuser.first_name,' ',cuser.last_name) as created_by,
 						   published_rate.updated_date,
-						   concat(uuser.first_name,' ',uuser.last_name) as updated_by
+						   concat(uuser.first_name,' ',uuser.last_name) as updated_by,
+						   published_rate.shipment_type_id,
+						   shipment_type.code as shipmenttype
 					from published_rate
 					left join origin_destination_port as origintbl on origintbl.id=published_rate.origin_id
 					left join origin_destination_port as destinationtbl on destinationtbl.id=published_rate.destination_id
@@ -86,6 +88,7 @@
 					left join services on services.id=published_rate.services_id
 					left join user as cuser on cuser.id=published_rate.created_by
 					left join user as uuser on uuser.id=published_rate.updated_by
+					left join shipment_type on shipment_type.id=published_rate.shipment_type_id
 					order by origintbl.description, destinationtbl.description asc
 				";
 
@@ -149,6 +152,7 @@
 		$pulloutfee = convertWithDecimal($obj->pull_out_fee,5);
 		$odarate = convertWithDecimal($obj->oda_rate,5);
 		$zone = utfEncode($obj->zone);
+		$shipmenttype = utfEncode($obj->shipmenttype);
 
 		$editbtn = (userAccess(USERID,'.editpublishedratebtn')==false)?"<img src='../resources/flexigrid/images/edit.png' rowid='$id' title='Edit Published Rate' class='editpublishedratebtn pointer' data-toggle='modal' href='#editpublishedratemodal' height='20px'>":'';
 
@@ -175,6 +179,7 @@
 									'cell' => array(
 													 $btn,
 													 $id, 
+													 $shipmenttype,
 													 $tpl,
 													 $type,
 													 $pouchsize,
