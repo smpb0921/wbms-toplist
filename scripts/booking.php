@@ -302,6 +302,8 @@
 	if(isset($_POST['SaveBookingTransaction'])){
 		if($_POST['SaveBookingTransaction']=='oi$ha@3h0$0jRoihQnsRP9$nzpo92po@k@'){
 
+			$shipmenttype = escapeString($_POST['shipmenttype']);
+			$shipmentmode = escapeString($_POST['shipmentmode']);
 			$bookingtype = escapeString($_POST['bookingtype']);
 			$source = escapeString($_POST['source']);
 			$origin = escapeString(strtoupper(trim($_POST['origin'])));
@@ -484,7 +486,9 @@
 																  $platenumber,
 																  $timeready,
 																  $bookingtype,
-																  $truckingdetails
+																  $truckingdetails,
+																  $shipmenttype,
+																  $shipmentmode
 															 )
 													  );
 								$id = $bookingclass->getInsertId();
@@ -552,7 +556,9 @@
 																  $platenumber,
 																  $timeready,
 																  $bookingtype,
-																  $truckingdetails
+																  $truckingdetails,
+																  $shipmenttype,
+																  $shipmentmode
 															 ),'BOOKING','New Booking Transaction Added',$userid,$now);
 
 								$response = array(
@@ -641,7 +647,9 @@
 																  $platenumber,
 																  $timeready,
 																  $bookingtype,
-																  $truckingdetails
+																  $truckingdetails,
+																  $shipmenttype,
+																  $shipmentmode
 															 ),'BOOKING','Edited Booking Transaction',$userid,$now);/// log should be before update is made
 									$bookingclass->update($id,array($bookingnumber,
 																  'LOGGED',
@@ -706,7 +714,9 @@
 																  $platenumber,
 																  $timeready,
 																  $bookingtype,
-																  $truckingdetails
+																  $truckingdetails,
+																  $shipmenttype,
+																  $shipmentmode
 															 ));
 
 									$response = array(
@@ -938,6 +948,10 @@
 				                accompanying_documents.description as document,
 				                txn_booking.booking_type_id,
 				                booking_type.description as bookingtype,
+								txn_booking.shipment_type_id,
+								txn_booking.shipment_mode_id,
+								shipment_type.code as shipmenttype,
+								shipment_mode.code as shipmentmode,
 								trucking_details
 				         from txn_booking
 				         left join origin_destination_port as origintbl on origintbl.id=txn_booking.origin_id 
@@ -948,6 +962,8 @@
 				         left join handling_instruction on handling_instruction.id=txn_booking.package_handling_instruction
 				         left join vehicle_type on vehicle_type.id=txn_booking.vehicle_type_id
 				         left join booking_type on booking_type.id=txn_booking.booking_type_id
+						 left join shipment_type on shipment_type.id=txn_booking.shipment_type_id
+						 left join shipment_mode on shipment_mode.id=txn_booking.shipment_mode_id
 				         where txn_booking.booking_number = '$txnnumber'");
 			if(getNumRows($rs)==1){
 				while($obj = fetch($rs)){
@@ -1132,7 +1148,11 @@
 									   "viewstatushistoryaccess"=>utfEncode($userviewstatushistoryaccess),
 									   "bookingtypeid"=>$obj->booking_type_id,
 									   "bookingtype"=>utfEncode($obj->bookingtype),
-									   "truckingdetails"=>utfEncode($obj->trucking_details)
+									   "truckingdetails"=>utfEncode($obj->trucking_details),
+									   "shipmenttypeid"=>utfEncode($obj->shipment_type_id),
+									   "shipmentmodeid"=>utfEncode($obj->shipment_mode_id),
+									   "shipmenttype"=>utfEncode($obj->shipmenttype),
+									   "shipmentmode"=>utfEncode($obj->shipmentmode)
 									   );
 				}
 				print_r(json_encode($dataarray));

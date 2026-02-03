@@ -256,6 +256,8 @@ $(document)
 	.off('click', contentBK + ' #booking-trans-savebtn:not(".disabled")')
 	.on('click', contentBK + ' #booking-trans-savebtn:not(".disabled")', function () {
 		var button = $(this),
+			shipmenttype = $(inputfieldsBK + ' .booking-shipmenttype').val(),
+			shipmentmode = $(inputfieldsBK + ' .booking-shipmentmode').val(),
 			bookingtype = $(inputfieldsBK + ' .booking-bookingtype').val(),
 			origin = $(inputfieldsBK + ' .booking-origin').val(),
 			destination = $(inputfieldsBK + ' .booking-destination').val(),
@@ -335,6 +337,16 @@ $(document)
 
 		if (bookingtype == '' || bookingtype == null || bookingtype == 'null' || bookingtype == 'NULL') {
 			$(inputfieldsBK + ' .header-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select booking type.</div></div>");
+			$('.content').animate({ scrollTop: 0 }, 500);
+			//$(modal+' .booking-shipperpickupaddresslookup-province').focus();
+			button.removeClass('disabled');
+		} else if (shipmenttype == '' || shipmenttype == null || shipmenttype == 'null' || shipmenttype == 'NULL') {
+			$(inputfieldsBK + ' .header-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select an shipment type.</div></div>");
+			$('.content').animate({ scrollTop: 0 }, 500);
+			//$(modal+' .booking-shipperpickupaddresslookup-province').focus();
+			button.removeClass('disabled');
+		} else if (shipmentmode == '' || shipmentmode == null || shipmentmode == 'null' || shipmentmode == 'NULL') {
+			$(inputfieldsBK + ' .header-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select an shipment mode.</div></div>");
 			$('.content').animate({ scrollTop: 0 }, 500);
 			//$(modal+' .booking-shipperpickupaddresslookup-province').focus();
 			button.removeClass('disabled');
@@ -608,7 +620,9 @@ $(document)
 											vehicletype: vehicletype,
 											vehicletypetype: vehicletypetype,
 											bookingtype: bookingtype,
-											truckingdetails: truckingdetails
+											truckingdetails: truckingdetails,
+											shipmenttype: shipmenttype,
+											shipmentmode: shipmentmode
 										},
 										function (data) {
 											data = $.parseJSON(data);
@@ -710,7 +724,9 @@ $(document)
 									vehicletype: vehicletype,
 									vehicletypetype: vehicletypetype,
 									bookingtype: bookingtype,
-									truckingdetails: truckingdetails
+									truckingdetails: truckingdetails,
+									shipmenttype: shipmenttype,
+									shipmentmode: shipmentmode
 								},
 								function (data) {
 									data = $.parseJSON(data);
@@ -1652,6 +1668,28 @@ function getBookingInformation(txnnumber) {
 					.trigger('change');
 			}
 
+			if (data['shipmenttype'] != null) {
+				$(inputfieldsBK + ' .booking-shipmenttype')
+					.empty()
+					.append('<option selected value="' + data['shipmenttypeid'] + '">' + data['shipmenttype'] + '</option>')
+					.trigger('change');
+			} else {
+				$(inputfieldsBK + ' .booking-shipmenttype')
+					.empty()
+					.trigger('change');
+			}
+
+			if (data['shipmentmode'] != null) {
+				$(inputfieldsBK + ' .booking-shipmentmode')
+					.empty()
+					.append('<option selected value="' + data['shipmentmodeid'] + '">' + data['shipmentmode'] + '</option>')
+					.trigger('change');
+			} else {
+				$(inputfieldsBK + ' .booking-shipmentmode')
+					.empty()
+					.trigger('change');
+			}
+
 			if (data['origin'] != null) {
 				$(inputfieldsBK + ' .booking-origin')
 					.empty()
@@ -2417,45 +2455,69 @@ $(document)
 	});
 
 /************************* PRINTING *****************************************/
-// $(document)
-// 	.off('click', contentBK + ' #booking-trans-printbtn')
-// 	.on('click', contentBK + ' #booking-trans-printbtn', function () {
-// 		var title = 'Print Preview [' + $('#pgtxnbooking-id').attr('pgtxnbooking-number') + ']';
-// 		var tabid = $('#pgtxnbooking-id').attr('pgtxnbooking-number');
+$(document)
+	.off('click', contentBK + ' #booking-trans-printbtn')
+	.on('click', contentBK + ' #booking-trans-printbtn', function () {
+		var modal = '#bookingprintingmodal';
+		$(modal).modal('show');
+		
+		// Initialize the select2 dropdown when modal is shown
+		$(document)
+			.off('shown.bs.modal', modal)
+			.on('shown.bs.modal', modal, function () {
+				$(document).off('shown.bs.modal', modal);
+				$(modal + ' .bookingprintingmodal-formtype').select2();
+			});
+	});
 
-// 		if ($('.content>.content-tab-pane .content-tabs').find("li[data-pane='#" + tabid + "tabpane']").length >= 1) {
-// 			$(".content>.content-tab-pane .content-tabs>li[data-pane='#" + tabid + "tabpane']").remove();
-// 			$(".content>.content-tab-pane .content-pane-wrapper>.content-pane[id='" + tabid + "tabpane']").remove();
-// 			$('#loading-img').removeClass('hidden');
-// 			$('.content').animate({ scrollTop: 0 }, 300);
+// Add the print button handler for the modal
+$(document)
+	.off('click', contentBK + ' #bookingprintingmodal-printbtn:not(".disabled")')
+	.on('click', contentBK + ' #bookingprintingmodal-printbtn:not(".disabled")', function () {
+		var modal = '#' + $(this).closest('.modal').attr('id');
+		var formtype = $(modal + ' .bookingprintingmodal-formtype').val();
+		var txnnumber = $('#pgtxnbooking-id').attr('pgtxnbooking-number');
+		var title = 'Print Preview [' + txnnumber + ']';
+		var tabid = txnnumber;
+		var printSource = '';
 
-// 			$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
-// 			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
-// 			$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
-// 			$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
-// 			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
-// 				'Printouts/print-preview.php?source=printouts/transactions/booking.php?txnnumber=' + tabid + '&reference=' + tabid
-// 			);
-// 			setTimeout(function () {
-// 				$('#loading-img').addClass('hidden');
-// 			}, 400);
-// 		} else {
-// 			$('#loading-img').removeClass('hidden');
-// 			$('.content').animate({ scrollTop: 0 }, 300);
+		// Determine which print source to use based on form type
+		if (formtype === 'BOOKINGCONFIRMATION') {
+			printSource = 'printouts/transactions/booking-confirmation.php';
+		} else if (formtype === 'BOOKINGRECEIPTNOTICE') {
+			printSource = 'printouts/transactions/booking-receipt-notice.php';
+		} else {
+			say('Please select a form type');
+			return;
+		}
 
-// 			$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
-// 			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
-// 			$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
-// 			$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
-// 			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
-// 				'Printouts/print-preview.php?source=printouts/transactions/booking.php?txnnumber=' + tabid + '&reference=' + tabid
-// 			);
-// 			setTimeout(function () {
-// 				$('#loading-img').addClass('hidden');
-// 			}, 400);
-// 		}
-// 	});
-// /************************* PRINTING - END *****************************************/
+		// Close the modal
+		$(modal).modal('hide');
+
+		// Remove existing tab if it exists
+		if ($('.content>.content-tab-pane .content-tabs').find("li[data-pane='#" + tabid + "tabpane']").length >= 1) {
+			$(".content>.content-tab-pane .content-tabs>li[data-pane='#" + tabid + "tabpane']").remove();
+			$(".content>.content-tab-pane .content-pane-wrapper>.content-pane[id='" + tabid + "tabpane']").remove();
+		}
+
+		// Load the print preview
+		$('#loading-img').removeClass('hidden');
+		$('.content').animate({ scrollTop: 0 }, 300);
+
+		$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
+		$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
+		$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
+		$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
+		$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
+			'Printouts/print-preview.php?source=' + printSource + '?txnnumber=' + tabid + '&reference=' + tabid
+		);
+		
+		setTimeout(function () {
+			$('#loading-img').addClass('hidden');
+		}, 400);
+	});
+/************************* PRINTING - END *****************************************/
+
 
 $(document)
 	.off('click', contentBK + ' #booking-shipperinfobtn:not(".disabled")')
@@ -3331,68 +3393,4 @@ $(document)
 				btn.removeClass('disabled');
 			}
 		});
-	});
-
-
-	/************************* PRINTING *****************************************/
-$(document)
-	.off('click', contentBK + ' #bookingprintingmodal-printbtn')
-	.on('click', contentBK + ' #bookingprintingmodal-printbtn', function () {
-		var tabid = $(contentBK + ' #pgtxnbooking-id').attr('pgtxnbooking-number');
-		var modal = '#' + $(this).closest('.modal').attr('id');
-		var type = $(modal + ' .bookingprintingmodal-formtype').val();
-
-		var filepath = '';
-
-		if (type == 'BOOKINGCONFIRMATION') {
-			filepath = 'printouts/print-preview.php?txnnumber=' + tabid + '&source=printouts/transactions/booking-confirmation.php?txnnumber=' + tabid + '&reference=' + tabid;
-			var title = 'Print Preview [' + $(contentBK + ' #pgtxnbooking-id').attr('pgtxnbooking-number');
-		} else if (type == 'BOOKINGRECEIPTNOTICE') {
-			filepath = 'printouts/print-preview.php?txnnumber=' + tabid + '&source=printouts/transactions/booking-receipt-notice.php?txnnumber=' + tabid + '&reference=' + tabid;
-			var title = 'Print Preview [' + $(contentBK + ' #pgtxnbooking-id').attr('pgtxnbooking-number');
-		} 
-
-		//alert(type+' '+filepath);
-
-		$(modal).modal('hide');
-		$(document)
-			.off('hidden.bs.modal', modal)
-			.on('hidden.bs.modal', modal, function () {
-				$(document).off('hidden.bs.modal', modal);
-
-				if ($('.content>.content-tab-pane .content-tabs').find("li[data-pane='#" + typesuffix + "tabpane']").length >= 1) {
-					$('#loading-img').removeClass('hidden');
-					$('.content').animate({ scrollTop: 0 }, 300);
-
-					$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
-					$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
-
-					$(".content>.content-tab-pane .content-tabs>li[data-pane='#" + typesuffix + "tabpane']").addClass('active');
-					$(".content>.content-tab-pane .content-pane-wrapper>.content-pane[id='" + typesuffix + "tabpane']").addClass('active');
-
-					$(".content>.content-tab-pane .content-pane-wrapper>.content-pane[id='" + typesuffix + "tabpane']").load(filepath);
-					setTimeout(function () {
-						$('#loading-img').addClass('hidden');
-					}, 400);
-				} else {
-					$('#loading-img').removeClass('hidden');
-					$('.content').animate({ scrollTop: 0 }, 300);
-
-					$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
-					$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
-					$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + typesuffix + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
-					$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + typesuffix + "tabpane'></div>");
-					$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(filepath);
-					setTimeout(function () {
-						$('#loading-img').addClass('hidden');
-					}, 400);
-				}
-			});
-	});
-/************************* PRINTING - END *****************************************/
-
-$(document)
-	.off('click', contentBK + ' #booking-trans-printbtn:not(".disabled")')
-	.on('click', contentBK + ' #booking-trans-printbtn:not(".disabled")', function () {
-		$(contentBK + ' #bookingprintingmodal').modal('show');
 	});

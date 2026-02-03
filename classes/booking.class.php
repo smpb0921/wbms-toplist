@@ -66,6 +66,8 @@ class txn_booking extends table{
 	var $time_ready;
 	var $booking_type_id;
 	var $trucking_details;
+	var $shipment_type_id;
+	var $shipment_mode_id;
 	
 
 }

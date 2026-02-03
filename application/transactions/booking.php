@@ -89,6 +89,15 @@
 									                                            </div>
 							                                                    <div class="form-horizontal">
 							                                                        <div class="col-md-6">
+
+																						<div class="form-group">
+																							<label class='control-label col-md-3'>Shipment Type</label>
+																							<div class='col-md-9'>
+																								<select class='form-control form-input booking-shipmenttype addshiptypedropdownselect' style='width:100%'></select>
+																									
+																							</div>
+																						</div>
+
 							                                                        	<div class="form-group">
 							                                                                <label class='control-label col-lg-3'>Booking Type</label>
 							                                                                <div class="col-lg-9">
@@ -246,9 +255,9 @@
 							                                                        	<legend>Shipper Information</legend>
 							                                                        	<div class='form-horizontal'>
 																							<div class="form-group">
-																								<label class='control-label col-md-3'>Shipment Type / Mode</label>
+																								<label class='control-label col-md-3'>Shipment Mode</label>
 																								<div class='col-md-9'>
-																									<select class='form-control inputslctfld booking-shipper-shiptypemode addrdropregion addshiptypemodedropdownselect'  disabled="false"></select>
+																									<select class='form-control inputslctfld booking-shipmentmode addshipmodedropdownselect'  style='width:100%'></select>
 																									
 																								</div>
 																							</div>
@@ -1677,9 +1686,33 @@
 		                width:'100%'
 		    });
 
-			$(tabBK+" .addshiptypemodedropdownselect").select2({
+			$(tabBK+" .addshiptypedropdownselect").select2({
 		            ajax: {
-		                    url: "loadables/dropdown/shipment-type-mode.php",
+		                    url: "loadables/dropdown/shipment-type.php",
+		                    dataType: 'json',
+		                    delay: 100,
+		                    data: function (params) {
+		                        return {
+		                            q: params.term // search term
+		                        };
+		                    },
+		                    processResults: function (data) {
+		                        // parse the results into the format expected by Select2.
+		                        // since we are using custom formatting functions we do not need to
+		                        // alter the remote JSON data
+		                        return {
+		                            results: data
+		                        };
+		                    },
+		                    cache: true
+		                },
+		                minimumInputLength: 0,
+		                width:'100%'
+		    });
+
+			$(tabBK+" .addshipmodedropdownselect").select2({
+		            ajax: {
+		                    url: "loadables/dropdown/shipment-mode.php",
 		                    dataType: 'json',
 		                    delay: 100,
 		                    data: function (params) {
