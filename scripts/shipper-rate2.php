@@ -13,6 +13,7 @@
 			$source = escapeString($_POST['source']);
 			$tpl = escapeString($_POST['tpl']);
 			$zone = escapeString($_POST['zone']);
+			$shipmenttype = escapeString($_POST['shipmenttype']);
 			$origin = escapeString($_POST['origin']);
 			$destination = 'NULL';//escapeString($_POST['destination']);
 			$modeoftransport = 'NULL';//escapeString($_POST['modeoftransport']);
@@ -81,6 +82,7 @@
 						          where origin_id='$origin' and 
 						                zone_id='$zone' and 
 						                third_party_logistic_id='$tpl' and
+										shipment_type_id='$shipmenttype' and
 						                id!='$id' and 
 						                shipper_id='$shipper' and
 						                waybill_type='$wbtype' $pouchsizecondition";
@@ -92,7 +94,8 @@
 						          where origin_id='$origin' and 
 						                zone_id='$zone' and 
 						                third_party_logistic_id='$tpl' and
-						                 shipper_id='$shipper' and
+						                shipper_id='$shipper' and
+										shipment_type_id='$shipmenttype' and
 						                waybill_type='$wbtype' $pouchsizecondition";
 						//$pouchsizecondition
 				}
@@ -104,17 +107,17 @@
 				if(getNumRows($rs)==0){
 				
 					if($source=='add'){
-							$prclass->insert(array('',$shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,$userid,$now,'NULL','NULL',$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl));
+							$prclass->insert(array('',$shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,$userid,$now,'NULL','NULL',$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl,$shipmenttype));
 							$id = $prclass->getInsertId();
-							$systemlog->logAddedInfo($prclass,array($id,$shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,$userid,$now,'NULL','NULL',$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl),'shipper RATE','New shipper Rate Added',$userid,$now);
+							$systemlog->logAddedInfo($prclass,array($id,$shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,$userid,$now,'NULL','NULL',$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl,$shipmenttype),'shipper RATE','New shipper Rate Added',$userid,$now);
 
 							echo "success";
 					}
 					else if($source=='edit'){
 							$id = escapeString($_POST['id']);
 						
-							$systemlog->logEditedInfo($prclass,$id,array($id,$shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,'NOCHANGE','NOCHANGE',$userid,$now,$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl),'SHIPPER RATE','Edited Shipper Rate Info',$userid,$now);/// log should be before update is made
-							$prclass->update($id,array($shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,'NOCHANGE','NOCHANGE',$userid,$now,$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl));
+							$systemlog->logEditedInfo($prclass,$id,array($id,$shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,'NOCHANGE','NOCHANGE',$userid,$now,$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl,$shipmenttype),'SHIPPER RATE','Edited Shipper Rate Info',$userid,$now);/// log should be before update is made
+							$prclass->update($id,array($shipper,$origin,$destination,$modeoftransport,$freightcomputation,$fixedrateflag,$valuation,$freightrate,$insurancerate,$fuelrate,$bunkerrate,$minimumrate,'NOCHANGE','NOCHANGE',$userid,$now,$rushflag,$pulloutflag,$wbtype,$pouchsize,$fixedrateamount,$pulloutfee,$odarate,$services,$zone,$tpl,$shipmenttype));
 
 
 							
@@ -174,7 +177,9 @@
 									   third_party_logistic.description as thirdpartylogistic,
 									   shipper_rate.zone_id,
 									   zone.description as zone,
-									   shipper.account_name as shippername
+									   shipper.account_name as shippername,
+									   shipper_rate.shipment_type_id,
+									   shipment_type.code as shipmenttype
 								from shipper_rate
 								left join shipper on shipper.id=shipper_rate.shipper_id
 								left join origin_destination_port as origin on origin.id=shipper_rate.origin_id
@@ -184,6 +189,7 @@
 								left join services on services.id=shipper_rate.services_id
 								left join zone on zone.id=shipper_rate.zone_id
 								left join third_party_logistic on third_party_logistic.id=shipper_rate.third_party_logistic_id
+								left join shipment_type on shipment_type.id=published_rate.shipment_type_id
 								where shipper_rate.id='$id'
 				 	    ");
 
@@ -221,6 +227,8 @@
 										   "fixedrateamount"=>$obj->fixed_rate_amount,
 										   "pulloutfee"=>$obj->pull_out_fee,
 										   "odarate"=>$obj->oda_rate,
+										   "shipmenttypeid"=>$obj->shipment_type_id,
+										   "shipmenttype"=>utfEncode($obj->shipmenttype),
 										   "response"=>'success'
 
 										  
