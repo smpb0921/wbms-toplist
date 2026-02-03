@@ -148,6 +148,9 @@
 			$blockunitdistrict = escapeString($_POST['blockunitdistrict'])==''?'NULL':escapeString($_POST['blockunitdistrict']);
 			$lotfloor = escapeString($_POST['lotfloor'])==''?'NULL':escapeString($_POST['lotfloor']);
 
+			$shipmenttype = escapeString($_POST['shipmenttype']);
+			$shipmentmode = escapeString($_POST['shipmentmode']);
+
 
 			$expresstransactiontype = 'NULL';
 			$pouchsize = 'NULL';
@@ -374,7 +377,9 @@
 																							  $blockunitdistrict,
 																							  $lotfloor,
 																							  $mawbl,
-																							  $agent
+																							  $agent,
+																							  $shipmenttype,
+																							  $shipmentmode
 																							 
 																						 )
 																				  );
@@ -490,7 +495,9 @@
 																							  $blockunitdistrict,
 																							  $lotfloor,
 																							  $mawbl,
-																							  $agent
+																							  $agent,
+																							  $shipmenttype,
+																							  $shipmentmode
 																						 ),'WAYBILL','New Waybill Transaction Added',$userid,$now);
 															/** WAYBILL STAT HISTORY **/
 															$waybillstathistory = new txn_waybill_status_history();
@@ -658,7 +665,9 @@
 																									  $blockunitdistrict,
 																									  $lotfloor,
 																									  $mawbl,
-																									  $agent
+																									  $agent,
+																									  $shipmenttype,
+																									  $shipmentmode
 																								 ),'WAYBILL','Edited Waybill Transaction',$userid,$now);/// log should be before update is made
 																		$waybillclass->update($id,array($waybillnumber,
 																									  $waybillstatus,
@@ -770,7 +779,9 @@
 																									  $blockunitdistrict,
 																									  $lotfloor,
 																									  $mawbl,
-																									  $agent
+																									  $agent,
+																									  $shipmenttype,
+																									  $shipmentmode
 																								 ));
 
 																		$response = array(
@@ -1175,7 +1186,11 @@
 				                	else 'NO'
 				                end as printedflag,
 								consignee.id_number,
-								txn_billing.invoice as billingstatement
+								txn_billing.invoice as billingstatement,
+								txn_waybill.shipment_type_id,
+								txn_waybill.shipment_mode_id,
+								shipment_type.code as shipmenttype,
+								shipment_mode.code as shipmentmode
 				         from txn_waybill
 						 left join consignee on consignee.id=txn_waybill.consignee_id
 				         left join origin_destination_port as origintbl on origintbl.id=txn_waybill.origin_id 
@@ -1193,6 +1208,8 @@
 				         left join user as printeduser on printeduser.id=txn_waybill.printed_by
 				         left join agent on agent.id=txn_waybill.agent_id
 						 left join txn_billing on txn_billing.billing_number=txn_waybill.billing_reference
+						 left join shipment_type on shipment_type.id=txn_waybill.shipment_type_id
+						 left join shipment_mode on shipment_mode.id=txn_waybill.shipment_mode_id
 				         where txn_waybill.waybill_number = '$txnnumber'");
 			if(getNumRows($rs)==1){
 				while($obj = fetch($rs)){
@@ -1514,7 +1531,11 @@
 									   "agent"=>utfEncode($obj->agent),
 									   "paidflag"=>utfEncode($obj->paid_flag),
 									   "paymentreference"=>utfEncode($obj->payment_reference),
-									   "updatepaidflag"=>$userupdatepaidflag
+									   "updatepaidflag"=>$userupdatepaidflag,
+									   "shipmenttypeid"=>utfEncode($obj->shipment_type_id),
+									   "shipmentmodeid"=>utfEncode($obj->shipment_mode_id),
+									   "shipmenttype"=>utfEncode($obj->shipmenttype),
+									   "shipmentmode"=>utfEncode($obj->shipmentmode)
 
 
 									   );

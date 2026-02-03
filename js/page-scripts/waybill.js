@@ -825,6 +825,8 @@ $(document)
 			(blockunitdistrict = $(contentWB + ' .waybill-blockunitdistrict').val()),
 			(lotfloor = $(contentWB + ' .waybill-lotfloor').val()),
 			(agent = $(contentWB + ' .waybill-agent').val()),
+			(shipmenttype = $(contentWB + ' .waybill-shipmenttype').val()),
+			(shipmentmode = $(contentWB + ' .waybill-shipmentmode').val()),
 			(source = processWB),
 			(linedesc = []),
 			(lineamount = []),
@@ -869,6 +871,14 @@ $(document)
 			);
 			$('.content').animate({ scrollTop: 0 }, 500);
 			$(contentWB + ' .waybill-bookingnumber').select2('open');
+			button.removeClass('disabled');
+		} else if (shipmenttype == '' || shipmenttype == null || shipmenttype == 'null' || shipmenttype == 'NULL') {
+			$(contentWB + ' .header-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide shipment type</div></div>");
+			$('.content').animate({ scrollTop: 0 }, 500);
+			button.removeClass('disabled');
+		} else if (shipmentmode == '' || shipmentmode == null || shipmentmode == 'null' || shipmentmode == 'NULL') {
+			$(contentWB + ' .header-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide shipment mode</div></div>");
+			$('.content').animate({ scrollTop: 0 }, 500);
 			button.removeClass('disabled');
 		} else if (tpl == '' || tpl == null || tpl == 'null' || tpl == 'NULL' || tpl == undefined) {
 			$(contentWB + ' .header-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select third party logistic (3PL)</div></div>");
@@ -1240,7 +1250,9 @@ $(document)
 					parkingslot: parkingslot,
 					blockunitdistrict: blockunitdistrict,
 					lotfloor: lotfloor,
-					freightcost: freightcost
+					freightcost: freightcost,
+					shipmenttype: shipmenttype,
+					shipmentmode: shipmentmode
 				},
 				function (data) {
 					//alert(data);
@@ -2996,6 +3008,28 @@ function getWaybillInformation(txnnumber) {
 					.trigger('change');
 			}
 
+			if (data['shipmenttype'] != null) {
+				$(inputfieldsWB + ' .waybill-shipmenttype')
+					.empty()
+					.append('<option selected value="' + data['shipmenttypeid'] + '">' + data['shipmenttype'] + '</option>')
+					.trigger('change');
+			} else {
+				$(inputfieldsWB + ' .waybill-shipmenttype')
+					.empty()
+					.trigger('change');
+			}
+
+			if (data['shipmentmode'] != null) {
+				$(inputfieldsWB + ' .waybill-shipmentmode')
+					.empty()
+					.append('<option selected value="' + data['shipmentmodeid'] + '">' + data['shipmentmode'] + '</option>')
+					.trigger('change');
+			} else {
+				$(inputfieldsWB + ' .waybill-shipmentmode')
+					.empty()
+					.trigger('change');
+			}
+
 			/*if(data["parceltype"]!=null){
 				$(inputfieldsWB+" .waybill-parceltype").empty().append('<option selected value="'+data["parceltypeid"]+'">'+data["parceltype"]+'</option>').trigger('change');
 			}
@@ -3672,7 +3706,7 @@ $(document)
 		btn.removeClass('disabled');
 		say("Please provide BOL Number");
 	}
-	else */ if (formtype != 'EXTERNAL' && formtype != 'INTERNAL' && formtype != 'DR' && formtype != 'DR-ALT' && formtype != 'INTERNAL-ALT' && formtype != 'EXTERNAL-ALT') {
+	else */ if (formtype != 'EXTERNAL' && formtype != 'INTERNAL' && formtype != 'DR' && formtype != 'DR-ALT' && formtype != 'INTERNAL-ALT' && formtype != 'EXTERNAL-ALT' && formtype != 'TRANS-BOL-ORIG') {
 			btn.removeClass('disabled');
 			say('Please select form type');
 		} else {
@@ -3888,6 +3922,40 @@ $(document)
 								$('#loading-img').addClass('hidden');
 							}, 400);
 						}
+						btn.removeClass('disabled');
+					});
+			} else if (formtype == 'TRANS-BOL-ORIG') {
+				$(modal).modal('hide');
+				$(document)
+					.off('hidden.bs.modal', modal)
+					.on('hidden.bs.modal', modal, function () {
+						$(document).off('hidden.bs.modal', modal);
+						if ($('.content>.content-tab-pane .content-tabs').find("li[data-pane='#" + tabid + "tabpane']").length >= 1) {
+							$(".content>.content-tab-pane .content-tabs>li[data-pane='#" + tabid + "tabpane']").remove();
+							$(".content>.content-tab-pane .content-pane-wrapper>.content-pane[id='" + tabid + "tabpane']").remove();
+							$('#loading-img').removeClass('hidden');
+							$('.content').animate({ scrollTop: 0 }, 300);
+
+							$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
+							$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
+							$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
+							$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
+							$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
+								'Printouts/print-preview.php?txnnumber=' +
+									waybillnumber +
+									'&source=printouts/transactions/bol-original.php?txnnumber=' +
+									waybillnumber +
+									'tpicorpaabbccreference=' +
+									waybillnumber +
+									'tpicorpaabbccbolnumber=' +
+									bolnumber +
+									'tpicorpaabbccformtype=' +
+									formtype
+							);
+							setTimeout(function () {
+								$('#loading-img').addClass('hidden');
+							}, 400);
+						} 
 						btn.removeClass('disabled');
 					});
 			}
@@ -6059,7 +6127,7 @@ $(document)
 		btn.removeClass('disabled');
 		say("Please provide BOL Number");
 	}
-	else */ if (formtype != 'EXTERNAL' && formtype != 'INTERNAL' && formtype != 'DR' && formtype != 'DR-ALT' && formtype != 'INTERNAL-ALT' && formtype != 'EXTERNAL-ALT') {
+	else */ if (formtype != 'EXTERNAL' && formtype != 'INTERNAL' && formtype != 'DR' && formtype != 'DR-ALT' && formtype != 'INTERNAL-ALT' && formtype != 'EXTERNAL-ALT' && formtype != 'TRANS-BOL-ORIG') {
 			btn.removeClass('disabled');
 			say('Please select form type');
 		} else {
@@ -6142,6 +6210,19 @@ $(document)
 						$(document).off('hidden.bs.modal', modal);
 						/*printJS(maindir+"application/printouts/transactions/waybill-dr-form.php?txnnumber="+waybillnumber+"&bolnumber="+bolnumber);*/
 						$(contentWB + ' #WBprintpdfiframe').attr('src', 'printouts/transactions/waybill-dr-form.php?txnnumber=' + waybillnumber + '&bolnumber=' + bolnumber + '&formtype=' + formtype);
+
+						$(contentWB + ' #WBprintpdfiframe').load(function () {
+							PDFDirectPrint('WBprintpdfiframe');
+							btn.removeClass('disabled');
+						});
+					});
+			} else if (formtype == 'TRANS-BOL-ORIG') {
+				$(modal).modal('hide');
+				$(document)
+					.off('hidden.bs.modal', modal)
+					.on('hidden.bs.modal', modal, function () {
+						$(document).off('hidden.bs.modal', modal);
+						$(contentWB + ' #WBprintpdfiframe').attr('src', 'printouts/transactions/bol-original.php?txnnumber=' + waybillnumber + '&bolnumber=' + bolnumber + '&formtype=' + formtype);
 
 						$(contentWB + ' #WBprintpdfiframe').load(function () {
 							PDFDirectPrint('WBprintpdfiframe');

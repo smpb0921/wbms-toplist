@@ -113,6 +113,8 @@ class txn_waybill extends table{
     var $lot_floor;
     var $mawbl_bl;
     var $agent_id;
+    var $shipment_type_id;
+    var $shipment_mode_id;
 
 }
 

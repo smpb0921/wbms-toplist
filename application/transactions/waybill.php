@@ -101,6 +101,15 @@
 								                                                        	<legend>General Information</legend>
 								                                                        	<div class='form-horizontal'>
 								                                                        	   	<div class='col-lg-6'>
+
+																									<div class="form-group">
+																										<label class='control-label col-md-3'>Shipment Type</label>
+																										<div class='col-md-9'>
+																											<select class='form-control form-input waybill-shipmenttype addshipmenttypedropdownselect'  style='width:100%'></select>
+																												
+																										</div>
+																									</div>
+
 										                                                        	<div class="form-group">
 										                                                                <label class='control-label col-lg-3'>Booking No.</label>
 										                                                                <div class="col-lg-9">
@@ -358,6 +367,13 @@
 							                                                        	<fieldset>
 								                                                        	<legend>Shipper Information</legend>
 								                                                        	<div class='form-horizontal'>
+																								<div class="form-group">
+																									<label class='control-label col-md-3'>Shipment Mode</label>
+																									<div class='col-md-9'>
+																										<select class='form-control form-input waybill-shipmentmode addshipmentmodedropdownselect'  style='width:100%'></select>
+																										
+																									</div>
+																								</div>
 								                                                        		<div class="form-group">
 																									<label class='control-label col-md-3'>Account No.</label>
 																									<div class='col-md-5'>
@@ -2195,6 +2211,7 @@
 	            					<option value='EXTERNAL-ALT'>External - RTS</option>
 	            					<option value='DR'>Delivery Receipt</option>
 	            					<option value='DR-ALT'>Delivery Receipt - RTS</option>
+									<option value='TRANS-BOL-ORIG'>BOL Original</option>
 	            				</select>
 	            				
 	            			</div>
@@ -2819,6 +2836,78 @@
 		    $(tabWB+" .addressregiondropdownselect").select2({
 		            ajax: {
 		                    url: "loadables/dropdown/address-region.php",
+		                    dataType: 'json',
+		                    delay: 100,
+		                    data: function (params) {
+		                        return {
+		                            q: params.term // search term
+		                        };
+		                    },
+		                    processResults: function (data) {
+		                        // parse the results into the format expected by Select2.
+		                        // since we are using custom formatting functions we do not need to
+		                        // alter the remote JSON data
+		                        return {
+		                            results: data
+		                        };
+		                    },
+		                    cache: true
+		                },
+		                minimumInputLength: 0,
+		                width:'100%'
+		    });
+
+			$(tabWB+" .addshipmenttypedropdownselect").select2({
+		            ajax: {
+		                    url: "loadables/dropdown/shipment-type.php",
+		                    dataType: 'json',
+		                    delay: 100,
+		                    data: function (params) {
+		                        return {
+		                            q: params.term // search term
+		                        };
+		                    },
+		                    processResults: function (data) {
+		                        // parse the results into the format expected by Select2.
+		                        // since we are using custom formatting functions we do not need to
+		                        // alter the remote JSON data
+		                        return {
+		                            results: data
+		                        };
+		                    },
+		                    cache: true
+		                },
+		                minimumInputLength: 0,
+		                width:'100%'
+		    });
+
+			$(tabWB+" .addshipmentmodedropdownselect").select2({
+		            ajax: {
+		                    url: "loadables/dropdown/shipment-mode.php",
+		                    dataType: 'json',
+		                    delay: 100,
+		                    data: function (params) {
+		                        return {
+		                            q: params.term // search term
+		                        };
+		                    },
+		                    processResults: function (data) {
+		                        // parse the results into the format expected by Select2.
+		                        // since we are using custom formatting functions we do not need to
+		                        // alter the remote JSON data
+		                        return {
+		                            results: data
+		                        };
+		                    },
+		                    cache: true
+		                },
+		                minimumInputLength: 0,
+		                width:'100%'
+		    });
+
+			$(tabWB+" .addshipmodedropdownselect").select2({
+		            ajax: {
+		                    url: "loadables/dropdown/shipment-mode.php",
 		                    dataType: 'json',
 		                    delay: 100,
 		                    data: function (params) {
