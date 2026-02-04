@@ -91,7 +91,7 @@
 							                                                        <div class="col-md-6">
 
 																						<div class="form-group">
-																							<label class='control-label col-md-3'>Shipment Type</label>
+																							<label class='control-label col-md-3'>Shipment Type*</label>
 																							<div class='col-md-9'>
 																								<select class='form-control form-input booking-shipmenttype addshiptypedropdownselect' style='width:100%'></select>
 																									
@@ -99,19 +99,19 @@
 																						</div>
 
 							                                                        	<div class="form-group">
-							                                                                <label class='control-label col-lg-3'>Booking Type</label>
+							                                                                <label class='control-label col-lg-3'>Booking Type*</label>
 							                                                                <div class="col-lg-9">
 							                                                                    <select class='form-control form-input booking-bookingtype bookingtypedropdownselect' style='width:100%'></select>
 							                                                                </div>
 							                                                            </div>
 							                                                            <div class="form-group">
-							                                                                <label class='control-label col-lg-3'>Origin</label>
+							                                                                <label class='control-label col-lg-3'>Origin*</label>
 							                                                                <div class="col-lg-9">
 							                                                                    <select class='form-control form-input booking-origin origindestinationdropdownselect' style='width:100%'></select>
 							                                                                </div>
 							                                                            </div>
 							                                                            <div class="form-group">
-							                                                                <label class='control-label col-lg-3'>Destination</label>
+							                                                                <label class='control-label col-lg-3'>Destination*</label>
 							                                                                <div class="col-lg-9">
 							                                                                    <select class='form-control form-input booking-destination origindestinationdropdownselect' style='width:100%'></select>
 							                                                                </div>
@@ -119,7 +119,7 @@
 							                                                            
 							                                                            
 							                                                            <div class="form-group">
-							                                                                <label class='control-label col-lg-3'>Pickup Date</label>
+							                                                                <label class='control-label col-lg-3'>Pickup Date*</label>
 							                                                                <div class="col-lg-9">
 							                                                                	<div class="input-group">
 							                                                            			
@@ -255,14 +255,14 @@
 							                                                        	<legend>Shipper Information</legend>
 							                                                        	<div class='form-horizontal'>
 																							<div class="form-group">
-																								<label class='control-label col-md-3'>Shipment Mode</label>
+																								<label class='control-label col-md-3'>Shipment Mode*</label>
 																								<div class='col-md-9'>
 																									<select class='form-control inputslctfld booking-shipmentmode addshipmodedropdownselect'  style='width:100%'></select>
 																									
 																								</div>
 																							</div>
 							                                                        		<div class="form-group">
-																								<label class='control-label col-md-3'>Account No.</label>
+																								<label class='control-label col-md-3'>Account No.*</label>
 																								<div class='col-md-5'>
 																									<div class="input-group">
 																										<input type='hidden' class='booking-shipper-systemid'>
@@ -394,7 +394,7 @@
 																											</div>
 																											<div class="form-group">
 											                                                        			<div class='col-md-12'>
-																													<label class='control-label'>Unit of Measure</label>
+																													<label class='control-label'>Unit of Measure*</label>
 																													<select class='form-control booking-uom uomdropdownselect'></select>
 																												</div>
 																											</div>
@@ -410,25 +410,25 @@
 																											</div>
 																											<div class="form-group">
 																												<div class='col-md-12'>
-																													<label class='control-label'>Mode of Transport</label>
+																													<label class='control-label'>Mode of Transport*</label>
 																													<select class='form-control booking-modeoftransport modeoftransportdropdownselect'></select>
 																												</div>
 																											</div>
 																											<div class="form-group">
 																												<div class='col-md-12'>
-																													<label class='control-label'>Documents</label>
+																													<label class='control-label'>Documents*</label>
 																													<select class='form-control booking-document documentdropdownselect' multiple></select>
 																												</div>
 																											</div>
 																											<div class="form-group">
 																												<div class='col-md-12'>
-																													<label class='control-label'>Handling Instruction</label>
+																													<label class='control-label'>Handling Instruction*</label>
 																													<select class='form-control booking-handlinginstruction handlinginstructiondropdownselect' multiple></select>
 																												</div>
 																											</div>
 																											<div class="form-group">	
 																												<div class='col-md-12'>
-																													<label class='control-label'>Pay Mode</label>
+																													<label class='control-label'>Pay Mode*</label>
 																													<select class='form-control booking-paymode paymodedropdownselect'></select>
 																												</div>
 																											</div>
@@ -593,7 +593,7 @@
 							                                                        	<legend>Vehicle Information</legend>
 							                                                        	<div class='form-horizontal'>
 							                                                        		<div class="form-group">
-							                                                        				<label class='control-label col-lg-3'>Vehicle Type</label>
+							                                                        				<label class='control-label col-lg-3'>Vehicle Type*</label>
 							                                                        				<div class="col-lg-9">
 							                                                        					<select class='form-control booking-vehicletype vehicletypedropdownselect'></select>
 							                                                        				</div>
@@ -605,7 +605,7 @@
 							                                                        				</div>
 							                                                        		</div>
 							                                                        		<div class="form-group">
-							                                                        			<label class='control-label col-lg-3'>Time Ready</label>
+							                                                        			<label class='control-label col-lg-3'>Time Ready*</label>
 							                                                        			<div class="col-lg-9">
 							                                                        				<input type='text' class='form-control booking-timeready datetimepicker'>
 							                                                        			</div>
@@ -658,7 +658,7 @@
 
 							                                                        <div class='col-md-12'>
 							                                                        	<div class="form-group">
-																							<label class='control-label'>Shipment Description</label>
+																							<label class='control-label'>Shipment Description*</label>
 																							<textarea class='form-input form-control booking-shipmentdescription' rows='5'></textarea>
 																						</div>
 																					</div>
