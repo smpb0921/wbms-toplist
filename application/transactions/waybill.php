@@ -103,7 +103,7 @@
 								                                                        	   	<div class='col-lg-6'>
 
 																									<div class="form-group">
-																										<label class='control-label col-md-3'>Shipment Type</label>
+																										<label class='control-label col-md-3'>Shipment Type*</label>
 																										<div class='col-md-9'>
 																											<select class='form-control form-input waybill-shipmenttype addshipmenttypedropdownselect'  style='width:100%'></select>
 																												
@@ -111,7 +111,7 @@
 																									</div>
 
 										                                                        	<div class="form-group">
-										                                                                <label class='control-label col-lg-3'>Booking No.</label>
+										                                                                <label class='control-label col-lg-3'>Booking No.*</label>
 										                                                                <div class="col-lg-9">
 										                                                                    <select class='form-control form-input waybill-bookingnumber wbbookingnumberdropdownselect' style='width:100%'></select>
 										                                                                </div>
@@ -125,13 +125,13 @@
 										                                                                </div>
 										                                                            </div>-->
 										                                                            <div class="form-group">
-										                                                                <label class='control-label col-lg-3'>Origin</label>
+										                                                                <label class='control-label col-lg-3'>Origin*</label>
 										                                                                <div class="col-lg-9">
 										                                                                    <select class='form-control form-input waybill-origin origindestinationdropdownselect' style='width:100%'></select>
 										                                                                </div>
 										                                                            </div>
 										                                                            <div class="form-group">
-										                                                                <label class='control-label col-lg-3'>Destination</label>
+										                                                                <label class='control-label col-lg-3'>Destination*</label>
 										                                                                <div class="col-lg-9">
 										                                                                    <select class='form-control form-input waybill-destination origindestinationdropdownselect' style='width:100%'></select>
 										                                                                </div>
@@ -300,7 +300,7 @@
 											                                                                </div>
 											                                                            </div>
 																										<div class="form-group">
-										                                                        			<label class='control-label col-md-3'>MAWBL</label>
+										                                                        			<label class='control-label col-md-3'>MAWBL*</label>
 										                                                        			<div class="col-md-9">
 										                                                        				<input type='text' class='form-control waybill-mawbl' disabled="true">
 										                                                        			</div>
@@ -308,13 +308,13 @@
 
 										                                                        		<div class="form-group modeoftransportwrapper">
 																											
-																												<label class='control-label col-md-3'>Mode of Transport</label>
+																												<label class='control-label col-md-3'>Mode of Transport*</label>
 																												<div class='col-md-9'>
 																													<select class='form-control waybill-modeoftransport modeoftransportdropdownselect'></select>
 																												</div>
 																										</div>
 																										<div class="form-group packagedimensionswrapper">
-																												<label class='control-label col-md-3'>Package Dimensions</label>
+																												<label class='control-label col-md-3'>Package Dimensions*</label>
 																												<div class='col-md-9'>
 											                                                                        <span class="input-group-addon inputgroupbtn pull-left">
 											                                                                                <i class="fa fa-search inputgroupicon inputgroupbtnicon" alwaysshow title='View Package Dimensions' id='waybill-packagedimensionsbtn'></i>
@@ -368,14 +368,14 @@
 								                                                        	<legend>Shipper Information</legend>
 								                                                        	<div class='form-horizontal'>
 																								<div class="form-group">
-																									<label class='control-label col-md-3'>Shipment Mode</label>
+																									<label class='control-label col-md-3'>Shipment Mode*</label>
 																									<div class='col-md-9'>
 																										<select class='form-control form-input waybill-shipmentmode addshipmentmodedropdownselect'  style='width:100%'></select>
 																										
 																									</div>
 																								</div>
 								                                                        		<div class="form-group">
-																									<label class='control-label col-md-3'>Account No.</label>
+																									<label class='control-label col-md-3'>Account No.*</label>
 																									<div class='col-md-5'>
 																										<div class="input-group">
 																											<input type='hidden' class='waybill-shipper-systemid'>
@@ -402,7 +402,7 @@
 																									</div>
 																								</div>
 																								<div class="form-group">
-																									<label class='control-label col-md-3'>Contact Person</label>
+																									<label class='control-label col-md-3'>Contact Person*</label>
 																									<div class='col-md-9'>
 																										<input type='text' class='form-input form-control waybill-shipper-contactperson'>
 																									</div>
@@ -572,7 +572,7 @@
 																										</div>
 										                                                        		<div class="form-group">
 										                                                        			<input type='hidden' class='waybill-consignee-systemid'>
-																											<label class='control-label col-md-3'>Account No.</label>
+																											<label class='control-label col-md-3'>Account No.*</label>
 																											<div class='col-md-5'>
 																												<div class="input-group">
 											    			                                                        
@@ -735,7 +735,7 @@
 																									
 																									<div class="form-group pouchsizewrapper">
 																										<div class='col-md-12'>
-																											<label class='control-label'>Pouch Size</label>	
+																											<label class='control-label'>Pouch Size*</label>	
 																											<select class='form-input form-control waybill-pouchsize pouchsizedropdownselect' style='width:100%'></select>
 																								    	</div>
 																								    </div>
