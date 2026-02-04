@@ -315,6 +315,12 @@
 				   				<div  data-title='Supplier Rate' data-file='maintenance/supplier-rate.php' id='supplierrate-menu' data-js='supplier-rate.js'>
 				   					<img class='img' src="../resources/img/folder_64.png">Supplier Rate
 				   				</div>
+									<div  data-title='Shipment Type' data-file='maintenance/shipment-type.php' id='shipmenttype-menu' data-js='shipment-type.js'>
+				   					<img class='img' src="../resources/img/folder_64.png">Shipment Type
+								</div>
+									<div  data-title='Shipment Mode' data-file='maintenance/shipment-mode.php' id='shipmentmode-menu' data-js='shipment-mode.js'>
+				   					<img class='img' src="../resources/img/folder_64.png">Shipment Mode
+				   				</div>
 				   				<div  data-title='Waybill Booklet Issuance' data-file='maintenance/waybill-booklet-issuance.php' id='waybillbookletissuance-menu' data-js='waybill-booklet-issuance.js'>
 				   					<img class='img' src="../resources/img/folder_64.png">BOL Booklet Issuance
 				   				</div>
