@@ -12,6 +12,7 @@ class txn_waybill_movement extends table{
 	var $updated_date;
 	var $updated_by;
 	var $movement_type_id;
+	var $shipment_type_id;
 
 }
 

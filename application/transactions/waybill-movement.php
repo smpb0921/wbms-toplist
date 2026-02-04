@@ -95,6 +95,12 @@
 							                                                                    <input type='text' class='form-control waybillmovement-movementtype'>
 							                                                                </div>
 							                                                            </div>
+																						<div class="form-group">
+							                                                                <label class='control-label col-lg-3'>Shipment Type</label>
+							                                                                <div class="col-lg-9">
+							                                                                    <input type='text' class='form-control waybillmovement-shipmenttype'>
+							                                                                </div>
+							                                                            </div>
 							                                                        	<div class="form-group">
 							                                                                <label class='control-label col-lg-3'>Location</label>
 							                                                                <div class="col-lg-9">
@@ -279,17 +285,23 @@
             				<div class='modal-errordiv'></div>
             				
 	            			<div class="form-group">
-	            				<label class='control-label col-md-3'>Location</label>
+	            				<label class='control-label col-md-3'>Location*</label>
 	            				<div class='col-md-9'>
 	            					<select class='form-control newwaybillmovementmodal-location locationdropdownselect'></select>
 	            				</div>
 	            			</div>
 	            			<div class="form-group">
-	            				<label class='control-label col-md-3'>Movement Type</label>
+	            				<label class='control-label col-md-3'>Movement Type*</label>
 	            				<div class='col-md-9'>
 	            					<select class='form-control newwaybillmovementmodal-movementtype movementtypedropdownselect'></select>
 	            				</div>
 	            			</div>
+							<div class="form-group">
+								<label class='control-label col-md-3'>Shipment Type*</label>
+								<div class='col-md-9'>
+									<select class='form-control newwaybillmovementmodal-shipmenttype addshiptypedropdownselect'></select>
+								</div>
+							</div>
             				<div class="form-group">
             					<label class='control-label col-md-3'>Document Date</label>
             					<div class="col-md-9">
@@ -527,6 +539,27 @@
 	    	$(tabWBM+" .movementtypedropdownselect").select2({
 	            ajax: {
 	                    url: "loadables/dropdown/movement-type.php",
+	                    dataType: 'json',
+	                    delay: 100,
+	                    data: function (params) {
+	                        return {
+	                            q: params.term // search term
+	                        };
+	                    },
+	                    processResults: function (data) {
+	                        return {
+	                            results: data
+	                        };
+	                    },
+	                    cache: true
+	                },
+	                minimumInputLength: 0,
+	                width: '100%'
+	    	});
+
+			$(tabWBM+" .addshiptypedropdownselect").select2({
+	            ajax: {
+	                    url: "loadables/dropdown/shipment-type.php",
 	                    dataType: 'json',
 	                    delay: 100,
 	                    data: function (params) {

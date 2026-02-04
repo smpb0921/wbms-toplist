@@ -106,6 +106,7 @@ $(document).off('click',contentWBM+' #newwaybillmovementmodal-savebtn:not(".disa
 	var documentdate = $(contentWBM+' .newwaybillmovementmodal-documentdate').val();
 	var location = $(contentWBM+' .newwaybillmovementmodal-location').val();
 	var movementtype = $(contentWBM+' .newwaybillmovementmodal-movementtype').val();
+	var shipmenttype = $(contentWBM+' .newwaybillmovementmodal-shipmenttype').val();
 	var remarks = $(contentWBM+' .newwaybillmovementmodal-remarks').val();
 	var modal = '#'+$(this).closest('.modal').attr('id');
 	var button = $(this);
@@ -116,13 +117,17 @@ $(document).off('click',contentWBM+' #newwaybillmovementmodal-savebtn:not(".disa
 		$(modal+' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select movement type.</div></div>");
 		button.removeClass('disabled');
 	}
+	else if(shipmenttype==''||shipmenttype=='NULL'||shipmenttype=='null'||shipmenttype==null){
+		$(modal+' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select a shipment type.</div></div>");
+		button.removeClass('disabled');
+	}
 	else if(location==''||location=='NULL'||location=='null'||location==null){
 		$(modal+' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select a location.</div></div>");
 		button.removeClass('disabled');
 	}
 	else{	
 		$('#loading-img').removeClass('hidden');
-		$.post(server+'waybill-movement.php',{saveNewWaybillMovementTransaction:'oi$ha@3h0$0jRoihQnsRP9$nzpo92po@k@',documentdate:documentdate,location:location,remarks:remarks,movementtype:movementtype},function(data){
+		$.post(server+'waybill-movement.php',{saveNewWaybillMovementTransaction:'oi$ha@3h0$0jRoihQnsRP9$nzpo92po@k@',documentdate:documentdate,location:location,remarks:remarks,movementtype:movementtype,shipmenttype:shipmenttype},function(data){
 		
 			data = $.parseJSON(data);
 			if(data['response']=='success'){
@@ -200,6 +205,7 @@ function getWaybillMovementInformation(txnnumber){
 			$(contentWBM+" .statusdiv").text(data["status"]);
 			
 			$(contentWBM+" .waybillmovement-movementtype").val(data["movementtype"]);
+			$(contentWBM+" .waybillmovement-shipmenttype").val(data["shipmenttype"]);
 			$(contentWBM+" .waybillmovement-location").val(data["location"]);
 			$(contentWBM+" .waybillmovement-remarks").val(data["remarks"]);
 			$(contentWBM+" .waybillmovement-documentdate").val(data["documentdate"]);

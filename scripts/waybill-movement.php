@@ -14,6 +14,7 @@
 
 			$response = array();
 			$movementtype = escapeString($_POST['movementtype']);
+			$shipmenttype = escapeString($_POST['shipmenttype']);
 			$documentdate = dateString($_POST['documentdate']);
 			$location = escapeString($_POST['location']);
 			$remarks = escapeString($_POST['remarks']);
@@ -27,8 +28,8 @@
 			$locationcode = getInfo("location","code","where id='$location'");
 			$movementtypedesc = getInfo("movement_type","description","where id='$movementtype'");
 
-			$wbmclass->insert(array('',$wbmnumber,'LOGGED',$location,$remarks,$documentdate,$now,$userid,'NULL','NULL',$movementtype));
-			$systemlog->logInfo('WAYBILL MOVEMENT',"New Waybill Movement","Waybill Movement No.: $wbmnumber | Movement Type: $movementtypedesc | Location: $locationcode | Remarks: $remarks | Document Date: $documentdate",$userid,$now);
+			$wbmclass->insert(array('',$wbmnumber,'LOGGED',$location,$remarks,$documentdate,$now,$userid,'NULL','NULL',$movementtype,$shipmenttype));
+			$systemlog->logInfo('WAYBILL MOVEMENT',"New Waybill Movement","Waybill Movement No.: $wbmnumber | Movement Type: $movementtypedesc | Shipment Type: $shipmenttype | Location: $locationcode | Remarks: $remarks | Document Date: $documentdate",$userid,$now);
 			$response = array(
 									   "response"=>'success',
 									   "txnnumber"=>$wbmnumber
@@ -99,9 +100,12 @@
 					                        txn_waybill_movement.remarks,
 					                        txn_waybill_movement.location_id,
 					                        txn_waybill_movement.movement_type_id,
-					                        movement_type.description as movementtype 
+					                        movement_type.description as movementtype,
+											txn_waybill_movement.shipment_type_id,
+											shipment_type.code as shipmenttype
 					                 from txn_waybill_movement 
 					                 left join movement_type on movement_type.id=txn_waybill_movement.movement_type_id
+									 left join shipment_type on shipment_type.id=txn_waybill_movement.shipment_type_id
 					                 where waybill_movement_number='$txnnumber'");
 				$status = '';
 				$data = array();
@@ -112,6 +116,9 @@
 
 				$movementtype = '';
 				$movementtypeid = '';
+
+				$shipmenttype = '';
+				$shipmenttypeid = '';
 			
 
 				if(getNumRows($checktxnrs)==1){
@@ -120,6 +127,8 @@
 						$createdby = $obj->created_by;
 						$movementtype = strtoupper($obj->movementtype);
 						$movementtypeid = $obj->movement_type_id;
+						$shipmenttype = strtoupper($obj->shipmenttype);
+						$shipmenttypeid = $obj->shipment_type_id;
 						$wbmlocid = $obj->location_id;
 						$wbstatremarks = trim($obj->remarks);
 					}
@@ -227,12 +236,15 @@
 				                location.code as loccode,
 				                location.description as locdesc,
 				                movement_type.description as movementtypedesc,
-				                movement_type.code as movementtypecode
+				                movement_type.code as movementtypecode,
+								txn_waybill_movement.shipment_type_id,
+								shipment_type.code as shipmenttype
 				         from txn_waybill_movement
 				         left join user as cuser on cuser.id=txn_waybill_movement.created_by
 				         left join user as uuser on uuser.id=txn_waybill_movement.updated_by
 				         left join location on location.id=txn_waybill_movement.location_id
 				         left join movement_type on movement_type.id=txn_waybill_movement.movement_type_id
+						 left join shipment_type on shipment_type.id=txn_waybill_movement.shipment_type_id
 				         where txn_waybill_movement.waybill_movement_number = '$txnnumber'");
 			if(getNumRows($rs)==1){
 				while($obj = fetch($rs)){
@@ -257,6 +269,7 @@
 									   "locationid"=>utfEncode($obj->location_id),
 									   "movementtype"=>utfEncode($obj->movementtypecode).' - '.utfEncode($obj->movementtypedesc),
 									   "location"=>utfEncode($obj->loccode).' - '.utfEncode($obj->locdesc),
+									   "shipmenttype"=>utfEncode($obj->shipmenttype),
 									   "remarks"=>utfEncode($obj->remarks),
 									   "documentdate"=>utfEncode($documentdate),
 									   "createddate"=>utfEncode($createddate),
