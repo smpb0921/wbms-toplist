@@ -35,6 +35,7 @@ $(document).off('click','.movementtypemodal-savebtn:not(".disabled")').on('click
 		code = $(modal+' .code').val(),
 		desc = $(modal+' .description').val(),
 		sourcemovement = $(modal+' .sourcemovement').val(),
+		shipmenttype = $(modal+' .shipmenttype').val(),
 		id='',
 		newsort = 'created_date',
 		source='add',
@@ -58,9 +59,14 @@ $(document).off('click','.movementtypemodal-savebtn:not(".disabled")').on('click
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide a description.</div></div>");
 		button.removeAttr('disabled').removeClass('disabled');
 	}
+	else if(shipmenttype==''){
+		$(modal+' .shipmenttype').focus();
+		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide a shipment type.</div></div>");
+		button.removeAttr('disabled').removeClass('disabled');
+	}
 	else{
 		$('#loading-img').removeClass('hidden');
-		$.post(server+'movement-type.php',{MovementTypeSaveEdit:'j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@',source:source,id:id,code:code,desc:desc,sourcemovement:sourcemovement},function(data){
+		$.post(server+'movement-type.php',{MovementTypeSaveEdit:'j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@',source:source,id:id,code:code,desc:desc,sourcemovement:sourcemovement,shipmenttype:shipmenttype},function(data){
 				if(data.trim()=='success'){
 					$(modal).modal('hide');
 					$(modal).on('hidden.bs.modal',function(){
@@ -76,6 +82,7 @@ $(document).off('click','.movementtypemodal-savebtn:not(".disabled")').on('click
 						$(modal+' .code').val('');
 						$(modal+' .description').val('');
 						$(modal+' .sourcemovement').tagsinput('removeAll');
+						$(modal+' .shipmenttype').val('');
 
 
 					});

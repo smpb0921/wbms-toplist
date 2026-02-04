@@ -43,11 +43,14 @@
 						   concat(cuser.first_name,' ',cuser.last_name) as created_by,
 						   movement_type.updated_date,
 						   concat(uuser.first_name,' ',uuser.last_name) as updated_by,
-						   group_concat(source_movement) as source_movement
+						   group_concat(source_movement) as source_movement,
+						   movement_type.shipment_type_id,
+						   shipment_type.code as shipmenttype
 					from movement_type
 					left join movement_type_source on movement_type_source.movement_type_id=movement_type.id
 					left join user as cuser on cuser.id=movement_type.created_by
 					left join user as uuser on uuser.id=movement_type.updated_by
+					left join shipment_type on shipment_type.id=movement_type.shipment_type_id
 					group by movement_type.id
 				";
 
@@ -82,6 +85,7 @@
 		$code = utfEncode($obj->code);
 		$desc = utfEncode($obj->description);
 		$sourcemovement = utfEncode($obj->source_movement);
+		$shipmenttype = utfEncode($obj->shipmenttype);
 		$createdby = utfEncode($obj->created_by);
 		$createddate = $obj->created_date;
 		$updatedby = utfEncode($obj->updated_by);
@@ -97,6 +101,7 @@
 													 $code,
 													 $desc,
 													 $sourcemovement,
+													 $shipmenttype,
 													 $createdby,
 													 $createddate,
 													 $updatedby,

@@ -51,6 +51,10 @@
 								
 							</div>	
 							<div class="form-group">
+									<label class='control-label'>Shipment Type*</label>
+									<select class='form-input form-control shipmenttype shipmenttypedropdownselect noresetfld' style='width:100%'></select>
+							</div>
+							<div class="form-group">
 									<label class='control-label'>Source Movement</label>	
 									<input type='text' class='form-input form-control sourcemovement tagsinput' data-role='tagsinput'>
 								
@@ -96,6 +100,10 @@
 								
 							</div>	
 							<div class="form-group">
+									<label class='control-label'>Shipment Type*</label>
+									<select class='form-input form-control shipmenttype shipmenttypedropdownselect noresetfld' style='width:100%'></select>
+							</div>
+							<div class="form-group">
 									<label class='control-label'>Source Movement</label>	
 									<input type='text' class='form-input form-control sourcemovement tagsinput' data-role='tagsinput'>
 								
@@ -122,6 +130,29 @@
 
 		$('.modal-dialog').draggable();
 
+		$(tabMOVEMENTTYPE+" .shipmenttypedropdownselect").select2({
+	            ajax: {
+	                    url: "loadables/dropdown/shipment-type.php",
+	                    dataType: 'json',
+	                    delay: 100,
+	                    data: function (params) {
+	                        return {
+	                            q: params.term // search term
+	                        };
+	                    },
+	                    processResults: function (data) {
+	                        // parse the results into the format expected by Select2.
+	                        // since we are using custom formatting functions we do not need to
+	                        // alter the remote JSON data
+	                        return {
+	                            results: data
+	                        };
+	                    },
+	                    cache: true
+	                },
+	                minimumInputLength: 0
+	    });
+
 
 
 		
@@ -135,6 +166,7 @@
 						{display: 'Code', name : 'code', width : 120, sortable : true, align: 'left'},
 						{display: 'Description', name : 'description', width : 250, sortable : true, align: 'left'},
 						{display: 'Source Movement', name : 'source_movement', width : 350, sortable : true, align: 'left'},
+						{display: 'Shipment Type', name : 'shipmenttype', width : 130, sortable : true, align: 'left'},
 						{display: 'Created by', name : 'created_by', width : 200, sortable : true, align: 'left'},
 						{display: 'Created Date', name : 'created_date', width : 130, sortable : true, align: 'left'},
 						{display: 'Updated by', name : 'updated_by', width : 200, sortable : true, align: 'left'},

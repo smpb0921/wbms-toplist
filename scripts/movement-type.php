@@ -12,6 +12,7 @@
 			$source = escapeString($_POST['source']);
 			$code = escapeString(strtoupper(trim($_POST['code'])));
 			$desc = escapeString($_POST['desc']);
+			$shipmenttype = escapeString($_POST['shipmenttype']);
 			$sourcemovement = escapeString($_POST['sourcemovement']);
 			$sourcemovement = explode(',', $sourcemovement);
 			$mtscount = count($sourcemovement);
@@ -34,9 +35,9 @@
 			if(getNumRows($rs)==0){
 			
 				if($source=='add'){
-					$mtclass->insert(array('',$code,$desc,$userid,$now,'NULL','NULL'));
+					$mtclass->insert(array('',$code,$desc,$userid,$now,'NULL','NULL',$shipmenttype));
 					$id = $mtclass->getInsertId();
-					$systemlog->logAddedInfo($mtclass,array($id,$code,$desc,$userid,$now,'NULL','NULL'),'MOVEMENT TYPE','New Movement Type Added',$userid,$now);
+					$systemlog->logAddedInfo($mtclass,array($id,$code,$desc,$userid,$now,'NULL','NULL',$shipmenttype),'MOVEMENT TYPE','New Movement Type Added',$userid,$now);
 
 					$mtsclass->deleteWhere("where movement_type_id=".$id);
 					$sourcemvtarray = array();
@@ -59,8 +60,8 @@
 				else if($source=='edit'){
 						$id = escapeString($_POST['id']);
 					
-						$systemlog->logEditedInfo($mtclass,$id,array('',$code,$desc,'NOCHANGE','NOCHANGE',$userid,$now),'MOVEMENT TYPE','Edited Movement Type Info',$userid,$now);/// log should be before update is made
-						$mtclass->update($id,array($code,$desc,'NOCHANGE','NOCHANGE',$userid,$now));
+						$systemlog->logEditedInfo($mtclass,$id,array('',$code,$desc,'NOCHANGE','NOCHANGE',$userid,$now,$shipmenttype),'MOVEMENT TYPE','Edited Movement Type Info',$userid,$now);/// log should be before update is made
+						$mtclass->update($id,array($code,$desc,'NOCHANGE','NOCHANGE',$userid,$now,$shipmenttype));
 
 
 						$mtsclass->deleteWhere("where movement_type_id=".$id);
@@ -102,11 +103,14 @@
 									   concat(cuser.first_name,' ',cuser.last_name) as created_by,
 									   movement_type.updated_date,
 									   concat(uuser.first_name,' ',uuser.last_name) as updated_by,
-									   group_concat(source_movement) as source_movement
+									   group_concat(source_movement) as source_movement,
+									   movement_type.shipment_type_id,
+									   shipment_type.code as shipmenttype
 								from movement_type
 								left join movement_type_source on movement_type_source.movement_type_id=movement_type.id
 								left join user as cuser on cuser.id=movement_type.created_by
 								left join user as uuser on uuser.id=movement_type.updated_by
+								left join shipment_type on shipment_type.id=movement_type.shipment_type_id
 								group by movement_type.id
 				 	     	  ) as tbl
 					where tbl.id='$id'");
@@ -118,6 +122,8 @@
 										   "code"=>utfEncode($obj->code),
 										   "description"=>utfEncode($obj->description),
 										   "sourcemovement"=>utfEncode($obj->source_movement),
+										   "shipmenttype"=>utfEncode($obj->shipmenttype),
+										   "shipmenttypeid"=>$obj->shipment_type_id,
 										   "response"=>'success'
 
 										  
