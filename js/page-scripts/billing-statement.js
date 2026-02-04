@@ -889,41 +889,60 @@ $(document)
 $(document)
 	.off('click', contentBLS + ' #billingstatement-trans-printbtn')
 	.on('click', contentBLS + ' #billingstatement-trans-printbtn', function () {
-		var title = 'Print Preview [' + $('#pgtxnbillingstatement-id').attr('pgtxnbillingstatement-number') + ']';
-		var tabid = $('#pgtxnbillingstatement-id').attr('pgtxnbillingstatement-number');
+		var modal = '#billingstatementprintingmodal';
+		$(modal).modal('show');
+		
+		// Initialize the select2 dropdown when modal is shown
+		$(document)
+			.off('shown.bs.modal', modal)
+			.on('shown.bs.modal', modal, function () {
+				$(document).off('shown.bs.modal', modal);
+				$(modal + ' .billingstatementprintingmodal-formtype').select2();
+			});
+	});
+
+$(document)
+	.off('click', contentBLS + ' #billingstatementprintingmodal-printbtn:not(".disabled")')
+	.on('click', contentBLS + ' #billingstatementprintingmodal-printbtn:not(".disabled")', function () {
+		var modal = '#' + $(this).closest('.modal').attr('id');
+		var formtype = $(modal + ' .billingstatementprintingmodal-formtype').val();
+		var txnnumber = $('#pgtxnbillingstatement-id').attr('pgtxnbillingstatement-number');
+		var title = 'Print Preview [' + txnnumber + ']';
+		var tabid = txnnumber;
+		var printSource = '';
+
+		if (formtype === 'SERVICEINVOICE') {
+			printSource = 'printouts/transactions/service-invoice.php';
+		} else if (formtype === 'AWB') {
+			printSource = 'printouts/transactions/billing-statement-awb.php';
+		} else {
+			say('Please select a form type');
+			return;
+		}
+
+		$(modal).modal('hide');
 
 		if ($('.content>.content-tab-pane .content-tabs').find("li[data-pane='#" + tabid + "tabpane']").length >= 1) {
 			$(".content>.content-tab-pane .content-tabs>li[data-pane='#" + tabid + "tabpane']").remove();
 			$(".content>.content-tab-pane .content-pane-wrapper>.content-pane[id='" + tabid + "tabpane']").remove();
-			$('#loading-img').removeClass('hidden');
-			$('.content').animate({ scrollTop: 0 }, 300);
-
-			$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
-			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
-			$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
-			$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
-			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
-				'Printouts/print-preview.php?source=printouts/transactions/billing-statement.php?txnnumber=' + tabid + '&reference=' + tabid
-			);
-			setTimeout(function () {
-				$('#loading-img').addClass('hidden');
-			}, 400);
-		} else {
-			$('#loading-img').removeClass('hidden');
-			$('.content').animate({ scrollTop: 0 }, 300);
-
-			$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
-			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
-			$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
-			$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
-			$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
-				'Printouts/print-preview.php?source=printouts/transactions/billing-statement.php?txnnumber=' + tabid + '&reference=' + tabid
-			);
-			setTimeout(function () {
-				$('#loading-img').addClass('hidden');
-			}, 400);
 		}
+
+		$('#loading-img').removeClass('hidden');
+		$('.content').animate({ scrollTop: 0 }, 300);
+
+		$('.content>.content-tab-pane .content-tabs>li').removeClass('active');
+		$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
+		$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
+		$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
+		$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
+			'Printouts/print-preview.php?source=' + printSource + '?txnnumber=' + tabid + '&reference=' + tabid
+		);
+		
+		setTimeout(function () {
+			$('#loading-img').addClass('hidden');
+		}, 400);
 	});
+/************************* PRINTING - END *****************************************/
 
 $(document)
 	.off('shown.bs.modal', contentBLS + ' #newbillingstatementmodal')
