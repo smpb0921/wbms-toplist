@@ -1217,8 +1217,10 @@
 								}
 								$rs = query($qry);
 								while($obj=fetch($rs)){
-									$supervisormobile = $obj->mobile;
-									$supervisor = $obj->supervisor;//$obj->id;
+									// $supervisormobile = $obj->mobile;
+									// $supervisor = $obj->supervisor;//$obj->id;
+									$supervisormobile = $obj->mobile ? $obj->mobile : '';
+									$supervisor = $obj->supervisor ? $obj->supervisor : '';
 								}
 								
 
@@ -1237,7 +1239,7 @@
 									         where id='$id'");
 								if($rs){
 									$systemlog->logInfo('BOOKING','Posted Booking Transaction',"Booking Number: ".$txnnumber,$userid,$now);
-									$bookingstathistory->insert(array('',$txnnumber,'POSTED','NULL','NULL','NULL',$supervisor,$supervisormobile,$driver,$drivermobile,'NULL','NULL',$now,$userid,0));
+									$bookingstathistory->insert(array('',$txnnumber,'POSTED','','','',$supervisor,$supervisormobile,$driver,$drivermobile,'','',$now,$userid,0));
 
 									query("delete from mod_sms_booking_notifications where booking_number='$txnnumber'");
 									query("insert into mod_sms_booking_notifications(		
