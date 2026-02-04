@@ -189,7 +189,7 @@
 								left join services on services.id=shipper_rate.services_id
 								left join zone on zone.id=shipper_rate.zone_id
 								left join third_party_logistic on third_party_logistic.id=shipper_rate.third_party_logistic_id
-								left join shipment_type on shipment_type.id=published_rate.shipment_type_id
+								left join shipment_type on shipment_type.id=shipper_rate.shipment_type_id
 								where shipper_rate.id='$id'
 				 	    ");
 
