@@ -219,7 +219,7 @@
 			   		<div id='sidebar-panel'>
 				   		<div id="sidebar-nav">
 				   			<div class="sidebarlogo">
-				   				<a href=''><img class='img img-responsive' src="../resources/logo.png"></a>
+				   				<a href=''><img class='img img-responsive' src="../resources/logicorelogo.png"></a>
 				   			</div>
 				   			<div class='nosubmenu active' data-title='Dashboard' data-file='dashboard.php' data-js='dashboard.js' id='dash'>
 				   				<img class='img' src="../resources/icons/main-home.png"><span>Dashboard</span>

@@ -50,7 +50,7 @@
 				border-top:2px solid #fff;
 				border-left: 2px solid #fff;
 				overflow: auto;
-				padding: 100px 20px 100px 20px;
+				padding: 70px 20px 90px 20px;
 				text-shadow: 1px 1px 0px rgb(200, 101, 101);
 			}
 
@@ -95,7 +95,7 @@
 				<div class="section3">
 					<div class="section3-inner">
 						<div class="col-sm-12">
-							<img class='img-responsive' src="resources/logo.png">
+							<img class='img-responsive' src="resources/logicorelogo.png">
 							<br>
 							<form action='index.php' method='post' class='form-horizontal'>
 								<div class="form-group">
