@@ -34,7 +34,7 @@ $rs = query("select txn_booking.booking_number
 
 
 $imgpath = '../../../barcode/';
-$imagelogo = "../../../resources/printout-logo.png";
+$imagelogo = "../../../resources/logicorelogo.png";
 
 
 
@@ -122,6 +122,13 @@ if(getNumRows($rs)==1){
 										  $obj->shipper_zip_code,
 										  $obj->shipper_country)
 							 );
+
+		// Add logo to the left side - before any other content
+		if(file_exists($imagelogo)){
+			// Image(file, x, y, width, height)
+			// x=10 (left margin), y=8 (top margin), width=65mm (bigger logo)
+			$pdf->Image($imagelogo, 25, 5, 75);
+		}
 
 		$leftLabel = 32;
 		$leftValue = 55;

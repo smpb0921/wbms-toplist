@@ -24,7 +24,7 @@ $pdf->AddPage();
 $now = date('m/d/Y h:i:s A');
 
 $imgpath = '../../../barcode/';
-$imagelogo = "../../../resources/printout-logo.png"; // Should be ONE logo
+$imagelogo = "../../../resources/logicorelogo.png"; // Should be ONE logo
 
 $pdf->SetTextColor(0, 0, 0);
 
@@ -96,7 +96,7 @@ if(getNumRows($rs)==1){
 	
 	// Logo (if available)
 	if(file_exists($imagelogo)){
-		$pdf->Image($imagelogo, 15, 10, 35);
+		$pdf->Image($imagelogo, 15, 6, 35);
 	}
 	
 	// Title
