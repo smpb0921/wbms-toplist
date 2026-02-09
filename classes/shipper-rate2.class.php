@@ -29,6 +29,7 @@ class shipper_rate extends table{
 	var $zone_id;
 	var $third_party_logistic_id;
 	var $shipment_type_id;
+	var $shipment_mode_id;
 
 }
 

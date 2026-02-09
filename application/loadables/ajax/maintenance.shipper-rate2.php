@@ -78,7 +78,8 @@
 						   concat(uuser.first_name,' ',uuser.last_name) as updated_by,
 						   shipper.account_name as shippername,
 						   shipper_rate.shipment_type_id,
-						   shipment_type.code as shipmenttype
+						   shipment_type.code as shipmenttype,
+						   shipment_mode.code as shipmentmode
 					from shipper_rate
 					left join shipper on shipper.id=shipper_rate.shipper_id
 					left join origin_destination_port as origintbl on origintbl.id=shipper_rate.origin_id
@@ -91,6 +92,7 @@
 					left join user as cuser on cuser.id=shipper_rate.created_by
 					left join user as uuser on uuser.id=shipper_rate.updated_by
 					left join shipment_type on shipment_type.id=shipper_rate.shipment_type_id
+					left join shipment_mode on shipment_mode.id=shipper_rate.shipment_mode_id
 					order by origintbl.description, destinationtbl.description asc
 				";
 
@@ -156,6 +158,7 @@
 		$odarate = convertWithDecimal($obj->oda_rate,5);
 		$zone = utfEncode($obj->zone);
 		$shipmenttype = utfEncode($obj->shipmenttype);
+		$shipmentmode = utfEncode($obj->shipmentmode);
 
 		$editbtn = (userAccess(USERID,'.editshipperratebtn')==false)?"<img src='../resources/flexigrid/images/edit.png' rowid='$id' title='Edit Shipper Rate' class='editshipperratebtn pointer' data-toggle='modal' href='#editshipperratemodal' height='20px'>":'';
 
@@ -185,6 +188,7 @@
 													 $id, 
 													 $shippername,
 													 $shipmenttype,
+													 $shipmentmode,
 													 $tpl,
 													 $type,
 													 $pouchsize,
