@@ -56,6 +56,11 @@
 									</div>
 
 									<div class="form-group">
+										<label class='control-label'>Shipment Mode*</label>
+											<select class='form-input form-control shipmentmode shipmentmodedropdownselect noresetfld' style='width:100%'></select>
+									</div>
+
+									<div class="form-group">
 										<label class='control-label'>3PL*</label>
 										<select class='form-input form-control 3pl 3pldropdownselect noresetfld' style='width:100%'>
 										</select>
@@ -200,6 +205,11 @@
 									<div class="form-group">
 										<label class='control-label'>Shipment Type*</label>
 											<select class='form-input form-control shipmenttype shipmenttypedropdownselect noresetfld' style='width:100%'></select>
+									</div>
+
+									<div class="form-group">
+										<label class='control-label'>Shipment Mode*</label>
+											<select class='form-input form-control shipmentmode shipmentmodedropdownselect noresetfld' style='width:100%'></select>
 									</div>
 									
 									<div class="form-group">
@@ -526,6 +536,29 @@
 	                minimumInputLength: 0
 	    });
 
+		$(tabPUBLISHEDRATE+" .shipmentmodedropdownselect").select2({
+	            ajax: {
+	                    url: "loadables/dropdown/shipment-mode.php",
+	                    dataType: 'json',
+	                    delay: 100,
+	                    data: function (params) {
+	                        return {
+	                            q: params.term // search term
+	                        };
+	                    },
+	                    processResults: function (data) {
+	                        // parse the results into the format expected by Select2.
+	                        // since we are using custom formatting functions we do not need to
+	                        // alter the remote JSON data
+	                        return {
+	                            results: data
+	                        };
+	                    },
+	                    cache: true
+	                },
+	                minimumInputLength: 0
+	    });
+
 		$(tabPUBLISHEDRATE+" .3pldropdownselect").select2({
 	            ajax: {
 	                    url: "loadables/dropdown/3pl.php",
@@ -697,6 +730,7 @@
 						{display: 'Actions', name : 'action', width : 70, sortable : false, align: 'center'},
 						{display: 'System ID', name : 'id', width : 70, sortable : true, align: 'left'},
 						{display: 'Shipment Type', name : 'shipmenttype', width : 130, sortable : true, align: 'left'},
+						{display: 'Shipment Mode', name : 'shipmentmode', width : 130, sortable : true, align: 'left'},
 						{display: '3PL', name : 'thirdpartylogistic', width : 100, sortable : true, align: 'left'},
 						{display: 'Type', name : 'waybill_type', width : 100, sortable : true, align: 'left'},
 						{display: 'Pouch Size', name : 'pouchsize', width : 130, sortable : true, align: 'left'},
