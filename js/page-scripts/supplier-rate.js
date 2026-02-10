@@ -147,6 +147,13 @@ $(document).off('click',tabsupplierRATE+' .editsupplierratebtn').on('click',tabs
 		        $(modal+" .shipmenttype").empty().trigger('change');
 		    }
 
+			if(rsp["shipmentmode"]!=null){
+		        $(modal+" .shipmentmode").empty().append('<option selected value="'+rsp["shipmentmodeid"]+'">'+rsp["shipmentmode"]+'</option>').trigger('change');
+		    }
+		    else{
+		        $(modal+" .shipmentmode").empty().trigger('change');
+		    }
+
 		    if(rsp["tpl"]!=null){
 		        $(modal+" .3pl").empty().append('<option selected value="'+rsp["tplid"]+'">'+rsp["tpl"]+'</option>').trigger('change');
 		    }
@@ -178,6 +185,7 @@ $(document).off('click','.supplierratemodal-savebtn:not(".disabled")').on('click
 		origin = $(modal+' .origin').val(),
 		zone = $(modal+' .zone').val(),
 		shipmenttype = $(modal+' .shipmenttype').val(),
+		shipmentmode = $(modal+' .shipmentmode').val(),
 		destination = $(modal+' .destination').val(),
 		modeoftransport = $(modal+' .modeoftransport').val(),
 		services = $(modal+' .services').val(),
@@ -252,6 +260,16 @@ $(document).off('click','.supplierratemodal-savebtn:not(".disabled")').on('click
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
 		button.removeAttr('disabled').removeClass('disabled');
 	} 
+	else if(shipmentmode==''||shipmentmode==null||shipmentmode=='NULL'||shipmentmode=='null'){
+		$(modal+' .shipmentmode').select2('open');
+		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
+		button.removeAttr('disabled').removeClass('disabled');
+	} 
+	else if(modeoftransport==''||modeoftransport==null||modeoftransport=='NULL'||modeoftransport=='null'){
+		$(modal+' .modeoftransport').focus();
+		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select mode of transport.</div></div>");
+		button.removeAttr('disabled').removeClass('disabled');
+	}
 	else if(zone==''||zone==null||zone=='NULL'||zone=='null'){
 		$(modal+' .zone').select2('open');
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select zone destination.</div></div>");
@@ -270,11 +288,6 @@ $(document).off('click','.supplierratemodal-savebtn:not(".disabled")').on('click
 	/*else if(destination==''||destination==null||destination=='NULL'||destination=='null'){
 		$(modal+' .destination').focus();
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select destination.</div></div>");
-		button.removeAttr('disabled').removeClass('disabled');
-	}
-	else if(wbtype=='PARCEL'&&(modeoftransport==''||modeoftransport==null||modeoftransport=='NULL'||modeoftransport=='null')){
-		$(modal+' .modeoftransport').focus();
-		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select mode of transport.</div></div>");
 		button.removeAttr('disabled').removeClass('disabled');
 	}
 	else if(wbtype=='PARCEL'&&(services==''||services==null||services=='NULL'||services=='null')){
@@ -329,7 +342,7 @@ $(document).off('click','.supplierratemodal-savebtn:not(".disabled")').on('click
 	}*/
 	else{
 		$('#loading-img').removeClass('hidden');
-		$.post(server+'supplier-rate.php',{supplierRateSaveEdit:'j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@',source:source,id:id,tpl:tpl,zone:zone,shipmenttype:shipmenttype,origin:origin,destination:destination,modeoftransport:modeoftransport,freightcomputation:freightcomputation,fixedrateflag:fixedrateflag,valuation:valuation,freightrate:freightrate,insurancerate:insurancerate,fuelrate:fuelrate,bunkerrate:bunkerrate,minimumrate:minimumrate,rushflag:rushflag,pulloutflag:pulloutflag,wbtype:wbtype,pouchsize:pouchsize,fixedrateamount:fixedrateamount,pulloutfee:pulloutfee,services:services},function(data){
+		$.post(server+'supplier-rate.php',{supplierRateSaveEdit:'j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@',source:source,id:id,tpl:tpl,zone:zone,shipmenttype:shipmenttype,shipmentmode:shipmentmode,origin:origin,destination:destination,modeoftransport:modeoftransport,freightcomputation:freightcomputation,fixedrateflag:fixedrateflag,valuation:valuation,freightrate:freightrate,insurancerate:insurancerate,fuelrate:fuelrate,bunkerrate:bunkerrate,minimumrate:minimumrate,rushflag:rushflag,pulloutflag:pulloutflag,wbtype:wbtype,pouchsize:pouchsize,fixedrateamount:fixedrateamount,pulloutfee:pulloutfee,services:services},function(data){
 				if(data.trim()=='success'){
 					$(modal).modal('hide');
 					$(modal).on('hidden.bs.modal',function(){

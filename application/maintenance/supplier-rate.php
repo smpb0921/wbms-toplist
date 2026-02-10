@@ -58,6 +58,17 @@
 									</div>
 
 									<div class="form-group">
+										<label class='control-label'>Shipment Mode*</label>
+										<select class='form-input form-control shipmentmode shipmentmodedropdownselect noresetfld' style='width:100%'>
+										</select>
+									</div>
+
+									<div class="form-group">
+											<label class='control-label'>Mode of Transport</label>	
+											<select class='form-input form-control modeoftransport modeoftransportdropdownselect noresetfld' style='width:100%'></select>
+									</div>
+
+									<div class="form-group">
 										<label class='control-label'>3PL*</label>
 										<select class='form-input form-control 3pl 3pldropdownselect noresetfld' style='width:100%'>
 										</select>
@@ -75,10 +86,6 @@
 											<label class='control-label'>Destination</label>
 											<select class='form-input form-control destination origindestinationdropdownselect noresetfld' style='width:100%'></select>
 									</div>	
-									<div class="form-group modeoftransportwrapper hidden">
-											<label class='control-label'>Mode of Transport</label>	
-											<select class='form-input form-control modeoftransport modeoftransportdropdownselect noresetfld' style='width:100%'></select>
-									</div>
 									<div class="form-group serviceswrapper hidden">
 											<label class='control-label'>Services</label>	
 											<select class='form-input form-control services servicesdropdownselect noresetfld' style='width:100%'></select>
@@ -206,6 +213,17 @@
 									</div>
 
 									<div class="form-group">
+										<label class='control-label'>Shipment Mode*</label>
+										<select class='form-input form-control shipmentmode shipmentmodedropdownselect noresetfld' style='width:100%'>
+										</select>
+									</div>
+
+									<div class="form-group">
+											<label class='control-label'>Mode of Transport*</label>	
+											<select class='form-input form-control modeoftransport modeoftransportdropdownselect' style='width:100%'></select>
+									</div>
+
+									<div class="form-group">
 										<label class='control-label'>3PL*</label>
 										<select class='form-input form-control 3pl 3pldropdownselect noresetfld' style='width:100%'>
 										</select>
@@ -223,10 +241,6 @@
 											<label class='control-label'>Destination*</label>
 											<select class='form-input form-control destination origindestinationdropdownselect' style='width:100%'></select>
 									</div>	
-									<div class="form-group modeoftransportwrapper hidden">
-											<label class='control-label'>Mode of Transport*</label>	
-											<select class='form-input form-control modeoftransport modeoftransportdropdownselect' style='width:100%'></select>
-									</div>
 									<div class="form-group serviceswrapper hidden">
 											<label class='control-label'>Services*</label>	
 											<select class='form-input form-control services servicesdropdownselect' style='width:100%'></select>
@@ -529,6 +543,29 @@
 	                minimumInputLength: 0
 	    });
 
+		$(tabsupplierRATE+" .shipmentmodedropdownselect").select2({
+	            ajax: {
+	                    url: "loadables/dropdown/shipment-mode.php",
+	                    dataType: 'json',
+	                    delay: 100,
+	                    data: function (params) {
+	                        return {
+	                            q: params.term // search term
+	                        };
+	                    },
+	                    processResults: function (data) {
+	                        // parse the results into the format expected by Select2.
+	                        // since we are using custom formatting functions we do not need to
+	                        // alter the remote JSON data
+	                        return {
+	                            results: data
+	                        };
+	                    },
+	                    cache: true
+	                },
+	                minimumInputLength: 0
+	    });
+
 		$(tabsupplierRATE+" .3pldropdownselect").select2({
 	            ajax: {
 	                    url: "loadables/dropdown/3pl.php",
@@ -700,13 +737,14 @@
 						{display: 'Actions', name : 'action', width : 70, sortable : false, align: 'center'},
 						{display: 'System ID', name : 'id', width : 70, sortable : true, align: 'left'},
 						{display: 'Shipment Type', name : 'shipmenttype', width : 130, sortable : true, align: 'left'},
+						{display: 'Shipment Mode', name : 'shipmentmode', width : 130, sortable : true, align: 'left'},
+						{display: 'Mode of Transport', name : 'mode_of_transport', width : 130, sortable : true, align: 'left'},
 						{display: '3PL', name : 'thirdpartylogistic', width : 100, sortable : true, align: 'left'},
 						{display: 'Type', name : 'waybill_type', width : 100, sortable : true, align: 'left'},
 						{display: 'Pouch Size', name : 'pouchsize', width : 130, sortable : true, align: 'left'},
 						{display: 'Origin', name : 'origin', width : 200, sortable : true, align: 'left'},
 						{display: 'Zone', name : 'zone', width : 200, sortable : true, align: 'left'},
 						/*{display: 'Destination', name : 'destination', width : 200, sortable : true, align: 'left'},
-						{display: 'Mode of Transport', name : 'mode_of_transport', width : 130, sortable : true, align: 'left'},
 						{display: 'Services', name : 'services', width : 100, sortable : true, align: 'left'},
 						{display: 'Rush Flag', name : 'rush_flag', width : 80, sortable : true, align: 'center'},
 						{display: 'Pull Out Flag', name : 'pull_out_flag', width : 80, sortable : true, align: 'center'},
