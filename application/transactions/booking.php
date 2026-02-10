@@ -98,6 +98,21 @@
 																							</div>
 																						</div>
 
+																						<div class="form-group">
+																							<label class='control-label col-lg-3'>Mode of Transport*</label>
+																							<div class='col-md-9'>
+																								<select class='form-control booking-modeoftransport modeoftransportdropdownselect' style='width:100%'></select>
+																							</div>
+																						</div>
+
+																						<div class="form-group">
+																							<label class='control-label col-md-3'>Shipment Mode*</label>
+																							<div class='col-md-9'>
+																								<select class='form-control inputslctfld booking-shipmentmode addshipmodedropdownselect'  style='width:100%'></select>
+																									
+																							</div>
+																						</div>
+
 							                                                        	<div class="form-group">
 							                                                                <label class='control-label col-lg-3'>Booking Type*</label>
 							                                                                <div class="col-lg-9">
@@ -254,13 +269,6 @@
 							                                                        <fieldset>
 							                                                        	<legend>Shipper Information</legend>
 							                                                        	<div class='form-horizontal'>
-																							<div class="form-group">
-																								<label class='control-label col-md-3'>Shipment Mode*</label>
-																								<div class='col-md-9'>
-																									<select class='form-control inputslctfld booking-shipmentmode addshipmodedropdownselect'  style='width:100%'></select>
-																									
-																								</div>
-																							</div>
 							                                                        		<div class="form-group">
 																								<label class='control-label col-md-3'>Account No.*</label>
 																								<div class='col-md-5'>
@@ -406,12 +414,6 @@
 											                                                        			<div class='col-md-12'>
 																													<label class='control-label'>Services</label>
 																													<select class='form-control booking-services servicesdropdownselect'></select>
-																												</div>
-																											</div>
-																											<div class="form-group">
-																												<div class='col-md-12'>
-																													<label class='control-label'>Mode of Transport*</label>
-																													<select class='form-control booking-modeoftransport modeoftransportdropdownselect'></select>
 																												</div>
 																											</div>
 																											<div class="form-group">
