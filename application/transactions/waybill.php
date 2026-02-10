@@ -110,6 +110,14 @@
 																										</div>
 																									</div>
 
+																									<div class="form-group">
+																										<label class='control-label col-md-3'>Shipment Mode*</label>
+																										<div class='col-md-9'>
+																											<select class='form-control form-input waybill-shipmentmode addshipmentmodedropdownselect'  style='width:100%'></select>
+																											
+																										</div>
+																									</div>
+
 										                                                        	<div class="form-group">
 										                                                                <label class='control-label col-lg-3'>Booking No.*</label>
 										                                                                <div class="col-lg-9">
@@ -367,13 +375,6 @@
 							                                                        	<fieldset>
 								                                                        	<legend>Shipper Information</legend>
 								                                                        	<div class='form-horizontal'>
-																								<div class="form-group">
-																									<label class='control-label col-md-3'>Shipment Mode*</label>
-																									<div class='col-md-9'>
-																										<select class='form-control form-input waybill-shipmentmode addshipmentmodedropdownselect'  style='width:100%'></select>
-																										
-																									</div>
-																								</div>
 								                                                        		<div class="form-group">
 																									<label class='control-label col-md-3'>Account No.*</label>
 																									<div class='col-md-5'>
