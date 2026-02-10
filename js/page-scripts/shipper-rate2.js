@@ -277,6 +277,11 @@ $(document).off('click','.shipperratemodal-savebtn:not(".disabled")').on('click'
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment mode.</div></div>");
 		button.removeAttr('disabled').removeClass('disabled');
 	} 
+	else if(modeoftransport==''||modeoftransport==null||modeoftransport=='NULL'||modeoftransport=='null'){
+		$(modal+' .modeoftransport').focus();
+		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select mode of transport.</div></div>");
+		button.removeAttr('disabled').removeClass('disabled');
+	}
 	else if(zone==''||zone==null||zone=='NULL'||zone=='null'){
 		$(modal+' .zone').select2('open');
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select zone destination.</div></div>");
@@ -295,11 +300,6 @@ $(document).off('click','.shipperratemodal-savebtn:not(".disabled")').on('click'
 	/*else if(destination==''||destination==null||destination=='NULL'||destination=='null'){
 		$(modal+' .destination').focus();
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select destination.</div></div>");
-		button.removeAttr('disabled').removeClass('disabled');
-	}
-	else if(wbtype=='PARCEL'&&(modeoftransport==''||modeoftransport==null||modeoftransport=='NULL'||modeoftransport=='null')){
-		$(modal+' .modeoftransport').focus();
-		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select mode of transport.</div></div>");
 		button.removeAttr('disabled').removeClass('disabled');
 	}
 	else if(wbtype=='PARCEL'&&(services==''||services==null||services=='NULL'||services=='null')){

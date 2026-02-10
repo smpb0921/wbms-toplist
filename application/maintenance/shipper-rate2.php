@@ -69,6 +69,11 @@
 									</div>
 
 									<div class="form-group">
+											<label class='control-label'>Mode of Transport</label>	
+											<select class='form-input form-control modeoftransport modeoftransportdropdownselect noresetfld' style='width:100%'></select>
+									</div>
+
+									<div class="form-group">
 										<label class='control-label'>3PL*</label>
 										<select class='form-input form-control 3pl 3pldropdownselect noresetfld' style='width:100%'>
 										</select>
@@ -86,10 +91,6 @@
 											<label class='control-label'>Destination</label>
 											<select class='form-input form-control destination origindestinationdropdownselect noresetfld' style='width:100%'></select>
 									</div>	
-									<div class="form-group modeoftransportwrapper hidden">
-											<label class='control-label'>Mode of Transport</label>	
-											<select class='form-input form-control modeoftransport modeoftransportdropdownselect noresetfld' style='width:100%'></select>
-									</div>
 									<div class="form-group serviceswrapper hidden">
 											<label class='control-label'>Services</label>	
 											<select class='form-input form-control services servicesdropdownselect noresetfld' style='width:100%'></select>
@@ -220,6 +221,11 @@
 									</div>
 
 									<div class="form-group">
+											<label class='control-label'>Mode of Transport*</label>	
+											<select class='form-input form-control modeoftransport modeoftransportdropdownselect' style='width:100%'></select>
+									</div>
+
+									<div class="form-group">
 										<label class='control-label'>Type*</label>
 										<select class='form-input form-control type noresetfld select2' style='width:100%'>
 											<option value='PARCEL'>PARCEL</option>
@@ -244,10 +250,6 @@
 											<label class='control-label'>Destination*</label>
 											<select class='form-input form-control destination origindestinationdropdownselect' style='width:100%'></select>
 									</div>	
-									<div class="form-group modeoftransportwrapper hidden">
-											<label class='control-label'>Mode of Transport*</label>	
-											<select class='form-input form-control modeoftransport modeoftransportdropdownselect' style='width:100%'></select>
-									</div>
 									<div class="form-group serviceswrapper hidden">
 											<label class='control-label'>Services*</label>	
 											<select class='form-input form-control services servicesdropdownselect' style='width:100%'></select>
@@ -774,13 +776,13 @@
 						{display: 'Shipper', name : 'shippername', width : 300, sortable : true, align: 'left'},
 						{display: 'Shipment Type', name : 'shipmenttype', width : 130, sortable : true, align: 'left'},
 						{display: 'Shipment Mode', name : 'shipmentmode', width : 130, sortable : true, align: 'left'},
+						{display: 'Mode of Transport', name : 'mode_of_transport', width : 130, sortable : true, align: 'left'},
 						{display: '3PL', name : 'thirdpartylogistic', width : 100, sortable : true, align: 'left'},
 						{display: 'Type', name : 'waybill_type', width : 100, sortable : true, align: 'left'},
 						{display: 'Pouch Size', name : 'pouchsize', width : 130, sortable : true, align: 'left'},
 						{display: 'Origin', name : 'origin', width : 200, sortable : true, align: 'left'},
 						{display: 'Zone', name : 'zone', width : 200, sortable : true, align: 'left'},
 						/*{display: 'Destination', name : 'destination', width : 200, sortable : true, align: 'left'},
-						{display: 'Mode of Transport', name : 'mode_of_transport', width : 130, sortable : true, align: 'left'},
 						{display: 'Services', name : 'services', width : 100, sortable : true, align: 'left'},
 						{display: 'Rush Flag', name : 'rush_flag', width : 80, sortable : true, align: 'center'},
 						{display: 'Pull Out Flag', name : 'pull_out_flag', width : 80, sortable : true, align: 'center'},

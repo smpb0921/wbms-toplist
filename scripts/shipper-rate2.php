@@ -17,7 +17,7 @@
 			$shipmentmode = escapeString($_POST['shipmentmode']);
 			$origin = escapeString($_POST['origin']);
 			$destination = 'NULL';//escapeString($_POST['destination']);
-			$modeoftransport = 'NULL';//escapeString($_POST['modeoftransport']);
+			$modeoftransport = escapeString($_POST['modeoftransport']);
 			$services = 'NULL';//escapeString($_POST['services']);
 			$freightcomputation = 'NULL';//escapeString($_POST['freightcomputation']);
 			$fixedrateflag = escapeString($_POST['fixedrateflag']);
@@ -85,6 +85,7 @@
 						                third_party_logistic_id='$tpl' and
 										shipment_type_id='$shipmenttype' and
 										shipment_mode_id='$shipmentmode' and
+										mode_of_transport_id='$modeoftransport' and
 						                id!='$id' and 
 						                shipper_id='$shipper' and
 						                waybill_type='$wbtype' $pouchsizecondition";
@@ -99,6 +100,7 @@
 						                shipper_id='$shipper' and
 										shipment_type_id='$shipmenttype' and
 										shipment_mode_id='$shipmentmode' and
+										mode_of_transport_id='$modeoftransport' and
 						                waybill_type='$wbtype' $pouchsizecondition";
 						//$pouchsizecondition
 				}
