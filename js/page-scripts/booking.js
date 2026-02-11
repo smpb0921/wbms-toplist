@@ -3394,3 +3394,47 @@ $(document)
 			}
 		});
 	});
+
+/************* SHIPMENT TYPE CHANGE - AUTO SET BOOKING TYPE ***************/
+$(document)
+    .off('change', contentBK + ' .booking-shipmenttype')
+    .on('change', contentBK + ' .booking-shipmenttype', function () {
+        if (processBK == 'add' || processBK == 'edit') {
+            var selectedText = $(this).find('option:selected').text().trim().toUpperCase();
+            var bookingTypeName = null;
+
+            if (selectedText === 'DOMESTIC') {
+                bookingTypeName = 'PICKUP';
+            } else if (selectedText === 'INTERNATIONAL - EXPORT' || selectedText === 'INTERNATIONAL - IMPORT') {
+                bookingTypeName = 'FOB';
+            }
+
+            if (bookingTypeName) {
+                $.post(
+                    server + 'booking.php',
+                    { getDefaultBookingType: 'oiskus49Fnla3#Oih4noiI$IO@Y#*h@o3sk', name: bookingTypeName },
+                    function (data) {
+                        try {
+                            data = JSON.parse(data);
+                            if (data['response'] == 'success') {
+                                $(inputfieldsBK + ' .booking-bookingtype')
+                                    .empty()
+                                    .append(
+                                        '<option selected value="' + data['id'] + '">' + data['name'] + '</option>'
+                                    )
+                                    .trigger('change');
+                            }
+                        } catch (e) {
+                            console.log('getDefaultBookingType error: ' + e);
+                        }
+                    }
+                );
+            } else {
+                // Clear the booking type for any other shipment type
+                $(inputfieldsBK + ' .booking-bookingtype')
+                    .empty()
+                    .trigger('change');
+            }
+        }
+    });
+/************* SHIPMENT TYPE CHANGE - END *********************************/

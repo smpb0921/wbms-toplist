@@ -1664,6 +1664,26 @@
 		
 	}
 
+    // Auto Set For Booking Type
+	if (isset($_POST['getDefaultBookingType'])) {
+		$name = strtoupper(trim($_POST['name']));
+		
+		$sql = "SELECT id, description as name FROM booking_type WHERE UPPER(description) = '$name' LIMIT 1";
+		$result = query($sql);  
+		
+		if (getNumRows($result) > 0) {
+			$row = fetch($result);
+			echo json_encode([
+				'response' => 'success',
+				'id'       => $row->id,
+				'name'     => $row->name
+			]);
+		} else {
+			echo json_encode(['response' => 'notfound']);
+		}
+		exit;
+	}
+
 
 	
 
