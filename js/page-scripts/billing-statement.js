@@ -144,6 +144,7 @@ $(document)
 		var docdate = $(modal + ' .newbillingstatementmodal-documentdate').val();
 		var paymentduedate = $(modal + ' .newbillingstatementmodal-paymentduedate').val();
 		var shipperid = $(modal + ' .newbillingstatementmodal-shipper').val();
+		var shipmenttype = $(modal + ' .newbillingstatementmodal-shipmenttype').val();
 		var billingtype = $(modal + ' .newbillingstatementmodal-billingtype').val();
 		var accountexecutive = $(modal + ' .newbillingstatementmodal-accountexecutive').val();
 		var remarks = $(modal + ' .newbillingstatementmodal-remarks').val();
@@ -159,6 +160,7 @@ $(document)
 			$(modal + ' .newbillingstatementmodal-documentdate').focus();
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide statement date.</div></div>");
 			btn.removeClass('disabled');
+			
 		} else if (billingtype == '' || billingtype == null || billingtype == 'NULL' || billingtype == 'null') {
 			/*else if(paymentduedate==''){
     	$(modal+' .newbillingstatementmodal-paymentduedate').focus();
@@ -167,6 +169,10 @@ $(document)
     }*/
 			$(modal + ' .newbillingstatementmodal-billingtype').select2('open');
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing type.</div></div>");
+			btn.removeClass('disabled');
+		} else if (shipmenttype == '' || shipmenttype == null || shipmenttype == 'NULL' || shipmenttype == 'null') {
+			$(modal + ' .newbillingstatementmodal-shipmenttype').select2('open');
+			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
 			btn.removeClass('disabled');
 		} else if (shipperid == '' || shipperid == null || shipperid == 'NULL' || shipperid == 'null') {
 			$(modal + ' .newbillingstatementmodal-shipper').select2('open');
@@ -181,6 +187,7 @@ $(document)
 				server + 'billing-statement.php',
 				{
 					NewBillingStatement: 'f#oifpNLEpR#nsRP9$nzpo92po@k@',
+					shipmenttype: shipmenttype,
 					billingtype: billingtype,
 					accountexecutive: accountexecutive,
 					shipperid: shipperid,
@@ -472,6 +479,7 @@ function getBillingStatementInformation(txnnumber) {
 	//$(contentBLS+' .topbuttonswrapper .button-group').addClass('hidden');
 
 	$.post(server + 'billing-statement.php', { getBillingStatementData: 'foiRFN#@!pspR#1NEi34smo1sonk&$', txnnumber: txnnumber }, function (response) {
+		
 		//alert(response);
 		if (response.trim() == 'INVALID') {
 			clearBillingStatementFields();
@@ -543,6 +551,7 @@ function getBillingStatementInformation(txnnumber) {
 			$(contentBLS + ' .billingstatement-invoice').val(data['invoice']);
 			$(contentBLS + ' .billingstatement-vatflag').val(data['vatflag']);
 
+			$(contentBLS + ' .billingstatement-shipmenttype').val(data['shipmenttype']);
 			$(contentBLS + ' .billingstatement-billingtype').val(data['billingtype']);
 			$(contentBLS + ' .billingstatement-accountexecutive').val(data['accountexecutive']);
 
@@ -1006,6 +1015,17 @@ $(document)
 						.trigger('change');
 				}
 
+				if (rsp['shipmenttype'] != null) {
+					$(modal + ' .editbillingstatementmodal-shipmenttype')
+						.empty()
+						.append('<option selected value="' + rsp['shipmenttypeid'] + '">' + rsp['shipmenttype'] + '</option>')
+						.trigger('change');
+				} else {
+					$(modal + ' .editbillingstatementmodal-shipmenttype')
+						.empty()
+						.trigger('change');
+				}
+
 				if (rsp['billingtype'] != null) {
 					$(modal + ' .editbillingstatementmodal-billingtype')
 						.empty()
@@ -1123,6 +1143,7 @@ $(document)
 		var vatflag = $('.editbillingstatementmodal-vatflag').val();
 
 		var shipperid = $(modal + ' .editbillingstatementmodal-shipper').val();
+		var shipmenttype = $(modal + ' .editbillingstatementmodal-shipmenttype').val();
 		var billingtype = $(modal + ' .editbillingstatementmodal-billingtype').val();
 		var accountexecutive = $(modal + ' .editbillingstatementmodal-accountexecutive').val();
 
@@ -1136,6 +1157,10 @@ $(document)
 		if (docdate == '') {
 			$(modal + ' .editbillingstatementmodal-documentdate').focus();
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide statement date.</div></div>");
+			btn.removeClass('disabled');
+		} else if (shipmenttype == '' || shipmenttype == null || shipmenttype == 'NULL' || shipmenttype == 'null') {
+			$(modal + ' .editbillingstatementmodal-shipmenttype').select2('open');
+			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
 			btn.removeClass('disabled');
 		} else if (billingtype == '' || billingtype == null || billingtype == 'NULL' || billingtype == 'null') {
 			$(modal + ' .editbillingstatementmodal-billingtype').select2('open');
@@ -1162,6 +1187,7 @@ $(document)
 					updateBillingStatement: 'kjoI$H2oiaah3h0$09jDppo92po@k@',
 					id: billingid,
 					shipperid: shipperid,
+					shipmenttype: shipmenttype,
 					billingtype: billingtype,
 					accountexecutive: accountexecutive,
 					billingnumber: billingnumber,

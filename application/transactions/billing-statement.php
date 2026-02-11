@@ -94,6 +94,12 @@
 
 							                                                        	<!--<fieldset>
 							                                                        		<legend>Shipper Information</legend>-->
+																							<div class="form-group">
+							                                                        			<label class='control-label col-md-3'>Shipment Type</label>
+							                                                        			<div class='col-md-9'>
+							                                                        				<input type='text' class='form-input form-control billingstatement-shipmenttype alwaysdisabled' disabled="true">
+							                                                        			</div>
+							                                                        		</div>
 							                                                        		<div class="form-group">
 							                                                        			<label class='control-label col-md-3'>Billing Type</label>
 							                                                        			<div class='col-md-9'>
@@ -526,6 +532,14 @@
 									<input type='text' class='form-control newbillingstatementmodal-invoice blsinvoice'>
             					</div>
             				</div>
+
+							<div class="form-group">
+            					<label class='control-label col-lg-2'>Shipment Type*</label>
+            					<div class="col-lg-10">
+            						<select class='form-control form-input newbillingstatementmodal-shipmenttype shipmenttypedropdownselect' style='width:100%'></select>
+            					</div>
+            				</div>
+
             				<div class="form-group">
             					<label class='control-label col-lg-2'>Billing Type*</label>
             					<div class="col-lg-10">
@@ -689,6 +703,14 @@
 									</select>
             					</div>
 							</div>
+
+							<div class="form-group">
+            					<label class='control-label col-lg-2'>Shipment Type*</label>
+            					<div class="col-lg-10">
+            						<select class='form-control form-input editbillingstatementmodal-shipmenttype shipmenttypedropdownselect' style='width:100%'></select>
+            					</div>
+            				</div>
+
 							<div class="form-group">
             					<label class='control-label col-lg-2'>Billing Type*</label>
             					<div class="col-lg-10">
@@ -1239,6 +1261,27 @@
 	        $(tabBLS+" .shipperdropdownselect").select2({
 	            ajax: {
 	                    url: "loadables/dropdown/shipper.php",
+	                    dataType: 'json',
+	                    delay: 100,
+	                    data: function (params) {
+	                        return {
+	                            q: params.term // search term
+	                        };
+	                    },
+	                    processResults: function (data) {
+	                        return {
+	                            results: data
+	                        };
+	                    },
+	                    cache: true
+	                },
+	                minimumInputLength: 0,
+	                width: '100%'
+	    	});
+
+			$(tabBLS+" .shipmenttypedropdownselect").select2({
+	            ajax: {
+	                    url: "loadables/dropdown/shipment-type.php",
 	                    dataType: 'json',
 	                    delay: 100,
 	                    data: function (params) {

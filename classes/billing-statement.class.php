@@ -36,6 +36,7 @@ class txn_billing extends table{
 	var $vat_flag;
 	var $billing_type_id;
 	var $account_executive_id;
+	var $shipment_type_id;
 
 }
 

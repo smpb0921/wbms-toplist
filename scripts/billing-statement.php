@@ -91,7 +91,7 @@
             $attention  = escapeString($_POST['attention'])==''?'NULL':escapeString($_POST['attention']);
             $invoice = escapeString($_POST['invoice'])==''?'NULL':escapeString($_POST['invoice']);
             $vatflag = escapeString($_POST['vatflag'])==''?'NULL':escapeString($_POST['vatflag']);
-
+            $shipmenttype  = escapeString($_POST['shipmenttype'])==''?'NULL':escapeString($_POST['shipmenttype']);
             $billingtype  = escapeString($_POST['billingtype'])==''?'NULL':escapeString($_POST['billingtype']);
             $accountexecutive  = escapeString($_POST['accountexecutive'])==''?'NULL':escapeString($_POST['accountexecutive']);
 
@@ -155,7 +155,7 @@
                     $now = date("Y-m-d H:i:s");
                     $userid = USERID;
 
-                    $blsclass->insert(array('','LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$accountnumber,$accountname,$companyname,$compstreet,$compdistrict,$compcity,$compprovince,$compzipcode,$compcountry,$billstreet,$billdistrict,$billcity,$billprovince,$billzipcode,$billcountry,$contact,$phone,$mobile,$email,$userid,$now,'NULL','NULL',$attention,$invoice,$vatflag,$billingtype,$accountexecutive));
+                    $blsclass->insert(array('','LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$accountnumber,$accountname,$companyname,$compstreet,$compdistrict,$compcity,$compprovince,$compzipcode,$compcountry,$billstreet,$billdistrict,$billcity,$billprovince,$billzipcode,$billcountry,$contact,$phone,$mobile,$email,$userid,$now,'NULL','NULL',$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype));
                     $txnid = $blsclass->getInsertId();
 					// $systemlog->logInfo('BILLING STATEMENT',"New Billing Statement","Statement Number: $billingnumber | Shipper ID: $shipperid | Account Number: $accountnumber | Account Name: $accountname | Company Name: $companyname | Company Street Address: $compstreet | Company District: $compdistrict | Company City: $compcity | Company Region: $compprovince | Company Zip: $compzipcode | Company Country: $compcountry | Billing Street Address: $billstreet | Billing District: $billdistrict | Billing City: $billcity | Billing Region: $billprovince | Billing Zip: $billzipcode | Billing Country: $billcountry | Contact: $contact | Phone: $phone | Mobile: $mobile | Email: $email | Attention: $attention | Invoice: $invoice | Vat Flag: $vatflag | Billing Type: $billingtype | Account Executive: $accountexecutive",$userid,$now,$txnid);
 
@@ -196,6 +196,7 @@
 
             $billingtype  = escapeString($_POST['billingtype'])==''?'NULL':escapeString($_POST['billingtype']);
             $accountexecutive  = escapeString($_POST['accountexecutive'])==''?'NULL':escapeString($_POST['accountexecutive']);
+            $shipmenttype  = escapeString($_POST['shipmenttype'])==''?'NULL':escapeString($_POST['shipmenttype']);
 
 
 
@@ -271,8 +272,8 @@
                         $billtocompanyname = $objshipper->company_name;
                     }
 
-                    $systemlog->logEditedInfo($blsclass,$billingid,array($billingid,'LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive),'BILLING STATEMENT','Edited Billing Statement Info',$userid,$now);/// log should be before update is made
-                    $blsclass->update($billingid,array('NOCHANGE',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive));
+                    $systemlog->logEditedInfo($blsclass,$billingid,array($billingid,'LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype),'BILLING STATEMENT','Edited Billing Statement Info',$userid,$now);/// log should be before update is made
+                    $blsclass->update($billingid,array('NOCHANGE',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype));
 
                     query("delete txn_billing_waybill 
                            from txn_billing_waybill 
@@ -339,12 +340,15 @@
                             txn_billing.vat_flag,
                             txn_billing.billing_type_id,
                             billing_type.description as billingtype,
+                            txn_billing.shipment_type_id,
+                            shipment_type.description as shipmenttype,
                             txn_billing.account_executive_id,
                             account_executive.name as accountexecutive
                      from txn_billing
                      left join billing_type on billing_type.id=txn_billing.billing_type_id 
                      left join account_executive on account_executive.id=txn_billing.account_executive_id
                      left join shipper on shipper.id=txn_billing.shipper_id
+                     left join shipment_type on shipment_type.id=txn_billing.shipment_type_id
                      where txn_billing.id='$id'";
 
           $rs = query($query);
@@ -378,6 +382,8 @@
                                        "shipper"=>utfEncode($obj->account_number).' - '.utfEncode($obj->account_name),
                                        "billingtypeid"=>utfEncode($obj->billing_type_id),
                                        "billingtype"=>utfEncode($obj->billingtype),
+                                       "shipmenttypeid"=>utfEncode($obj->shipment_type_id),
+                                       "shipmenttype"=>utfEncode($obj->shipmenttype),
                                        "accountexecutiveid"=>utfEncode($obj->account_executive_id),
                                        "accountexecutive"=>utfEncode($obj->accountexecutive),
                                        "response"=>"success",
@@ -453,10 +459,13 @@
                                    txn_billing.vat_flag,
                                    txn_billing.billing_type_id,
                                    billing_type.description as billingtype,
+                                   txn_billing.shipment_type_id,
+                                   shipment_type.description as shipmenttype,
                                    txn_billing.account_executive_id,
                                    account_executive.name as accountexecutive
                             from txn_billing
                             left join billing_type on billing_type.id=txn_billing.billing_type_id 
+                            left join shipment_type on shipment_type.id=txn_billing.shipment_type_id
                             left join account_executive on account_executive.id=txn_billing.account_executive_id
                             left join user as cuser on cuser.id=txn_billing.created_by
                             left join user as uuser on uuser.id=txn_billing.updated_by
@@ -541,6 +550,8 @@
                                        "reason"=>utfEncode($obj->reason),
                                        "billingtypeid"=>utfEncode($obj->billing_type_id),
                                        "billingtype"=>utfEncode($obj->billingtype),
+                                       "shipmenttypeid"=>utfEncode($obj->shipment_type_id),
+                                       "shipmenttype"=>utfEncode($obj->shipmenttype),
                                        "accountexecutiveid"=>utfEncode($obj->account_executive_id),
                                        "accountexecutive"=>utfEncode($obj->accountexecutive),
                                        "hasaccess"=>$loggedequalcreated,
