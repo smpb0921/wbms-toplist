@@ -13,6 +13,39 @@
 
     if(isset($_FILES['uploadpublishedratemodal-file'])){
 
+        function getShipmentTypeID($code){
+            $id = '';
+            $rs = query("select * from shipment_type where upper(code)='$code'");
+            if(getNumRows($rs)==1){
+                while($obj=fetch($rs)){
+                        $id=$obj->id;
+                }
+            }
+            return $id;
+        }
+
+        function getShipmentModeID($code){
+            $id = '';
+            $rs = query("select * from shipment_mode where upper(code)='$code'");
+            if(getNumRows($rs)==1){
+                while($obj=fetch($rs)){
+                        $id=$obj->id;
+                }
+            }
+            return $id;
+        }
+
+        function getModeofTransportID($code){
+            $id = '';
+            $rs = query("select * from mode_of_transport where upper(description)='$code'");
+            if(getNumRows($rs)==1){
+                while($obj=fetch($rs)){
+                        $id=$obj->id;
+                }
+            }
+            return $id;
+        }
+
        function getPortID($code){
             $id = '';
             $rs = query("select * from origin_destination_port where upper(code)='$code'");
@@ -85,17 +118,20 @@
                 $lastCol = $worksheet->getHighestColumn();
 
                 $headerColumns = array(
-                                        '3PL', //A
-                                        'TYPE', //B
-                                        'ORIGIN CODE', //C
-                                        'ZONE CODE',//D
-                                        'POUCHSIZE CODE', //E
-                                        'FIXED RATE FLAG', //F
-                                        'FIXED RATE AMOUNT', //G
-                                        'KG FROM', //H
-                                        'KG TO', //I
-                                        'FREIGHT CHARGE', //J
-                                        'EXCESS FREIGHT CHARGE' //K
+                                        'SHIPMENT TYPE', //A
+                                        'SHIPMENT MODE', //B
+                                        'MODE OF TRANSPORT', //C
+                                        '3PL', //D
+                                        'TYPE', //E
+                                        'ORIGIN CODE', //F
+                                        'ZONE CODE',//G
+                                        'POUCHSIZE CODE', //H
+                                        'FIXED RATE FLAG', //I
+                                        'FIXED RATE AMOUNT', //J
+                                        'KG FROM', //K
+                                        'KG TO', //L
+                                        'FREIGHT CHARGE', //M
+                                        'EXCESS FREIGHT CHARGE' //N
                                        );
                 $checkHeaderInfo = true;
                 $col = "A";
@@ -120,31 +156,37 @@
                     $systemlog = new system_log();
 
                     for($i=2;$i<=$lastRow;$i++){
-                        $tpl = convertToText(strtoupper($worksheet->getCell('A'.$i)->getValue()));
+                        $shipmenttype = convertToText(strtoupper($worksheet->getCell('A'.$i)->getValue()));
+                        $shipmenttypeID = getShipmentTypeID($shipmenttype);
+                        $shipmentmode = convertToText(strtoupper($worksheet->getCell('B'.$i)->getValue()));
+                        $shipmentmodeID = getShipmentModeID($shipmentmode);
+                        $modeoftransport = convertToText(strtoupper($worksheet->getCell('C'.$i)->getValue()));
+                        $modeoftransportID = getModeofTransportID($modeoftransport);
+                        $tpl = convertToText(strtoupper($worksheet->getCell('D'.$i)->getValue()));
                         $tplID = getTplID($tpl);
-                        $type = convertToText(strtoupper($worksheet->getCell('B'.$i)->getValue()));
-                        $origincode = convertToText(strtoupper($worksheet->getCell('C'.$i)->getValue()));
+                        $type = convertToText(strtoupper($worksheet->getCell('E'.$i)->getValue()));
+                        $origincode = convertToText(strtoupper($worksheet->getCell('F'.$i)->getValue()));
                         $originID = getPortID($origincode);
-                        $zonecode = convertToText(strtoupper($worksheet->getCell('D'.$i)->getValue()));
+                        $zonecode = convertToText(strtoupper($worksheet->getCell('G'.$i)->getValue()));
                         $zoneID = getZoneID($zonecode);
-                        $pouchsize = convertToText(strtoupper($worksheet->getCell('E'.$i)->getValue()));
+                        $pouchsize = convertToText(strtoupper($worksheet->getCell('H'.$i)->getValue()));
                         $pouchsizeID = getPouchSizeID($pouchsize);
 
-                        $fixedflag = convertToText(strtoupper($worksheet->getCell('F'.$i)->getValue()));
+                        $fixedflag = convertToText(strtoupper($worksheet->getCell('I'.$i)->getValue()));
                         $fixedflagbool = trim($fixedflag)=='YES'?1:0;
-                        $fixedamount = convertToText(strtoupper($worksheet->getCell('G'.$i)->getValue()));
+                        $fixedamount = convertToText(strtoupper($worksheet->getCell('J'.$i)->getValue()));
                         $fixedamount = $fixedflagbool==0?0:$fixedamount;
-                        $fromkg = convertToText(strtoupper($worksheet->getCell('H'.$i)->getValue()));
-                        $tokg = convertToText(strtoupper($worksheet->getCell('I'.$i)->getValue()));
-                        $freightcharge = convertToText(strtoupper($worksheet->getCell('J'.$i)->getValue()));
-                        $excessfreightcharge = convertToText(strtoupper($worksheet->getCell('K'.$i)->getValue()));
+                        $fromkg = convertToText(strtoupper($worksheet->getCell('K'.$i)->getValue()));
+                        $tokg = convertToText(strtoupper($worksheet->getCell('L'.$i)->getValue()));
+                        $freightcharge = convertToText(strtoupper($worksheet->getCell('M'.$i)->getValue()));
+                        $excessfreightcharge = convertToText(strtoupper($worksheet->getCell('N'.$i)->getValue()));
                         $excessfreightcharge = $excessfreightcharge>=0?$excessfreightcharge:0;
 
 
                         //echo $worksheet->getCell('G'.$i)->getValue()." $i <----<br>";
                         
 
-                        if($tplID!=''&&($type=='DOCUMENT'||$type=='PARCEL')&&$originID!=''&&$zoneID!=''&&$pouchsizeID!=''&&(
+                        if($shipmenttypeID!=''&&$shipmentmodeID!=''&&$modeoftransportID!=''&&$tplID!=''&&($type=='DOCUMENT'||$type=='PARCEL')&&$originID!=''&&$zoneID!=''&&$pouchsizeID!=''&&(
                                         ($fixedflag=='NO' &&(
                                                               (
                                                                 ($fromkg<=$tokg&&$fromkg>0&&$tokg>0)||
@@ -173,7 +215,10 @@
                                             }
                                
                                             $checkifexistrs = query("select * from published_rate 
-                                                                     where third_party_logistic_id='$tplID' and 
+                                                                     where shipment_type_id='$shipmenttypeID' and
+                                                                           shipment_mode_id='$shipmentmodeID' and
+                                                                           mode_of_transport_id='$modeoftransportID' and
+                                                                           third_party_logistic_id='$tplID' and 
                                                                            origin_id='$originID' and
                                                                            waybill_type='$type' and 
                                                                            zone_id='$zoneID' $pouchsizecondition");
@@ -188,10 +233,10 @@
                                                     $systemID = $obj->id;
                                                 }
 
-                                                 array_push($txnrowexist, "<b>Details</b>: Line $i - SystemID=$systemID, 3PL=$tpl, Type=$type, Origin=$origincode, Zone=$zonecode, PouchSize=$pouchsize, FixedRateFlag=$fixedflag, FixedAmount=$fixedamount, FromKg=$fromkg, ToKg=$tokg, FreightCharge=$freightcharge, ExcessCharge=$excessfreightcharge");
+                                                 array_push($txnrowexist, "<b>Details</b>: Line $i - SystemID=$systemID, ShipmentType=$shipmenttype, ShipmentMode=$shipmentmode, ModeofTransport=$modeoftransport, 3PL=$tpl, Type=$type, Origin=$origincode, Zone=$zonecode, PouchSize=$pouchsize, FixedRateFlag=$fixedflag, FixedAmount=$fixedamount, FromKg=$fromkg, ToKg=$tokg, FreightCharge=$freightcharge, ExcessCharge=$excessfreightcharge");
 
-                                                 $systemlog->logEditedInfo($prclass,$systemID,array('',$originID,'NULL','NULL','NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID),'PUBLISHED RATE','Edited Published Rate Info (UPLOAD)',$userid,$now);
-                                                 $prclass->update($systemID,array($originID,'NULL','NULL','NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID));
+                                                 $systemlog->logEditedInfo($prclass,$systemID,array('',$originID,'NULL',$modeoftransportID,'NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID,$shipmenttypeID,$shipmentmodeID),'PUBLISHED RATE','Edited Published Rate Info (UPLOAD)',$userid,$now);
+                                                 $prclass->update($systemID,array($originID,'NULL',$modeoftransportID,'NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID,$shipmenttypeID,$shipmentmodeID));
 
 
                                                  if($fixedflagbool==1){
@@ -218,11 +263,11 @@
                                             else{//NEW RATE
                                                 $userid = USERID;
                                                 $now = date('Y-m-d H:i:s');
-                                                $prclass->insert(array('',$originID,'NULL','NULL','NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID));
+                                                $prclass->insert(array('',$originID,'NULL',$modeoftransportID,'NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID,$shipmenttypeID,$shipmentmodeID));
                                                 $systemID = $prclass->getInsertId();
-                                                $systemlog->logAddedInfo($prclass,array($systemID,$originID,'NULL','NULL','NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID),'PUBLISHED RATE','New Published Rate Added (UPLOAD)',$userid,$now);
+                                                $systemlog->logAddedInfo($prclass,array($systemID,$originID,'NULL',$modeoftransportID,'NULL',$fixedflagbool,0,$fixedamount,0,0,0,0,$userid,$now,'NULL','NULL',0,0,$type,$pouchsizeID,0,0,0,'NULL',$zoneID,$tplID,$shipmenttypeID,$shipmentmodeID),'PUBLISHED RATE','New Published Rate Added (UPLOAD)',$userid,$now);
 
-                                                array_push($txnwithouterror, "<b>Details</b>: Line $i - SystemID=$systemID, 3PL=$tpl, Type=$type, Origin=$origincode, Zone=$zonecode, PouchSize=$pouchsize, FixedRateFlag=$fixedflag, FixedAmount=$fixedamount, FromKg=$fromkg, ToKg=$tokg, FreightCharge=$freightcharge, ExcessCharge=$excessfreightcharge");
+                                                array_push($txnwithouterror, "<b>Details</b>: Line $i - SystemID=$systemID, ShipmentType=$shipmenttype, ShipmentMode=$shipmentmode, ModeofTransport=$modeoftransport, 3PL=$tpl, Type=$type, Origin=$origincode, Zone=$zonecode, PouchSize=$pouchsize, FixedRateFlag=$fixedflag, FixedAmount=$fixedamount, FromKg=$fromkg, ToKg=$tokg, FreightCharge=$freightcharge, ExcessCharge=$excessfreightcharge");
                                                 
                                                 array_push($transactedIDs, $systemID);
 
@@ -276,8 +321,17 @@
                                 }*/
                             
                         }
-                        else if($tpl!=''||$type!=''||$origincode!=''||$zonecode!=''||$fixedflag!=''||$fixedamount!=''||$pouchsize!=''||$fromkg!=''||$tokg!=''||$freightcharge!=''||$excessfreightcharge!=''){
+                        else if($shipmenttype!=''||$shipmentmode!=''||$modeoftransport!=''||$tpl!=''||$type!=''||$origincode!=''||$zonecode!=''||$fixedflag!=''||$fixedamount!=''||$pouchsize!=''||$fromkg!=''||$tokg!=''||$freightcharge!=''||$excessfreightcharge!=''){
 
+                            if($shipmenttypeID==''){
+                                array_push($rowerror, "Shipment Type not in Database");
+                            }
+                            if($shipmentmodeID==''){
+                                array_push($rowerror, "Shipment Mode not in Database");
+                            }
+                            if($modeoftransportID==''){
+                                array_push($rowerror, "Mode of Transport not in Database");
+                            }
                             if($tplID==''){
                                 array_push($rowerror, "3PL not in Database");
                             }
@@ -314,7 +368,7 @@
                             $rowtexterror = implode(", ", $rowerror);
 
 
-                            array_push($txnwithrowerror, "<b>Line</b>: $i<br><b>Error</b>: $rowtexterror <br><b>Details</b>: 3PL=$tpl, Type=$type, Origin=$origincode, Zone=$zonecode, PouchSize=$pouchsize, FixedRateFlag=$fixedflag, FixedAmount=$fixedamount, FromKg=$fromkg, ToKg=$tokg, FreightCharge=$freightcharge, ExcessCharge=$excessfreightcharge");
+                            array_push($txnwithrowerror, "<b>Line</b>: $i<br><b>Error</b>: $rowtexterror <br><b>Details</b>: ShipmentType=$shipmenttype, ShipmentMode=$shipmentmode, ModeofTransport='$modeoftransport', 3PL=$tpl, Type=$type, Origin=$origincode, Zone=$zonecode, PouchSize=$pouchsize, FixedRateFlag=$fixedflag, FixedAmount=$fixedamount, FromKg=$fromkg, ToKg=$tokg, FreightCharge=$freightcharge, ExcessCharge=$excessfreightcharge");
 
                             $rowerror = array();
                         }
