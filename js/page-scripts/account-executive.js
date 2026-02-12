@@ -1,3 +1,5 @@
+var tabAccountExecutive = '#accountexecutive-menutabpane';
+
 $(document).off('click','.editaccountexecutivebtn').on('click','.editaccountexecutivebtn',function(){
 	var modal = "#editaccountexecutivemodal";
 	$(modal+' .code').val($(this).attr('code'));
@@ -101,3 +103,49 @@ $(document).off('click','.accountexecutivemodal-savebtn:not(".disabled")').on('c
 });
 
 /******************************* DELETE *****************************************************/
+
+/************************************* UPLOAD *************************************************/
+
+$(document).off('click',tabAccountExecutive+' #uploadaccountexecutivemodal-uploadbtn:not(".disabled")').on('click',tabAccountExecutive+' #uploadaccountexecutivemodal-uploadbtn:not(".disabled")',function(){
+
+	var modal = '#uploadaccountexecutivemodal';
+	var modal2 = '#accountexecutive-uploadtransactionlogmodal';
+	var form = '#uploadaccountexecutivemodal-form';
+	var logframe = '#accountexecutiveuploadtransactionlogframe';
+	var button = $(this);
+	button.addClass('disabled');
+
+	if($(tabAccountExecutive+' '+modal+' .uploadaccountexecutivemodal-file').val().trim()==''){
+		say('Please select a file to upload');
+		button.removeClass('disabled');
+	}
+	else{
+		$('#loading-img').removeClass('hidden');
+		
+		$(modal).modal('hide');
+		$(document).off('hidden.bs.modal',tabAccountExecutive+' '+modal).on('hidden.bs.modal',tabAccountExecutive+' '+modal,function(){
+			
+			$(document).off('hidden.bs.modal',tabAccountExecutive+' '+modal);
+			$(tabAccountExecutive+' '+modal2).modal('show');
+			$(form).submit();
+
+			$(logframe).load(function () {
+
+				button.removeClass('disabled');
+
+				$('#loading-img').addClass('hidden');
+
+				$('#accountexecutivetable').flexOptions({
+						url:'loadables/ajax/maintenance.account-executive.php',
+						sortname: "created_date",
+						sortorder: "desc"
+				}).flexReload();
+
+			});
+
+		});
+	
+	}
+
+});
+/************************************* UPLOAD END *************************************************/
