@@ -160,6 +160,7 @@
 									   published_rate.zone_id,
 									   zone.description as zone,
 									   published_rate.shipment_type_id,
+									   published_rate.shipment_mode_id,
 									   shipment_type.code as shipmenttype,
 									   shipment_mode.code as shipmentmode
 								from published_rate

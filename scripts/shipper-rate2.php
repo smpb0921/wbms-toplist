@@ -184,6 +184,7 @@
 									   zone.description as zone,
 									   shipper.account_name as shippername,
 									   shipper_rate.shipment_type_id,
+									   shipper_rate.shipment_mode_id,
 									   shipment_type.code as shipmenttype,
 									   shipment_mode.code as shipmentmode
 								from shipper_rate
