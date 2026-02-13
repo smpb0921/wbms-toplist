@@ -1,3 +1,5 @@
+var tabcarrier = '#carrier-menutabpane';
+
 $(document).off('click','.editcarrierbtn').on('click','.editcarrierbtn',function(){
 	var modal = "#editcarriermodal";
 	$(modal+' .code').val($(this).attr('code'));
@@ -69,3 +71,47 @@ $(document).off('click','.carriermodal-savebtn:not(".disabled")').on('click','.c
 });
 
 /******************************* DELETE *****************************************************/
+
+$(document).off('click',tabcarrier+' #uploadcarriermodal-uploadbtn:not(".disabled")').on('click',tabcarrier+' #uploadcarriermodal-uploadbtn:not(".disabled")',function(){
+
+	var modal = '#uploadcarriermodal';
+	var modal2 = '#carrier-uploadtransactionlogmodal';
+	var form = '#uploadcarriermodal-form';
+	var logframe = '#carrieruploadtransactionlogframe';
+	var button = $(this);
+	button.addClass('disabled');
+
+	if($(tabcarrier+' '+modal+' .uploadcarriermodal-file').val().trim()==''){
+		say('Please select a file to upload');
+		button.removeClass('disabled');
+	}
+	else{
+		$('#loading-img').removeClass('hidden');
+		
+		$(modal).modal('hide');
+		$(document).off('hidden.bs.modal',tabcarrier+' '+modal).on('hidden.bs.modal',tabcarrier+' '+modal,function(){
+			
+			$(document).off('hidden.bs.modal',tabcarrier+' '+modal);
+			$(tabcarrier+' '+modal2).modal('show');
+			$(form).submit();
+
+			$(logframe).load(function () {
+
+				button.removeClass('disabled');
+
+				$('#loading-img').addClass('hidden');
+
+				$('#carriertable').flexOptions({
+						url:'loadables/ajax/maintenance.carrier.php',
+						sortname: "created_date",
+						sortorder: "desc"
+				}).flexReload();
+
+			});
+
+		});
+	
+	}
+
+});
+/************************************* UPLOAD END *************************************************/
