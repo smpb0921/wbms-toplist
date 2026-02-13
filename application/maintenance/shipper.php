@@ -2741,9 +2741,9 @@
 				buttons : [
 						{name: 'Add', bclass: 'add addshipperbtn', onpress : addShipper},
 						{separator: true},
-						{name: 'Delete', bclass: 'delete deleteshipperbtn', onpress : deleteShipper}
-						/*{separator: true},
-						{name: 'Upload', bclass: 'upload uploadshipperratebtn', onpress : uploadShipperRates}*/
+						{name: 'Delete', bclass: 'delete deleteshipperbtn', onpress : deleteShipper},
+						{separator: true},
+						{name: 'Upload', bclass: 'upload uploadshipperratebtn', onpress : uploadShipperRates}
 				],
 				searchitems : [
 						{display: 'Account Number', name : 'account_number'},
