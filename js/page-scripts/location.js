@@ -1,3 +1,5 @@
+var tablocation = '#location-menutabpane ';
+
 $(document).off('click','.editlocationbtn').on('click','.editlocationbtn',function(){
 	var modal = "#editlocationmodal";
 	$(modal+' .code').val($(this).attr('code'));
@@ -69,3 +71,49 @@ $(document).off('click','.locationmodal-savebtn:not(".disabled")').on('click','.
 });
 
 /******************************* DELETE *****************************************************/
+
+/************************************* UPLOAD *************************************************/
+
+$(document).off('click',tablocation+' #uploadlocationmodal-uploadbtn:not(".disabled")').on('click',tablocation+' #uploadlocationmodal-uploadbtn:not(".disabled")',function(){
+
+	var modal = '#uploadlocationmodal';
+	var modal2 = '#location-uploadtransactionlogmodal';
+	var form = '#uploadlocationmodal-form';
+	var logframe = '#locationuploadtransactionlogframe';
+	var button = $(this);
+	button.addClass('disabled');
+
+	if($(tablocation+' '+modal+' .uploadlocationmodal-file').val().trim()==''){
+		say('Please select a file to upload');
+		button.removeClass('disabled');
+	}
+	else{
+		$('#loading-img').removeClass('hidden');
+		
+		$(modal).modal('hide');
+		$(document).off('hidden.bs.modal',tablocation+' '+modal).on('hidden.bs.modal',tablocation+' '+modal,function(){
+			
+			$(document).off('hidden.bs.modal',tablocation+' '+modal);
+			$(tablocation+' '+modal2).modal('show');
+			$(form).submit();
+
+			$(logframe).load(function () {
+
+				button.removeClass('disabled');
+
+				$('#loading-img').addClass('hidden');
+
+				$('#locationtable').flexOptions({
+						url:'loadables/ajax/maintenance.location.php',
+						sortname: "created_date",
+						sortorder: "desc"
+				}).flexReload();
+
+			});
+
+		});
+	
+	}
+
+});
+/************************************* UPLOAD END *************************************************/
