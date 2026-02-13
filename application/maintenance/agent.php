@@ -559,6 +559,57 @@
 </div>
 
 
+<div class="modal fade" id="uploadagentmodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class='page-title'>
+                    Upload File
+                    <button class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action='../scripts/agent-upload.php' method='post' id='uploadagentmodal-form'  enctype='multipart/form-data' target='agentuploadtransactionlogframe'>
+                    <div class='col-md-4'>
+                        Please make sure to follow the right format.
+                        Click <a class='pointer' id='agent-downloadtransactionfiletemplatebtn' href='../file-templates/agent-template.xlsx'>here</a> to download file template.
+                    </div>
+                    <div class='col-md-offset-1 col-md-6'>
+                        <div class="form-group">
+                            <label class='control-label'>Select an Excel File</label>
+                            <input type='file' class='form-control uploadagentmodal-file' name='uploadagentmodal-file'>
+                        </div>
+                    </div>
+                </form>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button class='btn btn-blue2 mybtn' id='uploadagentmodal-uploadbtn'>Upload</button>
+                    <button class='btn btn-blue2 mybtn modal-cancelbtn' >Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="agent-uploadtransactionlogmodal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class='page-title'>
+                    Uploading File...
+                    <button class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="agentuploadtransactionlogframe" name="agentuploadtransactionlogframe" height="600" width="100%" frameborder="0" scrolling="yes" style='background: #fff'></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script type="text/javascript">
 	$(document).ready(function(){
 
@@ -734,7 +785,9 @@
 				buttons : [
 						{name: 'Add', bclass: 'add addagentbtn', onpress : addAgent},
 						{separator: true},
-						{name: 'Delete', bclass: 'delete deleteagentbtn', onpress : deleteAgent}
+						{name: 'Delete', bclass: 'delete deleteagentbtn', onpress : deleteAgent},
+						{separator: true},
+						{name: 'Upload', bclass: 'upload uploadagentbtn', onpress : uploadAgent}
 				],
 				searchitems : [
 						{display: 'Code', name : 'code', isdefault: true},
@@ -758,6 +811,11 @@
 				height: 500,
 				singleSelect: false
 		});
+
+		function uploadAgent(){
+			$('#uploadagentmodal').modal('show');
+		
+		}
 
 		function addAgent(){
 				$('#addagentmodal').modal('show');

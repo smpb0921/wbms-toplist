@@ -319,3 +319,50 @@ $(document).off('show.bs.modal',tabagent+' #addagentmodal').on('show.bs.modal',t
     $("#addagentmodal .countriesdropdownselect").empty().append('<option selected value="Philippines">Philippines</option>').trigger('change');
     
 });
+
+
+/************************************* UPLOAD *************************************************/
+
+$(document).off('click',tabagent+' #uploadagentmodal-uploadbtn:not(".disabled")').on('click',tabagent+' #uploadagentmodal-uploadbtn:not(".disabled")',function(){
+
+	var modal = '#uploadagentmodal';
+	var modal2 = '#agent-uploadtransactionlogmodal';
+	var form = '#uploadagentmodal-form';
+	var logframe = '#agentuploadtransactionlogframe';
+	var button = $(this);
+	button.addClass('disabled');
+
+	if($(tabagent+' '+modal+' .uploadagentmodal-file').val().trim()==''){
+		say('Please select a file to upload');
+		button.removeClass('disabled');
+	}
+	else{
+		$('#loading-img').removeClass('hidden');
+		
+		$(modal).modal('hide');
+		$(document).off('hidden.bs.modal',tabagent+' '+modal).on('hidden.bs.modal',tabagent+' '+modal,function(){
+			
+			$(document).off('hidden.bs.modal',tabagent+' '+modal);
+			$(tabagent+' '+modal2).modal('show');
+			$(form).submit();
+
+			$(logframe).load(function () {
+
+				button.removeClass('disabled');
+
+				$('#loading-img').addClass('hidden');
+
+				$('#agenttable').flexOptions({
+						url:'loadables/ajax/maintenance.agent.php',
+						sortname: "created_date",
+						sortorder: "desc"
+				}).flexReload();
+
+			});
+
+		});
+	
+	}
+
+});
+/************************************* UPLOAD END *************************************************/
