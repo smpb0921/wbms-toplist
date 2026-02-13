@@ -10,85 +10,6 @@
     include("../resources/PHPExcel-1.8/Classes/PHPExcel.php");
 
     if(isset($_FILES['uploadcarriermodal-file'])){
-        
-
-        function getShipmentTypeID($code){
-            $id = '';
-            $rs = query("select * from shipment_type where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                        $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getShipmentModeID($code){
-            $id = '';
-            $rs = query("select * from shipment_mode where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                        $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getModeofTransportID($code){
-            $id = '';
-            $rs = query("select * from mode_of_transport where upper(description)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                        $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-       function getPortID($code){
-            $id = '';
-            $rs = query("select * from origin_destination_port where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getZoneID($code){
-            $id = '';
-            $rs = query("select * from zone where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getPouchSizeID($code){
-            $id = '';
-            $rs = query("select * from pouch_size where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-         function getTplID($code){
-            $id = '';
-            $rs = query("select * from third_party_logistic where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
 
         function convertToText($str){
             $str = trim($str);
@@ -103,14 +24,10 @@
         //$ftype = $file['type'];
     	$ftype = strrchr($filename, '.');
 
-    	
-
     	if($ftype=='.xls'||$ftype=='.csv'||$ftype=='.xlsx'){
 
     			@$excelReader = PHPExcel_IOFactory::createReaderForFile($tmp);
     			@$excelObj = $excelReader->load($tmp);
-
-
 
                 $worksheet = $excelObj->getActiveSheet();
                 $lastRow = $worksheet->getHighestRow();
@@ -189,8 +106,6 @@
                         }
                     }
 
-
-
                     echo "<table border='1px' cellspacing='0px' style='background-color:#ffdede'>
                             <thead >
                                 <tr>    
@@ -253,31 +168,15 @@
                                     $line++;
                                 }
                      echo   "</tbody></table><br>";
-
-                     
-
-
-                                    
                 }
                 else{
                     echo "Unable to upload file. <b>Invalid Header Format</b>.<br><br>";
                     echo "Click <a class='pointer' href='../file-templates/carrier-template.xlsx'>here</a> to download file template<br>";
-                        
                 }
-
-
     	}
     	else{
     		echo "Invalid File Type: $ftype<br><br>
                   <b>Valid File Types</b>: .xlsx, .xls, .csv";
     	}
-
-
-				
-				
-
-		
 	}
-
-
 ?>

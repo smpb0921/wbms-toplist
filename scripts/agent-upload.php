@@ -10,85 +10,6 @@
     include("../resources/PHPExcel-1.8/Classes/PHPExcel.php");
 
     if(isset($_FILES['uploadagentmodal-file'])){
-        
-
-        function getShipmentTypeID($code){
-            $id = '';
-            $rs = query("select * from shipment_type where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                        $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getShipmentModeID($code){
-            $id = '';
-            $rs = query("select * from shipment_mode where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                        $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getModeofTransportID($code){
-            $id = '';
-            $rs = query("select * from mode_of_transport where upper(description)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                        $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-       function getPortID($code){
-            $id = '';
-            $rs = query("select * from origin_destination_port where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getZoneID($code){
-            $id = '';
-            $rs = query("select * from zone where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-        function getPouchSizeID($code){
-            $id = '';
-            $rs = query("select * from pouch_size where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
-         function getTplID($code){
-            $id = '';
-            $rs = query("select * from third_party_logistic where upper(code)='$code'");
-            if(getNumRows($rs)==1){
-                while($obj=fetch($rs)){
-                    $id=$obj->id;
-                }
-            }
-            return $id;
-        }
-
 
         function convertToText($str){
             $str = trim($str);
@@ -194,7 +115,7 @@
                             $prclass->insert(array('',$code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL'));
                             $systemID = $prclass->getInsertId();
 
-                            $systemlog->logAddedInfo($prclass,array($systemID,$code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL'),'ACCOUNT EXECUTIVE','New Account Executive Added (UPLOAD)',$userid,$now);
+                            $systemlog->logAddedInfo($prclass,array($systemID,$code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL'),'AGENT','New Agent Added (UPLOAD)',$userid,$now);
                             
                             array_push($txnwithouterror, "<b>Details</b>: Line $i - SystemID=$systemID, Code=$code, CompanyName=$companyname, CompanyStreetAddress=$companystreetaddress, CompanyDistrict=$companydistrict, CompanyCity=$companycity, CompanyStateProvince=$companystateprovince, CompanyZipCode=$companyzipcode, CompanyCountry=$companycountry, Area=$area, Remarks=$remarks");
                         }
