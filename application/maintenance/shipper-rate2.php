@@ -222,7 +222,7 @@
 
 									<div class="form-group">
 											<label class='control-label'>Mode of Transport*</label>	
-											<select class='form-input form-control modeoftransport modeoftransportdropdownselect' style='width:100%'></select>
+											<select class='form-input form-control modeoftransport modeoftransportdropdownselect noresetfld' style='width:100%'></select>
 									</div>
 
 									<div class="form-group">

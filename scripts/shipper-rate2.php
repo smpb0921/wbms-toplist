@@ -185,7 +185,7 @@
 									   shipper.account_name as shippername,
 									   shipper_rate.shipment_type_id,
 									   shipment_type.code as shipmenttype,
-									   shipnment_mode.code as shipmentmode
+									   shipment_mode.code as shipmentmode
 								from shipper_rate
 								left join shipper on shipper.id=shipper_rate.shipper_id
 								left join origin_destination_port as origin on origin.id=shipper_rate.origin_id
