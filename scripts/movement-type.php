@@ -94,26 +94,23 @@
 		if($_POST['MovementTypeGetInfo']=='kjoI$H2oiaah3h0$09jDppo92po@k@'){
 			$id = escapeString($_POST['id']);
 
-			$rs = query("select * 
-				 	     from (	
-				 	     		select movement_type.id,
-									   movement_type.code, 
-									   movement_type.description,
-									   movement_type.created_date,
-									   concat(cuser.first_name,' ',cuser.last_name) as created_by,
-									   movement_type.updated_date,
-									   concat(uuser.first_name,' ',uuser.last_name) as updated_by,
-									   group_concat(source_movement) as source_movement,
-									   movement_type.shipment_type_id,
-									   shipment_type.code as shipmenttype
-								from movement_type
-								left join movement_type_source on movement_type_source.movement_type_id=movement_type.id
-								left join user as cuser on cuser.id=movement_type.created_by
-								left join user as uuser on uuser.id=movement_type.updated_by
-								left join shipment_type on shipment_type.id=movement_type.shipment_type_id
-								group by movement_type.id
-				 	     	  ) as tbl
-					where tbl.id='$id'");
+			$rs = query("select movement_type.id,
+								movement_type.code, 
+								movement_type.description,
+								movement_type.created_date,
+								concat(cuser.first_name,' ',cuser.last_name) as created_by,
+								movement_type.updated_date,
+								concat(uuser.first_name,' ',uuser.last_name) as updated_by,
+								group_concat(source_movement) as source_movement,
+								movement_type.shipment_type_id,
+								shipment_type.code as shipmenttype
+							from movement_type
+							left join movement_type_source on movement_type_source.movement_type_id=movement_type.id
+							left join user as cuser on cuser.id=movement_type.created_by
+							left join user as uuser on uuser.id=movement_type.updated_by
+							left join shipment_type on shipment_type.id=movement_type.shipment_type_id
+							where movement_type.id='$id'
+							group by movement_type.id");
 
 			if(getNumRows($rs)==1){
 				while($obj=fetch($rs)){

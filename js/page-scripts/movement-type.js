@@ -5,7 +5,9 @@ $(document).off('click','.editmovementtypebtn').on('click','.editmovementtypebtn
 
 	$.post(server+'movement-type.php',{MovementTypeGetInfo:'kjoI$H2oiaah3h0$09jDppo92po@k@',id:rowid},function(data){
 		//alert(data);
+		// console.log("Raw response:", data); 
 		rsp = $.parseJSON(data);
+		// console.log("Parsed response:", rsp); 
 		if(rsp['response']=='success'){
 			$(modal+' .code').val(rsp['code']);
 			$(modal+' .description').val(rsp['description']);
@@ -14,6 +16,12 @@ $(document).off('click','.editmovementtypebtn').on('click','.editmovementtypebtn
 			var mtsval = rsp['sourcemovement'].split(',');
 			for(var i = 0; i<mtsval.length; i++){
 				$(modal+' .sourcemovement').tagsinput('add',mtsval[i]);
+			}
+			if(rsp["shipmenttype"]!=null){
+				$(modal+" .shipmenttype").empty().append('<option selected value="'+rsp["shipmenttypeid"]+'">'+rsp["shipmenttype"]+'</option>').trigger('change');
+			}
+			else{
+				$(modal+" .shipmenttype").empty().trigger('change');
 			}
 			
 		}
