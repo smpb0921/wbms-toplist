@@ -1714,6 +1714,28 @@ $(document)
 
 					getWBShipperPODInstruction();
 
+					if (data['shipmenttype'] != null) {
+						$(inputfieldsWB + ' .waybill-shipmenttype')
+							.empty()
+							.append('<option selected value="' + data['shipmenttypeid'] + '">' + data['shipmenttype'] + '</option>')
+							.trigger('change');
+					} else {
+						$(inputfieldsWB + ' .waybill-shipmenttype')
+							.empty()
+							.trigger('change');
+					}
+
+					if (data['shipmentmode'] != null) {
+						$(inputfieldsWB + ' .waybill-shipmentmode')
+							.empty()
+							.append('<option selected value="' + data['shipmentmodeid'] + '">' + data['shipmentmode'] + '</option>')
+							.trigger('change');
+					} else {
+						$(inputfieldsWB + ' .waybill-shipmentmode')
+							.empty()
+							.trigger('change');
+					}
+
 					if (data['origin'] != null) {
 						$(inputfieldsWB + ' .waybill-origin')
 							.empty()
@@ -1724,6 +1746,7 @@ $(document)
 							.empty()
 							.trigger('change');
 					}
+					
 
 					if (data['destination'] != null) {
 						$(inputfieldsWB + ' .waybill-destination')
