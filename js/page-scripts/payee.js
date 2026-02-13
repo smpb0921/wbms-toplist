@@ -1,3 +1,5 @@
+var tabpayee = '#payee-menutabpane ';
+
 $(document)
 	.off('click', '.editpayeebtn')
 	.on('click', '.editpayeebtn', function () {
@@ -93,3 +95,49 @@ $(document)
 	});
 
 /******************************* DELETE *****************************************************/
+
+/************************************* UPLOAD *************************************************/
+
+$(document).off('click',tabpayee+' #uploadpayeemodal-uploadbtn:not(".disabled")').on('click',tabpayee+' #uploadpayeemodal-uploadbtn:not(".disabled")',function(){
+
+	var modal = '#uploadpayeemodal';
+	var modal2 = '#payee-uploadtransactionlogmodal';
+	var form = '#uploadpayeemodal-form';
+	var logframe = '#payeeuploadtransactionlogframe';
+	var button = $(this);
+	button.addClass('disabled');
+
+	if($(tabpayee+' '+modal+' .uploadpayeemodal-file').val().trim()==''){
+		say('Please select a file to upload');
+		button.removeClass('disabled');
+	}
+	else{
+		$('#loading-img').removeClass('hidden');
+		
+		$(modal).modal('hide');
+		$(document).off('hidden.bs.modal',tabpayee+' '+modal).on('hidden.bs.modal',tabpayee+' '+modal,function(){
+			
+			$(document).off('hidden.bs.modal',tabpayee+' '+modal);
+			$(tabpayee+' '+modal2).modal('show');
+			$(form).submit();
+
+			$(logframe).load(function () {
+
+				button.removeClass('disabled');
+
+				$('#loading-img').addClass('hidden');
+
+				$('#payeetable').flexOptions({
+						url:'loadables/ajax/maintenance.payee.php',
+						sortname: "created_date",
+						sortorder: "desc"
+				}).flexReload();
+
+			});
+
+		});
+	
+	}
+
+});
+/************************************* UPLOAD END *************************************************/

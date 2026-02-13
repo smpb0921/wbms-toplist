@@ -112,6 +112,56 @@
 	</div>  
 </div>
 
+<div class="modal fade" id="uploadpayeemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class='page-title'>
+                    Upload File
+                    <button class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action='../scripts/payee-upload.php' method='post' id='uploadpayeemodal-form'  enctype='multipart/form-data' target='payeeuploadtransactionlogframe'>
+                    <div class='col-md-4'>
+                        Please make sure to follow the right format.
+                        Click <a class='pointer' id='payee-downloadtransactionfiletemplatebtn' href='../file-templates/payee-template.xlsx'>here</a> to download file template.
+                    </div>
+                    <div class='col-md-offset-1 col-md-6'>
+                        <div class="form-group">
+                            <label class='control-label'>Select an Excel File</label>
+                            <input type='file' class='form-control uploadpayeemodal-file' name='uploadpayeemodal-file'>
+                        </div>
+                    </div>
+                </form>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button class='btn btn-blue2 mybtn' id='uploadpayeemodal-uploadbtn'>Upload</button>
+                    <button class='btn btn-blue2 mybtn modal-cancelbtn' >Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="payee-uploadtransactionlogmodal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class='page-title'>
+                    Uploading File...
+                    <button class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="payeeuploadtransactionlogframe" name="payeeuploadtransactionlogframe" height="600" width="100%" frameborder="0" scrolling="yes" style='background: #fff'></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script type="text/javascript">
 	$(document).ready(function(){
@@ -137,7 +187,9 @@
 				buttons : [
 						{name: 'Add', bclass: 'add addpayeebtn', onpress : addpayee},
 						{separator: true},
-						{name: 'Delete', bclass: 'delete deletepayeebtn', onpress : deletepayee}
+						{name: 'Delete', bclass: 'delete deletepayeebtn', onpress : deletepayee},
+						{separator: true},
+						{name: 'Upload', bclass: 'upload uploadpayeebtn', onpress : uploadPayee}
 				],
 				searchitems : [
 						{display: 'Name', name : 'payee.payee_name', isdefault: true},
@@ -156,6 +208,10 @@
 				height: 500,
 				singleSelect: false
 		});
+
+		function uploadPayee(){
+			$('#uploadpayeemodal').modal('show');
+		}
 
 		function addpayee(){
 				$('#addpayeemodal').modal('show');
