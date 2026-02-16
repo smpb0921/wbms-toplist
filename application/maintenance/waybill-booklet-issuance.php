@@ -197,6 +197,57 @@
 </div>
 
 
+<div class="modal fade" id="uploadwaybillbookletissuancemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class='page-title'>
+                    Upload File
+                    <button class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action='../scripts/waybill-booklet-issuance-upload.php' method='post' id='uploadwaybillbookletissuancemodal-form'  enctype='multipart/form-data' target='waybillbookletissuanceuploadtransactionlogframe'>
+                    <div class='col-md-4'>
+                        Please make sure to follow the right format.
+                        Click <a class='pointer' id='waybillbookletissuance-downloadtransactionfiletemplatebtn' href='../file-templates/waybill-booklet-issuance-template.xlsx'>here</a> to download file template.
+                    </div>
+                    <div class='col-md-offset-1 col-md-6'>
+                        <div class="form-group">
+                            <label class='control-label'>Select an Excel File</label>
+                            <input type='file' class='form-control uploadwaybillbookletissuancemodal-file' name='uploadwaybillbookletissuancemodal-file'>
+                        </div>
+                    </div>
+                </form>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button class='btn btn-blue2 mybtn' id='uploadwaybillbookletissuancemodal-uploadbtn'>Upload</button>
+                    <button class='btn btn-blue2 mybtn modal-cancelbtn' >Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="waybillbookletissuance-uploadtransactionlogmodal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class='page-title'>
+                    Uploading File...
+                    <button class="close" data-dismiss="modal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="waybillbookletissuanceuploadtransactionlogframe" name="waybillbookletissuanceuploadtransactionlogframe" height="600" width="100%" frameborder="0" scrolling="yes" style='background: #fff'></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script type="text/javascript">
 	$(document).ready(function(){
 
@@ -297,7 +348,9 @@
 				buttons : [
 						{name: 'Add', bclass: 'add addwaybillbookletissuancebtn', onpress : addWaybillBookletIssuance},
 						{separator: true},
-						{name: 'Delete', bclass: 'delete deletewaybillbookletissuancebtn', onpress : deleteWaybillBookletIssuance}
+						{name: 'Delete', bclass: 'delete deletewaybillbookletissuancebtn', onpress : deleteWaybillBookletIssuance},
+						{separator: true},
+						{name: 'Upload', bclass: 'upload uploadwaybillbookletissuancebtn', onpress : uploadWaybillbookletissuance}
 				],
 				searchitems : [
 						{display: 'Issuance Date', name : 'issuance_date', isdefault: true},
@@ -320,6 +373,10 @@
 				height: 500,
 				singleSelect: false
 		});
+
+		function uploadWaybillbookletissuance(){
+			$('#uploadwaybillbookletissuancemodal').modal('show');
+		}
 
 		function addWaybillBookletIssuance(){
 				$('#addwaybillbookletissuancemodal').modal('show');

@@ -203,3 +203,49 @@ $(document).off('change',tabWYBKLTISS+' .courierflag').on('change',tabWYBKLTISS+
 
 
 });
+
+/************************************* UPLOAD *************************************************/
+
+$(document).off('click',tabWYBKLTISS+' #uploadwaybillbookletissuancemodal-uploadbtn:not(".disabled")').on('click',tabWYBKLTISS+' #uploadwaybillbookletissuancemodal-uploadbtn:not(".disabled")',function(){
+
+	var modal = '#uploadwaybillbookletissuancemodal';
+	var modal2 = '#waybillbookletissuance-uploadtransactionlogmodal';
+	var form = '#uploadwaybillbookletissuancemodal-form';
+	var logframe = '#waybillbookletissuanceuploadtransactionlogframe';
+	var button = $(this);
+	button.addClass('disabled');
+
+	if($(tabWYBKLTISS+' '+modal+' .uploadwaybillbookletissuancemodal-file').val().trim()==''){
+		say('Please select a file to upload');
+		button.removeClass('disabled');
+	}
+	else{
+		$('#loading-img').removeClass('hidden');
+		
+		$(modal).modal('hide');
+		$(document).off('hidden.bs.modal',tabWYBKLTISS+' '+modal).on('hidden.bs.modal',tabWYBKLTISS+' '+modal,function(){
+			
+			$(document).off('hidden.bs.modal',tabWYBKLTISS+' '+modal);
+			$(tabWYBKLTISS+' '+modal2).modal('show');
+			$(form).submit();
+
+			$(logframe).load(function () {
+
+				button.removeClass('disabled');
+
+				$('#loading-img').addClass('hidden');
+
+				$('#waybillbookletissuancetable').flexOptions({
+						url:'loadables/ajax/maintenance.waybill-booklet-issuance.php',
+						sortname: "created_date",
+						sortorder: "desc"
+				}).flexReload();
+
+			});
+
+		});
+	
+	}
+
+});
+/************************************* UPLOAD END *************************************************/
