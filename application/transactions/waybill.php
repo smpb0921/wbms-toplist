@@ -103,6 +103,13 @@
 								                                                        	   	<div class='col-lg-6'>
 
 																									<div class="form-group">
+										                                                                <label class='control-label col-lg-3'>Booking No.*</label>
+										                                                                <div class="col-lg-9">
+										                                                                    <select class='form-control form-input waybill-bookingnumber wbbookingnumberdropdownselect' style='width:100%'></select>
+										                                                                </div>
+										                                                            </div>
+
+																									<div class="form-group">
 																										<label class='control-label col-md-3'>Shipment Type*</label>
 																										<div class='col-md-9'>
 																											<select class='form-control form-input waybill-shipmenttype addshipmenttypedropdownselect'  style='width:100%'></select>
@@ -117,13 +124,6 @@
 																											
 																										</div>
 																									</div>
-
-										                                                        	<div class="form-group">
-										                                                                <label class='control-label col-lg-3'>Booking No.*</label>
-										                                                                <div class="col-lg-9">
-										                                                                    <select class='form-control form-input waybill-bookingnumber wbbookingnumberdropdownselect' style='width:100%'></select>
-										                                                                </div>
-										                                                            </div>
 										                                                           
 										                                                            
 										                                                            <!--<div class="form-group parceltypewrapper hidden">
