@@ -37,6 +37,9 @@ class txn_billing extends table{
 	var $billing_type_id;
 	var $account_executive_id;
 	var $shipment_type_id;
+	var $billed_to;
+	var $agent_id;
+	var $consignee_id;
 
 }
 

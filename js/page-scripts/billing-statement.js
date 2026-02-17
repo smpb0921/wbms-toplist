@@ -3,6 +3,8 @@ var inputfieldsBLS = '.billingstatement-inputfields';
 var processBLS = '';
 var currentbillingstatementTxn = '';
 
+var blsonchangeeventstatus = true;
+
 function getBillingComputationBLS(txnnumber) {
 	$(contentBLS + ' .billingstatement-totalbillingamount').val(0);
 	var roundoffto = 2;
@@ -88,36 +90,75 @@ function clearBLSSelectedShipperInfo(modal) {
 $(document)
 	.off('change', contentBLS + ' .blsshipperselection:not(".disabled")')
 	.on('change', contentBLS + ' .blsshipperselection:not(".disabled")', function () {
-		var modal = '#' + $(this).closest('.modal').attr('id');
-		var shipperid = $(this).val();
-		var field = $(this);
-		field.addClass('disabled');
+		if (blsonchangeeventstatus) {
+			var modal = '#' + $(this).closest('.modal').attr('id');
+			var shipperid = $(this).val();
+			var field = $(this);
+			field.addClass('disabled');
 
-		clearBLSSelectedShipperInfo(modal);
+			clearBLSSelectedShipperInfo(modal);
 
-		if (shipperid != '') {
-			$.post(server + 'billing-statement.php', { getSelectedShipperInfoBLS: 'oi$ha@3h0$0jRoihQnsRP9$nzpo92po@k@', shipperid: shipperid }, function (data) {
-				//alert(data);
+			if (shipperid != '') {
+				$.post(server + 'billing-statement.php', { getSelectedShipperInfoBLS: 'oi$ha@3h0$0jRoihQnsRP9$nzpo92po@k@', shipperid: shipperid }, function (data) {
+					//alert(data);
 
-				rsp = $.parseJSON(data);
-				if (rsp['response'] == 'success') {
-					$(modal + ' .blscontact').val(rsp['collectioncontact']);
-					//$(modal+' .blsphone').val(rsp['phone']);
-					//$(modal+' .blsemail').val(rsp['email']);
-					//$(modal+' .blsmobile').val(rsp['mobile']);
+					rsp = $.parseJSON(data);
+					if (rsp['response'] == 'success') {
+						$(modal + ' .blscontact').val(rsp['collectioncontact']);
+						//$(modal+' .blsphone').val(rsp['phone']);
+						//$(modal+' .blsemail').val(rsp['email']);
+						//$(modal+' .blsmobile').val(rsp['mobile']);
 
-					$(modal + ' .newbillingstatementmodal-remarks').focus();
+						$(modal + ' .billingstatementmodal-remarks').focus();
+						field.removeClass('disabled');
+					} else if (rsp['response'] == 'invalidshipperid') {
+						field.removeClass('disabled');
+					} else {
+						alert(data);
+						field.removeClass('disabled');
+					}
 					field.removeClass('disabled');
-				} else if (rsp['response'] == 'invalidshipperid') {
-					field.removeClass('disabled');
-				} else {
-					alert(data);
-					field.removeClass('disabled');
-				}
+				});
+			} else {
 				field.removeClass('disabled');
-			});
-		} else {
-			field.removeClass('disabled');
+			}
+		}
+	});
+
+$(document)
+	.off('change', contentBLS + ' .blsaccountselection:not(".disabled")')
+	.on('change', contentBLS + ' .blsaccountselection:not(".disabled")', function () {
+		if (blsonchangeeventstatus) {
+			var modal = '#' + $(this).closest('.modal').attr('id');
+			var accountid = $(this).val();
+			var accounttype = $(this).data('type');
+			var btn = $(this);
+			btn.addClass('disabled');
+
+			if (accountid != '' && accountid != null && accountid != 'null' && accountid != 'NULL') {
+				$.post(server + 'billing-statement.php', { getAccountContact: 'oi$ha@3h0$0jRoihQnsRP9$nzpo92po@k@', accountid: accountid, accounttype: accounttype }, function (data) {
+					//alert(data);
+
+					rsp = $.parseJSON(data);
+					if (rsp['response'] == 'success') {
+						$(modal + ' .blscontact').val(rsp['contact']);
+						$(modal + ' .blsphone').val(rsp['phone']);
+						$(modal + ' .blsmobile').val(rsp['mobile']);
+						$(modal + ' .blsemail').val(rsp['email']);
+					} else if (rsp['response'] == 'failed') {
+						say(rsp['message']);
+					} else {
+						console.log(data);
+						say('Please contact system administrator');
+					}
+					btn.removeClass('disabled');
+				});
+			} else {
+				$(modal + ' .blscontact').val('');
+				$(modal + ' .blsphone').val('');
+				$(modal + ' .blsmobile').val('');
+				$(modal + ' .blsemail').val('');
+			}
 		}
 	});
 
@@ -125,29 +166,36 @@ $(document)
 	.off('show.bs.modal', contentBLS + ' #blssearchwaybilltransactionmodal')
 	.on('show.bs.modal', contentBLS + ' #blssearchwaybilltransactionmodal', function () {
 		var shipperid = $(contentBLS + ' .billingstatement-shipperid').val();
+		var agentid = $(contentBLS + ' .billingstatement-agentid').val();
+		var consigneeid = $(contentBLS + ' .billingstatement-consigneeid').val();
+		var shipmenttypeid = $(contentBLS + ' .billingstatement-shipmenttypeid').val();
+		var billedto = $(contentBLS + ' .billingstatement-billedto').val();
+
 		$(contentBLS + ' #blssearchwaybilltransactiontbl')
 			.flexOptions({
-				url: 'loadables/ajax/transactions.billing-statement-waybill-lookup.php?shipperid=' + shipperid,
+				url: `loadables/ajax/transactions.billing-statement-waybill-lookup.php?shipperid=${shipperid}&agentid=${agentid}&consigneeid=${consigneeid}&shipmenttypeid=${shipmenttypeid}&billedto=${billedto}`,
 				sortname: 'txn_waybill.waybill_number',
-				sortorder: 'asc',
+				sortorder: 'asc'
 			})
 			.flexReload();
 	});
 
 $(document)
-	.off('click', contentBLS + ' #newbillingstatementmodal-savebtn:not(".disabled")')
-	.on('click', contentBLS + ' #newbillingstatementmodal-savebtn:not(".disabled")', function () {
+	.off('click', contentBLS + ' #addbillingstatementmodal-savebtn:not(".disabled")')
+	.on('click', contentBLS + ' #addbillingstatementmodal-savebtn:not(".disabled")', function () {
 		var modal = '#' + $(this).closest('.modal').attr('id');
 		var btn = $(this);
 		btn.addClass('disabled');
 
-		var docdate = $(modal + ' .newbillingstatementmodal-documentdate').val();
-		var paymentduedate = $(modal + ' .newbillingstatementmodal-paymentduedate').val();
-		var shipperid = $(modal + ' .newbillingstatementmodal-shipper').val();
-		var shipmenttype = $(modal + ' .newbillingstatementmodal-shipmenttype').val();
-		var billingtype = $(modal + ' .newbillingstatementmodal-billingtype').val();
-		var accountexecutive = $(modal + ' .newbillingstatementmodal-accountexecutive').val();
-		var remarks = $(modal + ' .newbillingstatementmodal-remarks').val();
+		var docdate = $(modal + ' .billingstatementmodal-documentdate').val();
+		var paymentduedate = $(modal + ' .billingstatementmodal-paymentduedate').val();
+
+		var shipmenttype = $(modal + ' .billingstatementmodal-shipmenttype').val();
+		var billingtype = $(modal + ' .billingstatementmodal-billingtype').val();
+		var accountexecutive = $(modal + ' .billingstatementmodal-accountexecutive').val();
+
+		var billedto = $(modal + ' .billingstatementmodal-billedto').val();
+		var remarks = $(modal + ' .billingstatementmodal-remarks').val();
 		var contact = $(modal + ' .blscontact').val();
 		var phone = $(modal + ' .blsphone').val();
 		var email = $(modal + ' .blsemail').val();
@@ -156,30 +204,56 @@ $(document)
 		var invoice = $(modal + ' .blsinvoice').val();
 		var vatflag = $(modal + ' .blsvatflag').val();
 
+		var agent = 'NULL';
+		var shipperid = 'NULL';
+		var consignee = 'NULL';
+		if (billedto == 'SHIPPER') {
+			shipperid = $(modal + ' .billingstatementmodal-shipper').val();
+		} else if (billedto == 'AGENT') {
+			agent = $(modal + ' .billingstatementmodal-agent').val();
+		} else if (billedto == 'CONSIGNEE') {
+			consignee = $(modal + ' .billingstatementmodal-consignee').val();
+		}
+
+		console.log(billedto + ' s ' + shipperid);
+		console.log(billedto + ' a ' + agent);
+		console.log(billedto + ' c ' + consignee);
+
 		if (docdate == '') {
-			$(modal + ' .newbillingstatementmodal-documentdate').focus();
+			$(modal + ' .billingstatementmodal-documentdate').focus();
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide statement date.</div></div>");
 			btn.removeClass('disabled');
-			
 		} else if (billingtype == '' || billingtype == null || billingtype == 'NULL' || billingtype == 'null') {
 			/*else if(paymentduedate==''){
-    	$(modal+' .newbillingstatementmodal-paymentduedate').focus();
+    	$(modal+' .billingstatementmodal-paymentduedate').focus();
     	$(contentBLS+' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide payment due date.</div></div>");
     	btn.removeClass('disabled');
     }*/
-			$(modal + ' .newbillingstatementmodal-billingtype').select2('open');
+			$(modal + ' .billingstatementmodal-billingtype').select2('open');
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing type.</div></div>");
 			btn.removeClass('disabled');
 		} else if (shipmenttype == '' || shipmenttype == null || shipmenttype == 'NULL' || shipmenttype == 'null') {
-			$(modal + ' .newbillingstatementmodal-shipmenttype').select2('open');
+			$(modal + ' .billingstatementmodal-shipmenttype').select2('open');
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
 			btn.removeClass('disabled');
-		} else if (shipperid == '' || shipperid == null || shipperid == 'NULL' || shipperid == 'null') {
-			$(modal + ' .newbillingstatementmodal-shipper').select2('open');
+		} else if (billedto == '' || billedto == null || billedto == 'NULL' || billedto == 'null') {
+			$(modal + ' .billingstatementmodal-billedto').select2('open');
+			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billed to.</div></div>");
+			btn.removeClass('disabled');
+		} else if (billedto == 'SHIPPER' && (shipperid == '' || shipperid == null || shipperid == 'NULL' || shipperid == 'null')) {
+			$(modal + ' .billingstatementmodal-shipper').select2('open');
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select a shipper.</div></div>");
 			btn.removeClass('disabled');
+		} else if (billedto == 'AGENT' && (agent == '' || agent == null || agent == 'NULL' || agent == 'null')) {
+			$(modal + ' .billingstatementmodal-agent').select2('open');
+			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select agent.</div></div>");
+			btn.removeClass('disabled');
+		} else if (billedto == 'CONSIGNEE' && (consignee == '' || consignee == null || consignee == 'NULL' || consignee == 'null')) {
+			$(modal + ' .billingstatementmodal-consignee').select2('open');
+			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select consignee.</div></div>");
+			btn.removeClass('disabled');
 		} else if (accountexecutive == '' || accountexecutive == null || accountexecutive == 'NULL' || accountexecutive == 'null') {
-			$(modal + ' .newbillingstatementmodal-accountexecutive').select2('open');
+			$(modal + ' .billingstatementmodal-accountexecutive').select2('open');
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select account executive.</div></div>");
 			btn.removeClass('disabled');
 		} else {
@@ -191,6 +265,9 @@ $(document)
 					billingtype: billingtype,
 					accountexecutive: accountexecutive,
 					shipperid: shipperid,
+					agent: agent,
+					consignee: consignee,
+					billedto: billedto,
 					docdate: docdate,
 					paymentduedate: paymentduedate,
 					remarks: remarks,
@@ -200,7 +277,7 @@ $(document)
 					email: email,
 					attention: attention,
 					invoice: invoice,
-					vatflag: vatflag,
+					vatflag: vatflag
 				},
 				function (data) {
 					rsp = $.parseJSON(data);
@@ -209,15 +286,14 @@ $(document)
 						$(modal).modal('hide');
 						$(document).on('hidden.bs.modal', contentBLS + ' ' + modal, function () {
 							$(document).off('hidden.bs.modal', contentBLS + ' ' + modal);
-							btn.removeClass('disabled');
 							getBillingStatementInformation(rsp['txnnumber']);
 
-							$(modal + ' .newbillingstatementmodal-documentdate').val('');
-							$(modal + ' .newbillingstatementmodal-paymentduedate').val('');
-							$(modal + ' .newbillingstatementmodal-shipper')
+							$(modal + ' .billingstatementmodal-documentdate').val('');
+							$(modal + ' .billingstatementmodal-paymentduedate').val('');
+							$(modal + ' .billingstatementmodal-shipper')
 								.empty()
 								.trigger('change');
-							$(modal + ' .newbillingstatementmodal-remarks').val('');
+							$(modal + ' .billingstatementmodal-remarks').val('');
 							$(modal + ' .blscontact').val('');
 							$(modal + ' .blsphone').val('');
 							$(modal + ' .blsemail').val('');
@@ -226,23 +302,12 @@ $(document)
 							$(modal + ' .blsinvoice').val('');
 							$(modal + ' .modal-errordiv').empty();
 						});
-					} else if (rsp['response'] == 'invaliddocdate') {
-						$(modal + ' .newbillingstatementmodal-documentdate').focus();
-						$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid document date.</div></div>");
-						btn.removeClass('disabled');
-					} else if (rsp['response'] == 'invalidpaymentduedate') {
-						$(modal + ' .newbillingstatementmodal-paymentduedate').focus();
-						$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid payment due date.</div></div>");
-						btn.removeClass('disabled');
-					} else if (rsp['response'] == 'invalidshipper') {
-						$(contentBLS + ' .modal-errordiv').html(
-							"<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid Shipper. Please re-select a shipper</div></div>"
-						);
-						btn.removeClass('disabled');
+					} else if (rsp['response'] == 'false') {
+						$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>" + rsp['message'] + '</div></div>');
 					} else {
 						alert(data);
-						btn.removeClass('disabled');
 					}
+					btn.removeClass('disabled');
 				}
 			);
 		}
@@ -285,7 +350,7 @@ $(document)
 						.flexOptions({
 							url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=' + txnnumber,
 							sortname: 'txn_billing_waybill.created_date',
-							sortorder: 'desc',
+							sortorder: 'desc'
 						})
 						.flexReload();
 					getBillingComputationBLS(txnnumber);
@@ -308,7 +373,7 @@ $(document)
 						.flexOptions({
 							url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=' + txnnumber,
 							sortname: 'txn_billing_waybill.created_date',
-							sortorder: 'desc',
+							sortorder: 'desc'
 						})
 						.flexReload();
 					button.removeClass('disabled');
@@ -354,7 +419,7 @@ $(document)
 							.flexOptions({
 								url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=' + txnnumber,
 								sortname: 'txn_billing_waybill.created_date',
-								sortorder: 'desc',
+								sortorder: 'desc'
 							})
 							.flexReload();
 						getBillingComputationBLS(txnnumber);
@@ -377,7 +442,7 @@ $(document)
 							.flexOptions({
 								url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=' + txnnumber,
 								sortname: 'txn_billing_waybill.created_date',
-								sortorder: 'desc',
+								sortorder: 'desc'
 							})
 							.flexReload();
 						button.removeClass('disabled');
@@ -426,14 +491,14 @@ $(document)
 								.flexOptions({
 									url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=' + txnnumber,
 									sortname: 'txn_billing_waybill.created_date',
-									sortorder: 'desc',
+									sortorder: 'desc'
 								})
 								.flexReload();
 							$(contentBLS + ' #blssearchwaybilltransactiontbl')
 								.flexOptions({
 									url: 'loadables/ajax/transactions.billing-statement-waybill-lookup.php?shipperid=' + shipperid,
 									sortname: 'txn_waybill.waybill_number',
-									sortorder: 'asc',
+									sortorder: 'asc'
 								})
 								.flexReload();
 							//$(contentBLS+' .billingstatement-totalbillingamount').val(data['billingtotal']).number(true,4);
@@ -452,14 +517,14 @@ $(document)
 						.flexOptions({
 							url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=' + txnnumber,
 							sortname: 'txn_billing_waybill.created_date',
-							sortorder: 'desc',
+							sortorder: 'desc'
 						})
 						.flexReload();
 					$(contentBLS + ' #blssearchwaybilltransactiontbl')
 						.flexOptions({
 							url: 'loadables/ajax/transactions.billing-statement-waybill-lookup.php?shipperid=' + shipperid,
 							sortname: 'txn_waybill.waybill_number',
-							sortorder: 'asc',
+							sortorder: 'asc'
 						})
 						.flexReload();
 					button.removeClass('disabled');
@@ -479,7 +544,6 @@ function getBillingStatementInformation(txnnumber) {
 	//$(contentBLS+' .topbuttonswrapper .button-group').addClass('hidden');
 
 	$.post(server + 'billing-statement.php', { getBillingStatementData: 'foiRFN#@!pspR#1NEi34smo1sonk&$', txnnumber: txnnumber }, function (response) {
-		
 		//alert(response);
 		if (response.trim() == 'INVALID') {
 			clearBillingStatementFields();
@@ -488,7 +552,7 @@ function getBillingStatementInformation(txnnumber) {
 				.val('')
 				.removeAttr('pgtxnbillingstatement-number');
 			$(contentBLS + ' .topbuttonsdiv').html(
-				"<div class='padded-with-border-engraved topbuttonswrapper'><div class='button-group'><div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#newbillingstatementmodal'><img src='../resources/img/add.png'></div></div></div>"
+				"<div class='padded-with-border-engraved topbuttonswrapper'><div class='button-group'><div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#addbillingstatementmodal'><img src='../resources/img/add.png'></div></div></div>"
 			);
 			currentloadplanTxn = '';
 
@@ -496,7 +560,7 @@ function getBillingStatementInformation(txnnumber) {
 				.flexOptions({
 					url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=',
 					sortname: 'txn_billing_waybill.waybill_number',
-					sortorder: 'asc',
+					sortorder: 'asc'
 				})
 				.flexReload();
 
@@ -517,10 +581,16 @@ function getBillingStatementInformation(txnnumber) {
 				.attr('pgtxnbillingstatement-number', txnnumber);
 			$(contentBLS + ' .statusdiv').text(data['status']);
 
+			$(contentBLS + ' .billingstatement-agentid').val(data['agentid']);
+			$(contentBLS + ' .billingstatement-consigneeid').val(data['consigneeid']);
+			$(contentBLS + ' .billingstatement-shipmenttypeid').val(data['shipmenttypeid']);
+
 			$(contentBLS + ' .billingstatement-shipperid').val(data['shipperid']);
 			$(contentBLS + ' .billingstatement-accountnumber').val(data['accountnumber']);
 			$(contentBLS + ' .billingstatement-accountname').val(data['accountname']);
 			$(contentBLS + ' .billingstatement-companyname').val(data['companyname']);
+
+			$(contentBLS + ' .billingstatement-billedto').val(data['billedto']);
 
 			$(contentBLS + ' .billingstatement-contact').val(data['contact']);
 			$(contentBLS + ' .billingstatement-phone').val(data['phone']);
@@ -584,7 +654,7 @@ function getBillingStatementInformation(txnnumber) {
 						"<div class='button-group-btn active' title='Edit' id='billingstatement-trans-editbtn'><img src='../resources/img/edit.png'></div><div class='button-group-btn active' title='Post' id='billingstatement-trans-postbtn'><img src='../resources/img/post.png'></div>";
 				}
 				$(contentBLS + ' .topbuttonswrapper .button-group').html(
-					"<div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#newbillingstatementmodal'><img src='../resources/img/add.png'></div>" +
+					"<div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#addbillingstatementmodal'><img src='../resources/img/add.png'></div>" +
 						voidbtn +
 						allowothertrans +
 						"<div class='button-group-btn active' title='Print' id='billingstatement-trans-printbtn'><img src='../resources/img/print.png'></div>"
@@ -610,7 +680,7 @@ function getBillingStatementInformation(txnnumber) {
 				}
 
 				$(contentBLS + ' .topbuttonswrapper .button-group').html(
-					"<div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#newbillingstatementmodal'><img src='../resources/img/add.png'></div>" +
+					"<div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#addbillingstatementmodal'><img src='../resources/img/add.png'></div>" +
 						allowothertrans +
 						voidbtn +
 						paidflagbtn +
@@ -625,7 +695,7 @@ function getBillingStatementInformation(txnnumber) {
 				$(contentBLS + ' .blsuploadwaybillbtn').addClass('hidden');
 			} else {
 				$(contentBLS + ' .topbuttonswrapper .button-group').html(
-					"<div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#newbillingstatementmodal'><img src='../resources/img/add.png'></div>" +
+					"<div class='button-group-btn active' title='New' id='billingstatement-trans-newbtn' data-toggle='modal' href='#addbillingstatementmodal'><img src='../resources/img/add.png'></div>" +
 						allowothertrans +
 						"<div class='button-group-btn active' title='Print' id='billingstatement-trans-printbtn'><img src='../resources/img/print.png'></div>"
 				);
@@ -642,7 +712,7 @@ function getBillingStatementInformation(txnnumber) {
 				.flexOptions({
 					url: 'loadables/ajax/transactions.billing-statement-waybill.php?reference=' + txnnumber,
 					sortname: 'txn_billing_waybill.waybill_number',
-					sortorder: 'asc',
+					sortorder: 'asc'
 				})
 				.flexReload();
 
@@ -738,7 +808,7 @@ $(document)
 			},
 			cancel: function () {
 				button.removeClass('disabled');
-			},
+			}
 		});
 	});
 /******************* VIEWING *****************************/
@@ -802,7 +872,7 @@ $(document)
 			},
 			cancel: function () {
 				button.removeClass('disabled');
-			},
+			}
 		});
 	});
 
@@ -887,7 +957,7 @@ $(document)
 				},
 				cancel: function () {
 					button.removeClass('disabled');
-				},
+				}
 			});
 		}
 	});
@@ -900,7 +970,7 @@ $(document)
 	.on('click', contentBLS + ' #billingstatement-trans-printbtn', function () {
 		var modal = '#billingstatementprintingmodal';
 		$(modal).modal('show');
-		
+
 		// Initialize the select2 dropdown when modal is shown
 		$(document)
 			.off('shown.bs.modal', modal)
@@ -943,10 +1013,8 @@ $(document)
 		$('.content>.content-tab-pane .content-pane-wrapper>.content-pane').removeClass('active');
 		$('.content>.content-tab-pane .content-tabs').append("<li data-pane='#" + tabid + "tabpane' class='active'>" + title + "<i class='fa fa-remove'></i></li>");
 		$('.content>.content-tab-pane .content-pane-wrapper').append("<div class='content-pane active' id='" + tabid + "tabpane'></div>");
-		$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load(
-			'Printouts/print-preview.php?source=' + printSource + '?txnnumber=' + tabid + '&reference=' + tabid
-		);
-		
+		$('.content>.content-tab-pane .content-pane-wrapper>.content-pane:last-child').load('Printouts/print-preview.php?source=' + printSource + '?txnnumber=' + tabid + '&reference=' + tabid);
+
 		setTimeout(function () {
 			$('#loading-img').addClass('hidden');
 		}, 400);
@@ -954,11 +1022,11 @@ $(document)
 /************************* PRINTING - END *****************************************/
 
 $(document)
-	.off('shown.bs.modal', contentBLS + ' #newbillingstatementmodal')
-	.on('shown.bs.modal', contentBLS + ' #newbillingstatementmodal', function () {
-		var modal = '#newbillingstatementmodal';
+	.off('shown.bs.modal', contentBLS + ' #addbillingstatementmodal')
+	.on('shown.bs.modal', contentBLS + ' #addbillingstatementmodal', function () {
+		var modal = '#addbillingstatementmodal';
 
-		var date = $(modal + ' .newbillingstatementmodal-documentdate').val();
+		var date = $(modal + ' .billingstatementmodal-documentdate').val();
 
 		if (date == '') {
 			var today = new Date();
@@ -975,7 +1043,7 @@ $(document)
 			}
 			today = mm + '/' + dd + '/' + yyyy;
 
-			$(modal + ' .newbillingstatementmodal-documentdate').val(today);
+			$(modal + ' .billingstatementmodal-documentdate').val(today);
 		}
 	});
 
@@ -987,126 +1055,156 @@ $(document)
 
 		var modal = '#editbillingstatementmodal';
 		var billingid = $(contentBLS + ' #pgtxnbillingstatement-id').val();
+		blsonchangeeventstatus = false;
 
 		$.post(server + 'billing-statement.php', { editBillingGetInfo: 'kjoI$H2oiaah3h0$09jDppo92po@k@', id: billingid }, function (data) {
 			rsp = $.parseJSON(data);
 			if (rsp['response'] == 'success') {
-				$(modal + ' .editbillingstatementmodal-documentdate').val(rsp['documentdate']);
-				$(modal + ' .editbillingstatementmodal-paymentduedate').val(rsp['paymentduedate']);
-				$(modal + ' .editbillingstatementmodal-remarks').val(rsp['remarks']);
-				$(modal + ' .editbillingstatementmodal-contact').val(rsp['contact']);
-				$(modal + ' .editbillingstatementmodal-phone').val(rsp['phone']);
-				$(modal + ' .editbillingstatementmodal-mobile').val(rsp['mobile']);
-				$(modal + ' .editbillingstatementmodal-email').val(rsp['email']);
-				$(modal + ' .editbillingstatementmodal-street').val(rsp['street']);
-				$(modal + ' .editbillingstatementmodal-attention').val(rsp['attention']);
-				$(modal + ' .editbillingstatementmodal-invoice').val(rsp['invoice']);
-				$(modal + ' .editbillingstatementmodal-vatflag').val(rsp['vatflag']);
-				//$(modal+' .editbillingstatementmodal-shipperstr').val(rsp['shipper']).attr('EkPCXShipEOID',rsp['shipperid']);
-
-				if (rsp['shipper'] != null) {
-					$(modal + ' .editbillingstatementmodal-shipper')
-						.empty()
-						.append('<option selected value="' + rsp['shipperid'] + '">' + rsp['shipper'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-shippper')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['shipmenttype'] != null) {
-					$(modal + ' .editbillingstatementmodal-shipmenttype')
-						.empty()
-						.append('<option selected value="' + rsp['shipmenttypeid'] + '">' + rsp['shipmenttype'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-shipmenttype')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['billingtype'] != null) {
-					$(modal + ' .editbillingstatementmodal-billingtype')
-						.empty()
-						.append('<option selected value="' + rsp['billingtypeid'] + '">' + rsp['billingtype'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-billingtype')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['accountexecutive'] != null) {
-					$(modal + ' .editbillingstatementmodal-accountexecutive')
-						.empty()
-						.append('<option selected value="' + rsp['accountexecutiveid'] + '">' + rsp['accountexecutive'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-accountexecutive')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['province'] != null) {
-					$(modal + ' .editbillingstatementmodal-province')
-						.empty()
-						.append('<option selected value="' + rsp['province'] + '">' + rsp['province'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-province')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['city'] != null) {
-					$(modal + ' .editbillingstatementmodal-city')
-						.empty()
-						.append('<option selected value="' + rsp['city'] + '">' + rsp['city'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-city')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['district'] != null) {
-					$(modal + ' .editbillingstatementmodal-district')
-						.empty()
-						.append('<option selected value="' + rsp['district'] + '">' + rsp['district'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-district')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['zipcode'] != null) {
-					$(modal + ' .editbillingstatementmodal-zipcode')
-						.empty()
-						.append('<option selected value="' + rsp['zipcode'] + '">' + rsp['zipcode'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-zipcode')
-						.empty()
-						.trigger('change');
-				}
-
-				if (rsp['country'] != null) {
-					$(modal + ' .editbillingstatementmodal-country')
-						.empty()
-						.append('<option selected value="' + rsp['country'] + '">' + rsp['country'] + '</option>')
-						.trigger('change');
-				} else {
-					$(modal + ' .editbillingstatementmodal-country')
-						.empty()
-						.trigger('change');
-				}
-
 				$(modal).modal('show');
 				$(modal).on('shown.bs.modal', function () {
+					if (rsp['shipmenttype'] != null) {
+						$(modal + ' .billingstatementmodal-shipmenttype')
+							.empty()
+							.append('<option selected value="' + rsp['shipmenttypeid'] + '">' + rsp['shipmenttype'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-shipmenttype')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['shipper'] != null) {
+						$(modal + ' .billingstatementmodal-shipper')
+							.empty()
+							.append('<option selected value="' + rsp['shipperid'] + '">' + rsp['shipper'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-shippper')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['agent'] != null) {
+						$(modal + ' .billingstatementmodal-agent')
+							.empty()
+							.append('<option selected value="' + rsp['agentid'] + '">' + rsp['agent'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-agent')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['consignee'] != null) {
+						$(modal + ' .billingstatementmodal-consignee')
+							.empty()
+							.append('<option selected value="' + rsp['consigneeid'] + '">' + rsp['consignee'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-consignee')
+							.empty()
+							.trigger('change');
+					}
+					$(modal + ' .billingstatementmodal-documentdate').val(rsp['documentdate']);
+					$(modal + ' .billingstatementmodal-paymentduedate').val(rsp['paymentduedate']);
+					$(modal + ' .billingstatementmodal-remarks').val(rsp['remarks']);
+					$(modal + ' .billingstatementmodal-contact').val(rsp['contact']);
+					$(modal + ' .billingstatementmodal-phone').val(rsp['phone']);
+					$(modal + ' .billingstatementmodal-mobile').val(rsp['mobile']);
+					$(modal + ' .billingstatementmodal-email').val(rsp['email']);
+					$(modal + ' .billingstatementmodal-street').val(rsp['street']);
+					$(modal + ' .billingstatementmodal-attention').val(rsp['attention']);
+					$(modal + ' .billingstatementmodal-invoice').val(rsp['invoice']);
+					$(modal + ' .billingstatementmodal-vatflag').val(rsp['vatflag']);
+					//$(modal+' .billingstatementmodal-shipperstr').val(rsp['shipper']).attr('EkPCXShipEOID',rsp['shipperid']);
+
+					if (rsp['billingtype'] != null) {
+						$(modal + ' .billingstatementmodal-billingtype')
+							.empty()
+							.append('<option selected value="' + rsp['billingtypeid'] + '">' + rsp['billingtype'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-billingtype')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['accountexecutive'] != null) {
+						$(modal + ' .billingstatementmodal-accountexecutive')
+							.empty()
+							.append('<option selected value="' + rsp['accountexecutiveid'] + '">' + rsp['accountexecutive'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-accountexecutive')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['province'] != null) {
+						$(modal + ' .billingstatementmodal-province')
+							.empty()
+							.append('<option selected value="' + rsp['province'] + '">' + rsp['province'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-province')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['city'] != null) {
+						$(modal + ' .billingstatementmodal-city')
+							.empty()
+							.append('<option selected value="' + rsp['city'] + '">' + rsp['city'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-city')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['district'] != null) {
+						$(modal + ' .billingstatementmodal-district')
+							.empty()
+							.append('<option selected value="' + rsp['district'] + '">' + rsp['district'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-district')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['zipcode'] != null) {
+						$(modal + ' .billingstatementmodal-zipcode')
+							.empty()
+							.append('<option selected value="' + rsp['zipcode'] + '">' + rsp['zipcode'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-zipcode')
+							.empty()
+							.trigger('change');
+					}
+
+					if (rsp['country'] != null) {
+						$(modal + ' .billingstatementmodal-country')
+							.empty()
+							.append('<option selected value="' + rsp['country'] + '">' + rsp['country'] + '</option>')
+							.trigger('change');
+					} else {
+						$(modal + ' .billingstatementmodal-country')
+							.empty()
+							.trigger('change');
+					}
+
+					blsOnBilledToUpdate(modal, rsp['billedto']);
+					blsOnShipmentTypeUpdate(modal, rsp['shipmenttype']);
+
+					$(modal + ' .billingstatementmodal-billedto')
+						.val(rsp['billedto'])
+						.trigger('change');
+
 					$(modal).off('shown.bs.modal');
 					button.removeClass('disabled');
+					blsonchangeeventstatus = true;
 				});
 			} else {
 				/*$(modal).modal('hide');
@@ -1120,10 +1218,69 @@ $(document)
 		});
 	});
 
+function blsOnShipmentTypeUpdate(modal, shipmenttype) {
+	$(modal + ' .shipperwrapper').addClass('hidden');
+	$(modal + ' .agentwrapper').addClass('hidden');
+	$(modal + ' .consigneewrapper').addClass('hidden');
+	$(modal + ' .billingstatementmodal-billedto')
+		.empty()
+		.trigger('change');
+
+	// if (blsonchangeeventstatus) {
+	if (shipmenttype == 'DOMESTIC') {
+		$(modal + ' .shipperwrapper').removeClass('hidden');
+
+		$(modal + ' .billingstatementmodal-billedto')
+			.append("<option value='SHIPPER'>SHIPPER</option>")
+			.val('SHIPPER')
+			.trigger('change');
+		$(modal + ' .billingstatementmodal-billedto').attr('disabled', true);
+	} else {
+		$(modal + ' .billingstatementmodal-billedto')
+			.append("<option value='AGENT'>AGENT</option><option value='CONSIGNEE'>CONSIGNEE</option>")
+			.trigger('change');
+		$(modal + ' .billingstatementmodal-billedto').removeAttr('disabled');
+	}
+	// }
+}
+
+$(document)
+	.off('change', contentBLS + ' .blsshipmenttypeselection:not(".disabled")')
+	.on('change', contentBLS + ' .blsshipmenttypeselection:not(".disabled")', function () {
+		const modal = '#' + $(this).closest('.modal').attr('id');
+		const shipmenttype = $(this).find('option:selected').text();
+
+		blsOnShipmentTypeUpdate(modal, shipmenttype);
+	});
+
+function blsOnBilledToUpdate(modal, billedto) {
+	$(modal + ' .shipperwrapper').addClass('hidden');
+	$(modal + ' .agentwrapper').addClass('hidden');
+	$(modal + ' .consigneewrapper').addClass('hidden');
+
+	// if (blsonchangeeventstatus) {
+	if (billedto == 'SHIPPER') {
+		$(modal + ' .shipperwrapper').removeClass('hidden');
+	} else if (billedto == 'AGENT') {
+		$(modal + ' .agentwrapper').removeClass('hidden');
+	} else if (billedto == 'CONSIGNEE') {
+		$(modal + ' .consigneewrapper').removeClass('hidden');
+	}
+	// }
+}
+
+$(document)
+	.off('change', contentBLS + ' .blsbilledtoselection:not(".disabled")')
+	.on('change', contentBLS + ' .blsbilledtoselection:not(".disabled")', function () {
+		const modal = '#' + $(this).closest('.modal').attr('id');
+		const billedto = $(this).val();
+		blsOnBilledToUpdate(modal, billedto);
+	});
+
 $(document)
 	.off('click', contentBLS + ' #editbillingstatementmodal-savebtn:not(".disabled")')
 	.on('click', contentBLS + ' #editbillingstatementmodal-savebtn:not(".disabled")', function () {
-		$(contentBLS + ' .modal-errordiv').empty();
+		$(modal + ' .modal-errordiv').empty();
 
 		var modal = '#' + $(this).closest('.modal').attr('id');
 		var btn = $(this);
@@ -1131,52 +1288,68 @@ $(document)
 
 		var billingid = $(contentBLS + ' #pgtxnbillingstatement-id').val();
 		var billingnumber = $(contentBLS + ' #pgtxnbillingstatement-id').attr('pgtxnbillingstatement-number');
-		var docdate = $(contentBLS + ' .editbillingstatementmodal-documentdate').val();
-		var paymentduedate = $(contentBLS + ' .editbillingstatementmodal-paymentduedate').val();
-		var remarks = $(contentBLS + ' .editbillingstatementmodal-remarks').val();
-		var contact = $(contentBLS + ' .editbillingstatementmodal-contact').val();
-		var phone = $(contentBLS + ' .editbillingstatementmodal-phone').val();
-		var mobile = $(contentBLS + ' .editbillingstatementmodal-mobile').val();
-		var email = $(contentBLS + ' .editbillingstatementmodal-email').val();
-		var attention = $('.editbillingstatementmodal-attention').val();
-		var invoice = $('.editbillingstatementmodal-invoice').val();
-		var vatflag = $('.editbillingstatementmodal-vatflag').val();
+		var docdate = $(modal + ' .billingstatementmodal-documentdate').val();
+		var paymentduedate = $(modal + ' .billingstatementmodal-paymentduedate').val();
+		var remarks = $(modal + ' .billingstatementmodal-remarks').val();
+		var contact = $(modal + ' .billingstatementmodal-contact').val();
+		var phone = $(modal + ' .billingstatementmodal-phone').val();
+		var mobile = $(modal + ' .billingstatementmodal-mobile').val();
+		var email = $(modal + ' .billingstatementmodal-email').val();
+		var attention = $(modal + ' .billingstatementmodal-attention').val();
+		var invoice = $(modal + ' .billingstatementmodal-invoice').val();
+		var vatflag = $(modal + ' .billingstatementmodal-vatflag').val();
 
-		var shipperid = $(modal + ' .editbillingstatementmodal-shipper').val();
-		var shipmenttype = $(modal + ' .editbillingstatementmodal-shipmenttype').val();
-		var billingtype = $(modal + ' .editbillingstatementmodal-billingtype').val();
-		var accountexecutive = $(modal + ' .editbillingstatementmodal-accountexecutive').val();
+		var shipperid = $(modal + ' .billingstatementmodal-shipper').val();
+		var shipmenttype = $(modal + ' .billingstatementmodal-shipmenttype').val();
+		var billingtype = $(modal + ' .billingstatementmodal-billingtype').val();
+		var accountexecutive = $(modal + ' .billingstatementmodal-accountexecutive').val();
 
-		var province = $(contentBLS + ' .editbillingstatementmodal-province').val();
-		var city = $(contentBLS + ' .editbillingstatementmodal-city').val();
-		var district = $(contentBLS + ' .editbillingstatementmodal-district').val();
-		var zipcode = $(contentBLS + ' .editbillingstatementmodal-zipcode').val();
-		var street = $(contentBLS + ' .editbillingstatementmodal-street').val();
-		var country = $(contentBLS + ' .editbillingstatementmodal-country').val();
+		var billedto = $(modal + ' .billingstatementmodal-billedto').val();
+		var agent = $(modal + ' .billingstatementmodal-agent').val();
+		var consignee = $(modal + ' .billingstatementmodal-consignee').val();
+
+		var province = $(modal + ' .billingstatementmodal-province').val();
+		var city = $(modal + ' .billingstatementmodal-city').val();
+		var district = $(modal + ' .billingstatementmodal-district').val();
+		var zipcode = $(modal + ' .billingstatementmodal-zipcode').val();
+		var street = $(modal + ' .billingstatementmodal-street').val();
+		var country = $(modal + ' .billingstatementmodal-country').val();
+
+		var country = $(modal + ' .billingstatementmodal-country').val();
+		var country = $(modal + ' .billingstatementmodal-country').val();
+		var country = $(modal + ' .billingstatementmodal-country').val();
 
 		if (docdate == '') {
-			$(modal + ' .editbillingstatementmodal-documentdate').focus();
-			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide statement date.</div></div>");
+			$(modal + ' .billingstatementmodal-documentdate').focus();
+			$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide statement date.</div></div>");
 			btn.removeClass('disabled');
 		} else if (shipmenttype == '' || shipmenttype == null || shipmenttype == 'NULL' || shipmenttype == 'null') {
-			$(modal + ' .editbillingstatementmodal-shipmenttype').select2('open');
-			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
+			$(modal + ' .billingstatementmodal-shipmenttype').select2('open');
+			$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
 			btn.removeClass('disabled');
 		} else if (billingtype == '' || billingtype == null || billingtype == 'NULL' || billingtype == 'null') {
-			$(modal + ' .editbillingstatementmodal-billingtype').select2('open');
-			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing type.</div></div>");
+			$(modal + ' .billingstatementmodal-billingtype').select2('open');
+			$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing type.</div></div>");
 			btn.removeClass('disabled');
-		} else if (shipperid == '' || shipperid == null || shipperid == 'NULL' || shipperid == 'null') {
-			$(modal + ' .editbillingstatementmodal-shipper').select2('open');
+		} else if (billedto == 'SHIPPER' && (shipperid == '' || shipperid == null || shipperid == 'NULL' || shipperid == 'null')) {
+			$(modal + ' .billingstatementmodal-shipper').select2('open');
 			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select a shipper.</div></div>");
 			btn.removeClass('disabled');
+		} else if (billedto == 'AGENT' && (agent == '' || agent == null || agent == 'NULL' || agent == 'null')) {
+			$(modal + ' .billingstatementmodal-agent').select2('open');
+			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select agent.</div></div>");
+			btn.removeClass('disabled');
+		} else if (billedto == 'CONSIGNEE' && (consignee == '' || consignee == null || consignee == 'NULL' || consignee == 'null')) {
+			$(modal + ' .billingstatementmodal-consignee').select2('open');
+			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select consignee.</div></div>");
+			btn.removeClass('disabled');
 		} else if (accountexecutive == '' || accountexecutive == null || accountexecutive == 'NULL' || accountexecutive == 'null') {
-			$(modal + ' .editbillingstatementmodal-accountexecutive').select2('open');
-			$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select account executive.</div></div>");
+			$(modal + ' .billingstatementmodal-accountexecutive').select2('open');
+			$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select account executive.</div></div>");
 			btn.removeClass('disabled');
 		} else {
 			/*else if(paymentduedate==''){
-    	$(modal+' .editbillingstatementmodal-paymentduedate').focus();
+    	$(modal+' .billingstatementmodal-paymentduedate').focus();
     	$(contentBLS+' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide payment due date.</div></div>");
     	btn.removeClass('disabled');
     }*/
@@ -1207,6 +1380,9 @@ $(document)
 					attention: attention,
 					invoice: invoice,
 					vatflag: vatflag,
+					consignee: consignee,
+					agent: agent,
+					billedto: billedto
 				},
 				function (data) {
 					//alert(data);
@@ -1217,56 +1393,52 @@ $(document)
 							$(document).off('hidden.bs.modal', contentBLS + ' ' + modal);
 							btn.removeClass('disabled');
 							getBillingStatementInformation(billingnumber);
-							$(contentBLS + ' .modal-errordiv').empty();
+							$(modal + ' .modal-errordiv').empty();
 							$('#loading-img').addClass('hidden');
 						});
 					} else if (rsp['response'] == 'invaliddocdate') {
-						$(modal + ' .editbillingstatementmodal-documentdate').focus();
-						$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid document date.</div></div>");
+						$(modal + ' .billingstatementmodal-documentdate').focus();
+						$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid document date.</div></div>");
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else if (rsp['response'] == 'invalidpaymentduedate') {
-						$(modal + ' .editbillingstatementmodal-paymentduedate').focus();
-						$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid payment due date.</div></div>");
+						$(modal + ' .billingstatementmodal-paymentduedate').focus();
+						$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid payment due date.</div></div>");
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else if (rsp['response'] == 'invalidbilling') {
-						$(contentBLS + ' .modal-errordiv').html(
+						$(modal + ' .modal-errordiv').html(
 							"<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Invalid Billing Statement. Please refresh page.</div></div>"
 						);
 						btn.removeClass('disabled');
 					} else if (rsp['response'] == 'noprovinceprovided') {
-						$(contentBLS + ' .modal-errordiv').html(
+						$(modal + ' .modal-errordiv').html(
 							"<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing state/province.</div></div>"
 						);
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else if (rsp['response'] == 'nocityprovided') {
-						$(contentBLS + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing city.</div></div>");
+						$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing city.</div></div>");
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else if (rsp['response'] == 'nodistrictprovided') {
-						$(contentBLS + ' .modal-errordiv').html(
+						$(modal + ' .modal-errordiv').html(
 							"<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing barangay/district.</div></div>"
 						);
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else if (rsp['response'] == 'nozipcodeprovided') {
-						$(contentBLS + ' .modal-errordiv').html(
-							"<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing zip code.</div></div>"
-						);
+						$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing zip code.</div></div>");
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else if (rsp['response'] == 'nostreetprovided') {
-						$(contentBLS + ' .modal-errordiv').html(
+						$(modal + ' .modal-errordiv').html(
 							"<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide billing street address.</div></div>"
 						);
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else if (rsp['response'] == 'nocountryprovided') {
-						$(contentBLS + ' .modal-errordiv').html(
-							"<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing country.</div></div>"
-						);
+						$(modal + ' .modal-errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select billing country.</div></div>");
 						btn.removeClass('disabled');
 						$('#loading-img').addClass('hidden');
 					} else {
@@ -1326,7 +1498,7 @@ function searchBillingStatementLookup(modal) {
 				'&paidflag=' +
 				paidflag,
 			sortname: 'billing_number',
-			sortorder: 'asc',
+			sortorder: 'asc'
 		})
 		.flexReload();
 }
@@ -1443,7 +1615,7 @@ $(document)
 				},
 				cancel: function () {
 					button.removeClass('disabled');
-				},
+				}
 			});
 		}
 	});

@@ -1,0 +1,3 @@
+alter table txn_billing add column billed_to enum('SHIPPER','AGENT','CONSIGNEE');
+alter table txn_billing add column agent_id int, add foreign key(agent_id) REFERENCES agent(id) on update cascade;
+alter table txn_billing add column consignee_id int, add foreign key(consignee_id) REFERENCES consignee(id) on update cascade;

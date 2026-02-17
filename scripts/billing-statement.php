@@ -74,12 +74,52 @@
         }
     }
 
+	if(isset($_POST['getAccountContact'])){
+        if($_POST['getAccountContact']=='oi$ha@3h0$0jRoihQnsRP9$nzpo92po@k@'){
+            $accountid = isset($_POST['accountid'])?escapeString($_POST['accountid']):'';
+			$accounttype = isset($_POST['accounttype'])?escapeString($_POST['accounttype']):'';
+
+            
+            $rs = query("
+									select * from ".$accounttype."_contact where ".$accounttype."_id='$accountid' order by default_flag desc limit 1
+						");
+
+					
+
+            if(getNumRows($rs)==1){
+                while($obj=fetch($rs)){
+
+                    $dataarray = array(
+                                     "response"=>'success',
+                                     "contact"=>utfEncode($obj->contact_name),
+                                     "phone"=>utfEncode($obj->phone_number),
+                                     "mobile"=>utfEncode($obj->mobile_number),
+                                     "email"=>utfEncode($obj->email_address)
+
+                                  );
+
+                }
+            }else{
+				$dataarray = array(
+                                     "response"=>'success',
+                                     "contact"=>'',
+                                     "phone"=>'',
+                                     "mobile"=>'',
+                                     "email"=>''
+
+                                  );
+			}
+           
+            print_r(json_encode($dataarray));
+
+        }
+    }
+
 
     if(isset($_POST['NewBillingStatement'])){
         if($_POST['NewBillingStatement']=='f#oifpNLEpR#nsRP9$nzpo92po@k@'){
 
-            
-            $shipperid = escapeString($_POST['shipperid']);
+            $shipperid = isset($_POST['shipperid'])&&trim($_POST['shipperid'])!=''?escapeString($_POST['shipperid']):'NULL';
             $docdate = dateString($_POST['docdate']);
             $paymentduedate = dateString($_POST['paymentduedate']);
             $paymentduedate = trim($paymentduedate)=='1970-01-01'||trim($paymentduedate)==''?'NULL':$paymentduedate;
@@ -94,6 +134,10 @@
             $shipmenttype  = escapeString($_POST['shipmenttype'])==''?'NULL':escapeString($_POST['shipmenttype']);
             $billingtype  = escapeString($_POST['billingtype'])==''?'NULL':escapeString($_POST['billingtype']);
             $accountexecutive  = escapeString($_POST['accountexecutive'])==''?'NULL':escapeString($_POST['accountexecutive']);
+
+			$billedto = isset($_POST['billedto'])&&trim($_POST['billedto'])!=''?escapeString($_POST['billedto']):'NULL';
+			$agentid = isset($_POST['agent'])&&trim($_POST['agent'])!=''?escapeString($_POST['agent']):'NULL';
+			$consigneeid = isset($_POST['consignee'])&&trim($_POST['consignee'])!=''?escapeString($_POST['consignee']):'NULL';
 
             $billprovince = 'NULL';
             $billcity = 'NULL';
@@ -113,63 +157,146 @@
             $accountname = '';
             $companyname = '';
 
+			$noerrors = true;
+
+			
+
             if($docdate==''||$docdate=='1970-01-01'){
                 $response = array(
-                                       "response"=>'invaliddocdate'
+                                       "response"=>'false',
+									   "message"=>"Invalid document date"
                              );
             }
             else if(($paymentduedate==''||$paymentduedate=='1970-01-01')&&$paymentduedate!='NULL'){
                 $response = array(
-                                       "response"=>'invalidpaymentduedate'
+                                       "response"=>'false',
+									   "message"=>"Invalid Payment Due Date"
                              );
             }
             else{
-                $rs = query("select * from shipper where shipper.id='$shipperid'");
-                if(getNumRows($rs)==1){
 
-                    $blsclass = new txn_billing();
-                    $systemlog = new system_log();
-                    $billingnumber = getTransactionNumber(9);
+				if($billedto=='SHIPPER'){
+					$rs = query("select * from shipper where shipper.id='$shipperid'");
+					if(getNumRows($rs)==1){
+						while($obj=fetch($rs)){
+							$billprovince = trim($obj->billing_state_province)==''?'NULL':$obj->billing_state_province;
+							$billcity = trim($obj->billing_city)==''?'NULL':$obj->billing_city;
+							$billdistrict = trim($obj->billing_district)==''?'NULL':$obj->billing_district;
+							$billzipcode = trim($obj->billing_zip_code)==''?'NULL':$obj->billing_zip_code;
+							$billstreet = trim($obj->billing_street_address)==''?'NULL':$obj->billing_street_address;
+							$billcountry = trim($obj->billing_country)==''?'NULL':$obj->billing_country;
 
+							$compprovince = trim($obj->company_state_province)==''?'NULL':$obj->company_state_province;
+							$compcity = trim($obj->company_city)==''?'NULL':$obj->company_city;
+							$compdistrict = trim($obj->company_district)==''?'NULL':$obj->company_district;
+							$compzipcode = trim($obj->company_zip_code)==''?'NULL':$obj->company_zip_code;
+							$compstreet = trim($obj->company_street_address)==''?'NULL':$obj->company_street_address;
+							$compcountry = trim($obj->company_country)==''?'NULL':$obj->company_country;
 
-                    while($obj=fetch($rs)){
-                        $billprovince = trim($obj->billing_state_province)==''?'NULL':$obj->billing_state_province;
-                        $billcity = trim($obj->billing_city)==''?'NULL':$obj->billing_city;
-                        $billdistrict = trim($obj->billing_district)==''?'NULL':$obj->billing_district;
-                        $billzipcode = trim($obj->billing_zip_code)==''?'NULL':$obj->billing_zip_code;
-                        $billstreet = trim($obj->billing_street_address)==''?'NULL':$obj->billing_street_address;
-                        $billcountry = trim($obj->billing_country)==''?'NULL':$obj->billing_country;
+							$accountnumber = $obj->account_number;
+							$accountname = $obj->account_name;
+							$companyname = $obj->company_name;
+						}
+					}
+					else{
+						$response = array(
+										"response"=>'false',
+										"message"=>"Invalid Shipper"
+										);
 
-                        $compprovince = trim($obj->company_state_province)==''?'NULL':$obj->company_state_province;
-                        $compcity = trim($obj->company_city)==''?'NULL':$obj->company_city;
-                        $compdistrict = trim($obj->company_district)==''?'NULL':$obj->company_district;
-                        $compzipcode = trim($obj->company_zip_code)==''?'NULL':$obj->company_zip_code;
-                        $compstreet = trim($obj->company_street_address)==''?'NULL':$obj->company_street_address;
-                        $compcountry = trim($obj->company_country)==''?'NULL':$obj->company_country;
+						$noerrors = false;
+					}
+				}
+				else if($billedto=='AGENT'){
+					$rs = query("select * from agent where agent.id='$agentid'");
+					if(getNumRows($rs)==1){
+						while($obj=fetch($rs)){
+							$billprovince = trim($obj->company_state_province)==''?'NULL':$obj->company_state_province;
+							$billcity = trim($obj->company_city)==''?'NULL':$obj->company_city;
+							$billdistrict = trim($obj->company_district)==''?'NULL':$obj->company_district;
+							$billzipcode = trim($obj->company_zip_code)==''?'NULL':$obj->company_zip_code;
+							$billstreet = trim($obj->company_street_address)==''?'NULL':$obj->company_street_address;
+							$billcountry = trim($obj->company_country)==''?'NULL':$obj->company_country;
 
-                        $accountnumber = $obj->account_number;
-                        $accountname = $obj->account_name;
-                        $companyname = $obj->company_name;
-                    }
+							$compprovince = trim($obj->company_state_province)==''?'NULL':$obj->company_state_province;
+							$compcity = trim($obj->company_city)==''?'NULL':$obj->company_city;
+							$compdistrict = trim($obj->company_district)==''?'NULL':$obj->company_district;
+							$compzipcode = trim($obj->company_zip_code)==''?'NULL':$obj->company_zip_code;
+							$compstreet = trim($obj->company_street_address)==''?'NULL':$obj->company_street_address;
+							$compcountry = trim($obj->company_country)==''?'NULL':$obj->company_country;
 
-                    $now = date("Y-m-d H:i:s");
-                    $userid = USERID;
+							$accountnumber = $obj->code;
+							$accountname = $obj->company_name;
+							$companyname = $obj->company_name;
+						}
+					}
+					else{
+						$response = array(
+										"response"=>'false',
+										"message"=>"Invalid Agent"
+										);
 
-                    $blsclass->insert(array('','LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$accountnumber,$accountname,$companyname,$compstreet,$compdistrict,$compcity,$compprovince,$compzipcode,$compcountry,$billstreet,$billdistrict,$billcity,$billprovince,$billzipcode,$billcountry,$contact,$phone,$mobile,$email,$userid,$now,'NULL','NULL',$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype));
-                    $txnid = $blsclass->getInsertId();
+						$noerrors = false;
+					}
+				}
+				else if($billedto=='CONSIGNEE'){
+					$rs = query("select * from consignee where consignee.id='$consigneeid'");
+					if(getNumRows($rs)==1){
+						while($obj=fetch($rs)){
+							$billprovince = trim($obj->company_state_province)==''?'NULL':$obj->company_state_province;
+							$billcity = trim($obj->company_city)==''?'NULL':$obj->company_city;
+							$billdistrict = trim($obj->company_district)==''?'NULL':$obj->company_district;
+							$billzipcode = trim($obj->company_zip_code)==''?'NULL':$obj->company_zip_code;
+							$billstreet = trim($obj->company_street_address)==''?'NULL':$obj->company_street_address;
+							$billcountry = trim($obj->company_country)==''?'NULL':$obj->company_country;
+
+							$compprovince = trim($obj->company_state_province)==''?'NULL':$obj->company_state_province;
+							$compcity = trim($obj->company_city)==''?'NULL':$obj->company_city;
+							$compdistrict = trim($obj->company_district)==''?'NULL':$obj->company_district;
+							$compzipcode = trim($obj->company_zip_code)==''?'NULL':$obj->company_zip_code;
+							$compstreet = trim($obj->company_street_address)==''?'NULL':$obj->company_street_address;
+							$compcountry = trim($obj->company_country)==''?'NULL':$obj->company_country;
+
+							$accountnumber = $obj->account_number;
+							$accountname = $obj->account_name;
+							$companyname = $obj->company_name;
+						}
+					}
+					else{
+						$response = array(
+										"response"=>'false',
+										"message"=>"Invalid Consignee"
+										);
+
+						$noerrors = false;
+					}
+				}
+				else{
+					$response = array(
+										"response"=>'false',
+										"message"=>"Invalid Billed To"
+										);
+
+					$noerrors = false;
+				}
+
+				if($noerrors){
+					$blsclass = new txn_billing();
+					$systemlog = new system_log();
+					$billingnumber = getTransactionNumber(9);
+
+					$now = date("Y-m-d H:i:s");
+					$userid = USERID;
+
+					$blsclass->insert(array('','LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$accountnumber,$accountname,$companyname,$compstreet,$compdistrict,$compcity,$compprovince,$compzipcode,$compcountry,$billstreet,$billdistrict,$billcity,$billprovince,$billzipcode,$billcountry,$contact,$phone,$mobile,$email,$userid,$now,'NULL','NULL',$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype,$billedto,$agentid,$consigneeid));
+					$txnid = $blsclass->getInsertId();
 					// $systemlog->logInfo('BILLING STATEMENT',"New Billing Statement","Statement Number: $billingnumber | Shipper ID: $shipperid | Account Number: $accountnumber | Account Name: $accountname | Company Name: $companyname | Company Street Address: $compstreet | Company District: $compdistrict | Company City: $compcity | Company Region: $compprovince | Company Zip: $compzipcode | Company Country: $compcountry | Billing Street Address: $billstreet | Billing District: $billdistrict | Billing City: $billcity | Billing Region: $billprovince | Billing Zip: $billzipcode | Billing Country: $billcountry | Contact: $contact | Phone: $phone | Mobile: $mobile | Email: $email | Attention: $attention | Invoice: $invoice | Vat Flag: $vatflag | Billing Type: $billingtype | Account Executive: $accountexecutive",$userid,$now,$txnid);
 
-                    $response = array(
-                                       "response"=>'success',
-                                       "txnnumber"=>$billingnumber
-                                      );
-
-                }
-                else{
-                    $response = array(
-                                       "response"=>'invalidshipper'
-                                     );
-                }
+					$response = array(
+										"response"=>'success',
+										"txnnumber"=>$billingnumber
+										);
+				}
             }
             print_r(json_encode($response));
 
@@ -197,6 +324,10 @@
             $billingtype  = escapeString($_POST['billingtype'])==''?'NULL':escapeString($_POST['billingtype']);
             $accountexecutive  = escapeString($_POST['accountexecutive'])==''?'NULL':escapeString($_POST['accountexecutive']);
             $shipmenttype  = escapeString($_POST['shipmenttype'])==''?'NULL':escapeString($_POST['shipmenttype']);
+
+			$billedto = isset($_POST['billedto'])&&trim($_POST['billedto'])!=''?escapeString($_POST['billedto']):'NULL';
+			$agentid = isset($_POST['agent'])&&trim($_POST['agent'])!=''?escapeString($_POST['agent']):'NULL';
+			$consigneeid = isset($_POST['consignee'])&&trim($_POST['consignee'])!=''?escapeString($_POST['consignee']):'NULL';
 
 
 
@@ -265,15 +396,36 @@
                     $billtoaccountnumber = 'NULL';
                     $billtoaccountname = 'NULL';
                     $billtocompanyname = 'NULL';
-                    $shipperrs = query("select * from shipper where id='$shipperid'");
-                    while($objshipper = fetch($shipperrs)){
-                        $billtoaccountnumber = $objshipper->account_number;
-                        $billtoaccountname = $objshipper->account_name;
-                        $billtocompanyname = $objshipper->company_name;
-                    }
 
-                    $systemlog->logEditedInfo($blsclass,$billingid,array($billingid,'LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype),'BILLING STATEMENT','Edited Billing Statement Info',$userid,$now);/// log should be before update is made
-                    $blsclass->update($billingid,array('NOCHANGE',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype));
+					if($billedto=='SHIPPER'){
+						$shipperrs = query("select * from shipper where id='$shipperid'");
+						while($objshipper = fetch($shipperrs)){
+							$billtoaccountnumber = $objshipper->account_number;
+							$billtoaccountname = $objshipper->account_name;
+							$billtocompanyname = $objshipper->company_name;
+						}
+					}
+					else if($billedto=='AGENT'){
+						$shipperrs = query("select * from agent where id='$agentid'");
+						while($objshipper = fetch($shipperrs)){
+							$billtoaccountnumber = $objshipper->code;
+							$billtoaccountname = $objshipper->company_name;
+							$billtocompanyname = $objshipper->company_name;
+						}
+					}
+					else if($billedto=='CONSIGNEE'){
+						$shipperrs = query("select * from consignee where id='$consigneeid'");
+						while($objshipper = fetch($shipperrs)){
+							$billtoaccountnumber = $objshipper->account_number;
+							$billtoaccountname = $objshipper->account_name;
+							$billtocompanyname = $objshipper->company_name;
+						}
+					}
+
+					
+
+                    $systemlog->logEditedInfo($blsclass,$billingid,array($billingid,'LOGGED',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype,$billedto,$agentid,$consigneeid),'BILLING STATEMENT','Edited Billing Statement Info',$userid,$now);/// log should be before update is made
+                    $blsclass->update($billingid,array('NOCHANGE',$billingnumber,$docdate,$paymentduedate,$remarks,$shipperid,$billtoaccountnumber,$billtoaccountname,$billtocompanyname,'NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE','NOCHANGE',$street,$district,$city,$province,$zipcode,$country,$contact,$phone,$mobile,$email,'NOCHANGE','NOCHANGE',$userid,$now,$attention,$invoice,$vatflag,$billingtype,$accountexecutive,$shipmenttype,$billedto,$agentid,$consigneeid));
 
                     query("delete txn_billing_waybill 
                            from txn_billing_waybill 
@@ -333,6 +485,9 @@
                             txn_billing.billing_contact_person,
                             txn_billing.remarks,
                             txn_billing.payment_due_date,
+							txn_billing.billed_to,
+							txn_billing.agent_id,
+							txn_billing.consignee_id,
                             shipper.account_name,
                             shipper.account_number,
                             txn_billing.attention,
@@ -343,12 +498,16 @@
                             txn_billing.shipment_type_id,
                             shipment_type.description as shipmenttype,
                             txn_billing.account_executive_id,
-                            account_executive.name as accountexecutive
+                            account_executive.name as accountexecutive,
+							agent.company_name as agent,
+							consignee.account_name as consignee
                      from txn_billing
                      left join billing_type on billing_type.id=txn_billing.billing_type_id 
                      left join account_executive on account_executive.id=txn_billing.account_executive_id
                      left join shipper on shipper.id=txn_billing.shipper_id
                      left join shipment_type on shipment_type.id=txn_billing.shipment_type_id
+					 left join agent on agent.id=txn_billing.agent_id 
+					 left join consignee on consignee.id=txn_billing.consignee_id
                      where txn_billing.id='$id'";
 
           $rs = query($query);
@@ -386,6 +545,11 @@
                                        "shipmenttype"=>utfEncode($obj->shipmenttype),
                                        "accountexecutiveid"=>utfEncode($obj->account_executive_id),
                                        "accountexecutive"=>utfEncode($obj->accountexecutive),
+									   "agentid"=>utfEncode($obj->agent_id),
+                                       "agent"=>utfEncode($obj->agent),
+									    "consigneeid"=>utfEncode($obj->consignee_id),
+                                       "consignee"=>utfEncode($obj->consignee),
+									   "billedto"=>utfEncode($obj->billed_to),
                                        "response"=>"success",
                                        "vatflag"=>utfEncode($obj->vat_flag)
                                     );
@@ -433,6 +597,7 @@
                                    txn_billing.billing_zip_code,
                                    txn_billing.billing_country,
                                    txn_billing.billing_contact_person,
+								   txn_billing.billed_to,
                                    txn_billing.phone,
                                    txn_billing.mobile,
                                    txn_billing.email,
@@ -447,6 +612,8 @@
                                    txn_billing.received_date,
                                    txn_billing.received_by,    
                                    txn_billing.paid_flag,
+								   txn_billing.agent_id,
+								   txn_billing.consignee_id,
                                    case
                                         when txn_billing.paid_flag=0 then 'NO'
                                         when txn_billing.paid_flag=1 then 'YES'
@@ -462,7 +629,9 @@
                                    txn_billing.shipment_type_id,
                                    shipment_type.description as shipmenttype,
                                    txn_billing.account_executive_id,
-                                   account_executive.name as accountexecutive
+                                   account_executive.name as accountexecutive,
+								   agent.company_name as agent,
+								   consignee.account_name as consignee
                             from txn_billing
                             left join billing_type on billing_type.id=txn_billing.billing_type_id 
                             left join shipment_type on shipment_type.id=txn_billing.shipment_type_id
@@ -470,6 +639,8 @@
                             left join user as cuser on cuser.id=txn_billing.created_by
                             left join user as uuser on uuser.id=txn_billing.updated_by
                             left join user as puser on puser.id=txn_billing.posted_by
+							left join agent on agent.id=txn_billing.agent_id 
+					 		left join consignee on consignee.id=txn_billing.consignee_id
                             where txn_billing.billing_number='$txnnumber'
 
 
@@ -541,6 +712,10 @@
                                        "documentdate"=>$documentdate,
                                        "paymentduedate"=>$paymentduedate,
                                        "remarks"=>utfEncode($obj->remarks),
+									   "agentid"=>utfEncode($obj->agent_id),
+                                       "agent"=>utfEncode($obj->agent),
+									    "consigneeid"=>utfEncode($obj->consignee_id),
+                                       "consignee"=>utfEncode($obj->consignee),
                                        "createddate"=>$createddate,
                                        "updateddate"=>$updateddate,
                                        "posteddate"=>$posteddate,
@@ -550,6 +725,7 @@
                                        "reason"=>utfEncode($obj->reason),
                                        "billingtypeid"=>utfEncode($obj->billing_type_id),
                                        "billingtype"=>utfEncode($obj->billingtype),
+									   "billedto"=>utfEncode($obj->billed_to),
                                        "shipmenttypeid"=>utfEncode($obj->shipment_type_id),
                                        "shipmenttype"=>utfEncode($obj->shipmenttype),
                                        "accountexecutiveid"=>utfEncode($obj->account_executive_id),
@@ -635,6 +811,9 @@
             $userid = USERID;
 
             $shipperid = '';
+			$agentid = '';
+			$consigneeid = '';
+			$billedto = '';
 
             $vatpercent = getInfo("company_information","value_added_tax_percentage","where id=1");
             if($vatpercent>0){
@@ -663,8 +842,21 @@
             if(getNumRows($checkifvalidtxnrs)==1){
                 while($obj=fetch($checkifvalidtxnrs)){
                     $shipperid = $obj->shipper_id;
+					$consigneeid = $obj->consignee_id;
+					$agentid = $obj->agent_id;
+					$billedto = $obj->billed_to;
                     $vatflag = $obj->vat_flag;
                 }
+
+				$accountstr = '';
+				if($billedto=='SHIPPER'){
+					$accountstr =  "and txn_waybill.shipper_id='$shipperid'";
+				}
+				else if($billedto=='AGENT'){
+					$accountstr =  "and txn_waybill.agent_id='$agentid'";
+				} else if($billedto=='CONSIGNEE'){
+					$accountstr =  "and txn_waybill.consignee_id='$consigneeid'";
+				}
 
                
 
@@ -682,7 +874,6 @@
                                                       txn_waybill.status!='VOID' and
                                                       txn_waybill.status!='LOGGED' and
                                                       txn_waybill.billed_flag=0 and
-                                                      txn_waybill.shipper_id='$shipperid' and
                                                       txn_waybill.waybill_number not in (
                                                                                             select txn_billing_waybill.waybill_number
                                                                                             from txn_billing_waybill
@@ -690,7 +881,11 @@
                                                                                             where txn_billing.status!='VOID' and
                                                                                                   txn_billing_waybill.flag=1
                                                                                          ) and
-                                                      txn_waybill.waybill_number='".escapeString(strtoupper(trim($wbnumber[$i])))."'");
+                                                      txn_waybill.waybill_number='".escapeString(strtoupper(trim($wbnumber[$i])))."'
+													  $accountstr
+													 
+													 
+													  ");
 
                     if(getNumRows($checkifvalidwbrs)!=1){
                         array_push($invalidwaybills, escapeString(strtoupper($wbnumber[$i])));
