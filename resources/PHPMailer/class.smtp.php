@@ -330,6 +330,12 @@ class SMTP
         if (!$this->sendCommand('STARTTLS', 'STARTTLS', 220)) {
             return false;
         }
+
+        // Disable SSL certificate verification
+        stream_context_set_option($this->smtp_conn, 'ssl', 'verify_peer', false);
+        stream_context_set_option($this->smtp_conn, 'ssl', 'verify_peer_name', false);
+        stream_context_set_option($this->smtp_conn, 'ssl', 'allow_self_signed', true);
+
         // Begin encrypted connection
         if (!stream_socket_enable_crypto(
             $this->smtp_conn,
