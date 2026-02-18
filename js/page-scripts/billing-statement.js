@@ -1235,6 +1235,13 @@ function blsOnShipmentTypeUpdate(modal, shipmenttype) {
 			.val('SHIPPER')
 			.trigger('change');
 		$(modal + ' .billingstatementmodal-billedto').attr('disabled', true);
+	} else if (shipmenttype == 'INTERNATIONAL - EXPORT') {
+		$(modal + ' .shipperwrapper').removeClass('hidden');
+
+		$(modal + ' .billingstatementmodal-billedto')
+			.append("<option value='AGENT'>AGENT</option><option value='SHIPPER'>SHIPPER</option>")
+			.trigger('change');
+		$(modal + ' .billingstatementmodal-billedto').removeAttr('disabled');
 	} else {
 		$(modal + ' .billingstatementmodal-billedto')
 			.append("<option value='AGENT'>AGENT</option><option value='CONSIGNEE'>CONSIGNEE</option>")
