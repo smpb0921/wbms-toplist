@@ -52,7 +52,8 @@
 		$forc = "(".implode(" or ",$forc).")";
 	}
 	else{
-		$forc = USERID."=1";
+		// $forc = USERID."=1";
+		$forc = "1=1";
 	}
 
 	// Setup sort and search SQL using posted data
