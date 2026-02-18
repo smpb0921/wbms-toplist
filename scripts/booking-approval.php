@@ -5,7 +5,7 @@
     include('../config/functions.php');
     include("../classes/system-log.class.php");
     include("../classes/email.class.php");
-    include("../classes/booking-status-history.class.php");////////
+    include("../classes/booking-status-history.class.php");
 
     if(isset($_POST['approveRejectBooking'])){
     	if($_POST['approveRejectBooking']=='j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@'){
@@ -223,29 +223,17 @@
 			    				else if($action=='REJECT'){
 			    					
 			    					/** EMAIL NOTIFICATION **/
-			    					$bookingcreator = getInfo("txn_booking","posted_by","where booking_number='$bookingnumber'");
-			    					$bookingcreatoremail = getInfo("user","email_address","where id='$bookingcreator'");
-			    					$rejectedby = '';
-			    					$tmp = query("select * from user where id='$userid'");
-			    					while($obj1=fetch($tmp)){
-			    						$rejectedby = $obj1->first_name.' '.$obj1->last_name;
-			    					}
-			    					//echo '-->'.$bookingcreator.'='.$bookingcreatoremail."<---";
-									$sent = $emailClass->sendNotification(
-																			  array($bookingcreatoremail),
-													                          '',
-													                          'Booking Rejection',
-																			  "Booking No. ".$bookingnumber." has been rejected.<br><br>
-																			   <b>Rejected by</b>: $rejectedby<br>
-																			   <b>Rejection Reason</b>: $remarks
-																			  ",
-																			  "Booking No. ".$bookingnumber." has been rejected.<br><br>
-																			   <b>Rejected by</b>: $rejectedby<br>
-																			   <b>Rejection Reason</b>: $remarks
-																			  ",
-																			  array(),//emailcc
-																			  array()//attachments
-														                  );
+			    					// Send rejection email using the new function
+									$emailResult = sendBookingRejectionEmail($bookingnumber, $remarks);
+									
+									// Log the email result for debugging
+									if($emailResult['success']) {
+										// Email sent successfully
+										error_log("Booking rejection email sent successfully for: " . $bookingnumber);
+									} else {
+										// Email failed to send, log the error
+										error_log("Failed to send booking rejection email: " . $emailResult['message']);
+									}
 									/***************************/
 
 									$rs = query("update txn_booking set status='REJECTED', supervisor_notified=NULL, driver_notified=NULL, rejected_date='$now', rejected_by='$userid', rejected_reason='$remarks', posted_date=NULL, posted_by=NULL where booking_number='$bookingnumber'");
