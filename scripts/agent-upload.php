@@ -11,6 +11,17 @@
 
     if(isset($_FILES['uploadagentmodal-file'])){
 
+        function getShipmentTypeID($code){
+            $id = '';
+            $rs = query("select * from shipment_type where upper(code)='$code'");
+            if(getNumRows($rs)==1){
+                while($obj=fetch($rs)){
+                    $id=$obj->id;
+                }
+            }
+            return $id;
+        }
+
         function convertToText($str){
             $str = trim($str);
             $str = escapeString($str);
@@ -40,14 +51,15 @@
                 $headerColumns = array(
                                         'CODE', //A
                                         'COMPANY NAME', //B
-                                        'COMPANY STREET ADDRESS', //C
-                                        'COMPANY DISTRICT', //D
-                                        'COMPANY CITY', //E
-                                        'COMPANY STATE PROVINCE', //F
-                                        'COMPANY ZIP CODE', //G
-                                        'COMPANY COUNTRY', //H
-                                        'AREA', //I
-                                        'REMARKS' //J
+                                        'SHIPMENT TYPE', //C
+                                        'COMPANY STREET ADDRESS', //D
+                                        'COMPANY DISTRICT', //E
+                                        'COMPANY CITY', //F
+                                        'COMPANY STATE PROVINCE', //G
+                                        'COMPANY ZIP CODE', //H
+                                        'COMPANY COUNTRY', //I
+                                        'AREA', //J
+                                        'REMARKS' //K
                                        );
                 $checkHeaderInfo = true;
                 $col = "A";
@@ -73,19 +85,22 @@
                     for($i=2;$i<=$lastRow;$i++){
                         $code = convertToText(strtoupper($worksheet->getCell('A'.$i)->getValue()));
                         $companyname = convertToText(strtoupper($worksheet->getCell('B'.$i)->getValue()));
-                        $companystreetaddress = convertToText(strtoupper($worksheet->getCell('C'.$i)->getValue()));
-                        $companydistrict = convertToText(strtoupper($worksheet->getCell('D'.$i)->getValue()));
-                        $companycity = convertToText(strtoupper($worksheet->getCell('E'.$i)->getValue()));
-                        $companystateprovince = convertToText(strtoupper($worksheet->getCell('F'.$i)->getValue()));
-                        $companyzipcode = convertToText(strtoupper($worksheet->getCell('G'.$i)->getValue()));
-                        $companycountry = convertToText(strtoupper($worksheet->getCell('H'.$i)->getValue()));
-                        $area = convertToText(strtoupper($worksheet->getCell('I'.$i)->getValue()));
-                        $remarks = convertToText(strtoupper($worksheet->getCell('J'.$i)->getValue()));
+                        $shipmenttype = convertToText(strtoupper($worksheet->getCell('C'.$i)->getValue()));
+                        $shipmenttypeID = getShipmentTypeID($shipmenttype);
+                        $companystreetaddress = convertToText(strtoupper($worksheet->getCell('D'.$i)->getValue()));
+                        $companydistrict = convertToText(strtoupper($worksheet->getCell('E'.$i)->getValue()));
+                        $companycity = convertToText(strtoupper($worksheet->getCell('F'.$i)->getValue()));
+                        $companystateprovince = convertToText(strtoupper($worksheet->getCell('G'.$i)->getValue()));
+                        $companyzipcode = convertToText(strtoupper($worksheet->getCell('H'.$i)->getValue()));
+                        $companycountry = convertToText(strtoupper($worksheet->getCell('I'.$i)->getValue()));
+                        $area = convertToText(strtoupper($worksheet->getCell('J'.$i)->getValue()));
+                        $remarks = convertToText(strtoupper($worksheet->getCell('K'.$i)->getValue()));
 
                         // Fixed SQL query - added closing quote after $remarks
                         $checkifexistrs = query("select * from agent 
                                                 where code='$code' and
                                                       company_name='$companyname' and
+                                                      shipment_type_id='$shipmenttypeID' and
                                                       company_street_address='$companystreetaddress' and
                                                       company_district='$companydistrict' and 
                                                       company_city='$companycity' and
@@ -102,29 +117,32 @@
                                 $systemID = $obj->id;
                             }
 
-                            array_push($txnrowexist, "<b>Details</b>: Line $i - SystemID=$systemID, Code=$code, CompanyName=$companyname, CompanyStreetAddress=$companystreetaddress, CompanyDistrict=$companydistrict, CompanyCity=$companycity, CompanyStateProvince=$companystateprovince, CompanyZipCode=$companyzipcode, CompanyCountry=$companycountry, Area=$area, Remarks=$remarks");
+                            array_push($txnrowexist, "<b>Details</b>: Line $i - SystemID=$systemID, Code=$code, CompanyName=$companyname, ShipmentType=$shipmenttype, CompanyStreetAddress=$companystreetaddress, CompanyDistrict=$companydistrict, CompanyCity=$companycity, CompanyStateProvince=$companystateprovince, CompanyZipCode=$companyzipcode, CompanyCountry=$companycountry, Area=$area, Remarks=$remarks");
 
-                            $systemlog->logEditedInfo($prclass,$systemID,array($code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL'),'AGENT','Edited Agent Info (UPLOAD)',$userid,$now);
-                            $prclass->update($systemID,array($code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL'));
+                            $systemlog->logEditedInfo($prclass,$systemID,array($code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL',$shipmenttypeID),'AGENT','Edited Agent Info (UPLOAD)',$userid,$now);
+                            $prclass->update($systemID,array($code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL',$shipmenttypeID));
                         }
                         // Changed validation - removed $remarks!='' requirement
-                        else if($code!=''&&$companyname!=''&&$companystreetaddress!=''&&$companydistrict!=''&&$companycity!=''&&$companystateprovince!=''&&$companyzipcode!=''&&$companycountry!=''&&$area!=''){//NEW RECORD - INSERT
+                        else if($code!=''&&$companyname!=''&&$shipmenttype!=''&&$companystreetaddress!=''&&$companydistrict!=''&&$companycity!=''&&$companystateprovince!=''&&$companyzipcode!=''&&$companycountry!=''&&$area!=''){//NEW RECORD - INSERT
                             $userid = USERID;
                             $now = date('Y-m-d H:i:s');
                             
-                            $prclass->insert(array('',$code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL'));
+                            $prclass->insert(array('',$code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL',$shipmenttypeID));
                             $systemID = $prclass->getInsertId();
 
-                            $systemlog->logAddedInfo($prclass,array($systemID,$code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL'),'AGENT','New Agent Added (UPLOAD)',$userid,$now);
+                            $systemlog->logAddedInfo($prclass,array($systemID,$code,$companyname,$companystreetaddress,$companydistrict,$companycity,$companystateprovince,$companyzipcode,$companycountry,$area,$remarks,$userid,$now,'NULL','NULL',$shipmenttypeID),'AGENT','New Agent Added (UPLOAD)',$userid,$now);
                             
-                            array_push($txnwithouterror, "<b>Details</b>: Line $i - SystemID=$systemID, Code=$code, CompanyName=$companyname, CompanyStreetAddress=$companystreetaddress, CompanyDistrict=$companydistrict, CompanyCity=$companycity, CompanyStateProvince=$companystateprovince, CompanyZipCode=$companyzipcode, CompanyCountry=$companycountry, Area=$area, Remarks=$remarks");
+                            array_push($txnwithouterror, "<b>Details</b>: Line $i - SystemID=$systemID, Code=$code, CompanyName=$companyname, ShipmentType=$shipmenttype, CompanyStreetAddress=$companystreetaddress, CompanyDistrict=$companydistrict, CompanyCity=$companycity, CompanyStateProvince=$companystateprovince, CompanyZipCode=$companyzipcode, CompanyCountry=$companycountry, Area=$area, Remarks=$remarks");
                         }
-                        else if($code!=''||$companyname!=''||$companystreetaddress!=''||$companydistrict!=''||$companycity!=''||$companystateprovince!=''||$companyzipcode!=''||$companycountry!=''||$area!=''){//INCOMPLETE DATA - ERROR
+                        else if($code!=''||$companyname!=''||$shipmenttype!=''||$companystreetaddress!=''||$companydistrict!=''||$companycity!=''||$companystateprovince!=''||$companyzipcode!=''||$companycountry!=''||$area!=''){//INCOMPLETE DATA - ERROR
                             if($code==''){
                                 array_push($rowerror, "Code is required");
                             }
                             if($companyname==''){
                                 array_push($rowerror, "Company Name is required");
+                            }
+                            if($shipmenttypeID==''){
+                                array_push($rowerror, "Shipment Type is required");
                             }
                             if($companystreetaddress==''){
                                 array_push($rowerror, "Company Street Address is required");
@@ -150,7 +168,7 @@
                             // Note: Remarks is NOT required, so no validation check added
                             
                             $rowtexterror = implode(", ", $rowerror);
-                            array_push($txnwithrowerror, "<b>Line</b>: $i<br><b>Error</b>: $rowtexterror <br><b>Details</b>: Code=$code, CompanyName=$companyname, CompanyStreetAddress=$companystreetaddress, CompanyDistrict=$companydistrict, CompanyCity=$companycity, CompanyStateProvince=$companystateprovince, CompanyZipCode=$companyzipcode, CompanyCountry=$companycountry, Area=$area, Remarks=$remarks");
+                            array_push($txnwithrowerror, "<b>Line</b>: $i<br><b>Error</b>: $rowtexterror <br><b>Details</b>: Code=$code, ShipmentType=$shipmenttype, CompanyName=$companyname, CompanyStreetAddress=$companystreetaddress, CompanyDistrict=$companydistrict, CompanyCity=$companycity, CompanyStateProvince=$companystateprovince, CompanyZipCode=$companyzipcode, CompanyCountry=$companycountry, Area=$area, Remarks=$remarks");
                             $rowerror = array();
                         }
                     }
