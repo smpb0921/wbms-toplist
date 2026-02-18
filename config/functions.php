@@ -692,6 +692,8 @@
     // }
 
 
+    /************** EMAIL NOTIFICATION FOR REJECTED BOOKING TRANSACTION *******************/
+
     function sendBookingRejectionEmail($booking_number, $rejection_reason = '') {
 
         require_once('../resources/PHPMailer/PHPMailerAutoload.php');
@@ -787,6 +789,109 @@
             return array('success' => false, 'message' => $e->getMessage());
         }
     }
+
+    /************** EMAIL NOTIFICATION FOR REJECTED BOOKING TRANSACTION END *******************/
+
+
+    /************** EMAIL NOTIFICATION FOR PENDING APPROVAL BOOKING TRANSACTION *******************/
+
+    function sendBookingPendingEmail($booking_number) {
+
+        require_once('../resources/PHPMailer/PHPMailerAutoload.php');
+
+        $mail = new PHPMailer;
+
+        try {
+
+            // Pull SMTP config from email_configuration table
+            $configRs = query("SELECT * FROM email_configuration WHERE active_flag = 1 LIMIT 1");
+
+            if(getNumRows($configRs) == 0){
+                return array('success' => false, 'message' => 'No active email configuration found');
+            }
+
+            $config = fetch($configRs);
+
+            // Get booking + creator details
+            $rs = query("SELECT 
+                            txn_booking.booking_number,
+                            txn_booking.shipper_company_name,
+                            txn_booking.origin_id,
+                            txn_booking.destination_id,
+                            user.first_name,
+                            user.last_name,
+                            user.email_address as created_by_email
+                        FROM txn_booking
+                        LEFT JOIN user ON user.id = txn_booking.created_by
+                        WHERE txn_booking.booking_number = '$booking_number'
+                    ");
+
+            if(getNumRows($rs) == 0){
+                return array('success' => false, 'message' => 'Booking not found');
+            }
+
+            $booking = fetch($rs);
+
+            // SMTP setup from DB config
+            $mail->isSMTP();
+            $mail->Host       = $config->host;
+            $mail->Port       = $config->port;
+            $mail->SMTPSecure = $config->encryption;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $config->username;
+            $mail->Password   = $config->password;
+
+            // Sender from DB config
+            $mail->setFrom($config->email_sent_from, $config->email_sender);
+
+            // Send to booking creator
+            if(!empty($booking->created_by_email)){
+                $mail->addAddress(
+                    $booking->created_by_email,
+                    $booking->first_name . ' ' . $booking->last_name
+                );
+            }
+
+            // Additional TO/CC emails (if configured)
+            $emailsTO = getEmailAddressesTO('BOOKING_PENDING', '', '');
+            foreach($emailsTO as $email){
+                $mail->addAddress($email);
+            }
+
+            $emailsCC = getEmailAddressesCC('BOOKING_PENDING', '', '');
+            foreach($emailsCC as $email){
+                $mail->addCC($email);
+            }
+
+            // Email content
+            $mail->isHTML(true);
+            $mail->Subject = "Booking Pending for Approval - " . $booking_number;
+            $mail->Body = "
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h3 style='color: #e67e22;'>Booking Transaction Pending for Approval</h3>
+                    <hr>
+                    <p><strong>Booking Number:</strong> {$booking_number}</p>
+                    <p><strong>Shipper:</strong> {$booking->shipper_company_name}</p>
+                    <br>
+                    <p>This booking transaction has been submitted and is currently <strong>pending for approval</strong>. Please review and take action at your earliest convenience.</p>
+                    <br>
+                    <small style='color: #888;'>This is a system generated email. Please do not reply.</small>
+                </div>
+            ";
+
+            if($mail->send()){
+                return array('success' => true, 'message' => 'Email sent successfully');
+            } else {
+                return array('success' => false, 'message' => $mail->ErrorInfo);
+            }
+
+        } catch (Exception $e) {
+            return array('success' => false, 'message' => $e->getMessage());
+        }
+    }
+
+
+    /************** EMAIL NOTIFICATION FOR PENDING APPROVAL BOOKING TRANSACTION END *******************/
    
 
 

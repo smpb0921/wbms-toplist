@@ -1251,6 +1251,15 @@
 																						'$supervisormobile'
 
 																					)");
+
+																					/** EMAIL NOTIFICATION - BOOKING PENDING **/
+									$emailResult = sendBookingPendingEmail($txnnumber);
+									if($emailResult['success']) {
+										error_log("Booking pending email sent successfully for: " . $txnnumber);
+									} else {
+										error_log("Failed to send booking pending email: " . $emailResult['message']);
+									}
+									/******************************************/
 									$data = array("response"=>'success');
 								}
 							}
