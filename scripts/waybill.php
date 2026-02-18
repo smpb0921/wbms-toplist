@@ -1740,6 +1740,9 @@
 
 			$odaflag = escapeString(strtoupper($_POST['odaflag']));
 
+			$shipmenttype = escapeString(strtoupper($_POST['shipmenttype']));
+			$shipmentmode = escapeString(strtoupper($_POST['shipmentmode']));
+
 			$tpl = escapeString(strtoupper($_POST['tpl']));
 			$origin = escapeString(strtoupper($_POST['origin']));
 			$destination = escapeString(strtoupper($_POST['destination']));
@@ -1802,396 +1805,27 @@
 			$totalrate = $valuation;
 
 
-			//$pouchsizecondition = $waybilltype=='DOCUMENT'?" and pouch_size_id='$pouchsize'":'';
+			// $pouchsizecondition = $waybilltype=='DOCUMENT'?" and pouch_size_id='$pouchsize'":'';
 			$pouchsizecondition =" and pouch_size_id='$pouchsize'";
 
 			
-			
-				
-				/*if($waybilltype=='PARCEL'&&$origin!=''&&$origin!='NULL'&&$destination!=''&&$destination!='NULL'&&$modeoftransport!=''&&$modeoftransport!='NULL'&&$services!=''&&$services!='NULL'){
-					$checkshipperraters = query("select * from shipper_rate where origin_id='$origin' and destination_id='$destination' and mode_of_transport_id='$modeoftransport' and services_id='$services' and rush_flag='$rushflag' and pull_out_flag='$pulloutflag' and shipper_id='$shipperid' and waybill_type='$waybilltype'  limit 1");//and parcel_type_id='$parceltype'
-					if(getNumRows($checkshipperraters)==1){// has shipper rate
-						while($obj=fetch($checkshipperraters)){
-							$returndocumentfee = $obj->return_document_fee;
-							$waybillfee = $obj->waybill_fee;
-							$securityfee = $obj->security_fee;
-							$docstampfee = $obj->doc_stamp_fee;
-							$totalshipperfixedcharges = $returndocumentfee+$waybillfee+$securityfee+$docstampfee;
-
-							$freightchargecomputation = $obj->freight_charge_computation;
-							$insuranceratecomputation = $obj->insurance_rate_computation;
-							$cbmcomputation = $obj->cbm_computation;
-							$excessamount = $obj->excess_amount;
 
 
-							$shipperrateid = $obj->id;
-							$fixedrateflag = $obj->fixed_rate_flag;
-							$freightcomputation = $obj->freight_computation;
-							$minimumrate = $obj->minimum_rate;
-
-							$rtcollectionpercentage = $obj->collection_fee_percentage>=0?$obj->collection_fee_percentage:0;
-							$rtvaluation = $obj->valuation>=0?$obj->valuation:0;
-							$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
-							$rtinsurancerate = $obj->insurance_rate>=0?$obj->insurance_rate:0;
-							$rtfuelrate = $obj->fuel_rate>=0?$obj->fuel_rate:0;
-							$rtbunkerrate = $obj->bunker_rate>=0?$obj->bunker_rate:0;
-
-							$pulloutfee = $obj->pull_out_fee>=0?$obj->pull_out_fee:0;
-							$fixedrateamount = $obj->fixed_rate_amount>=0?$obj->fixed_rate_amount:0;
-							
-
-							if($fixedrateflag==0){
-								$shipperoda = $obj->oda_rate>=0?$obj->oda_rate:0;
-								//$oda = $baseoda>0?($baseoda*(1+($shipperoda/100))):0;
-								$oda = $shipperoda;
-							}
-
-							if(strtoupper($freightcomputation)=='AD VALOREM'){
-								$multiplier = $declaredvalue;
-								$freightrate = $multiplier*($rtfreightrate/100);
-							}
-							else if(strtoupper($freightcomputation)=='NO. OF PACKAGE'){
-								$multiplier = $numberofpackage;
-								$freightrate = $multiplier*$rtfreightrate;
-							}
-							else if(strtoupper($freightcomputation)=='CBM'){
-								$multiplier = $cbm;
-								$freightrate = $multiplier*$rtfreightrate;
-
-								if($cbmcomputation==2){
-									if($minimumrate>$freightrate){
-										$freightrate = $minimumrate;
-									}
-								}
-							}
-							else if(strtoupper($freightcomputation)=='VOLUMETRIC'){
-								$multiplier = $vw;
-								$freightrate = $multiplier*$rtfreightrate;
-							}
-							else if(strtoupper($freightcomputation)=='ACTUAL WEIGHT'){
-								$multiplier = $actualweight;
-								$freightrate = $multiplier*$rtfreightrate;
-							}
-							else if(strtoupper($freightcomputation)=='COLLECTION FEE'){
-								$multiplier = 0;
-								$freightrate = $amountforcollection*($rtcollectionpercentage/100);
-							}
-							else if(strtoupper($freightcomputation)=='DEFAULT'){
-								$mode = getInfo("mode_of_transport","description","where id='$modeoftransport'");
-								if(strpos(strtoupper($mode), 'SEA') !== false){
-									if($actualweight>$cbm){
-										$multiplier = $actualweight;
-									}
-									else{
-										$multiplier = $cbm;
-									} 
-								}
-								else{
-									if($actualweight>$vw){
-										$multiplier = $actualweight;
-									}
-									else{
-										$multiplier = $vw;
-									}	
-								}
-								$freightrate = $multiplier*$rtfreightrate;
-							}
-							else{
-								$chargeableweight = 0;
-								$multiplier = $chargeableweight;
-								$freightrate = $multiplier*$rtfreightrate;
-							}
-
-							$valuation = $declaredvalue*($rtvaluation/100);
-							
-							$fuelrate = $multiplier*$rtfuelrate;
-							$bunkerrate = $multiplier*$rtbunkerrate;
-							$chargeableweight = $multiplier;
-
-							if($insuranceratecomputation==1){
-								$insurancerate = $actualweight*$rtinsurancerate;
-							}
-							else if($insuranceratecomputation==2){
-								$excess = $declaredvalue-$excessamount;
-								$excess = $excess>=0?$excess:0;
-								$insurancerate = $excess*$rtinsurancerate;
-							}
-							else{
-								$insurancerate = 0;
-							}
+			if(($waybilltype=='PARCEL'||$waybilltype=='DOCUMENT')&&$origin!=''&&$origin!='NULL'&&$zone!=''&&$zone!='NULL'&&$tpl!=''&&$tpl!='NULL'&&$pouchsize!=''&&$pouchsize!='NULL'&&$shipmenttype!=''&&$shipmenttype!='NULL'&&$shipmentmode!=''&&$shipmentmode!='NULL'&&$modeoftransport!=''&&$modeoftransport!='NULL'){
 
 
-							if(strtoupper($freightcomputation)=='ACTUAL WEIGHT'||strtoupper($freightcomputation)=='VOLUMETRIC'||strtoupper($freightcomputation)=='CBM'||strtoupper($freightcomputation)=='DEFAULT'){
+					$checkshipperraters = query("select * from shipper_rate 
+														where origin_id='$origin' 
+														and zone_id='$zone'
+														and third_party_logistic_id='$tpl'
+														and waybill_type='$waybilltype' 
+														and shipment_type_id='$shipmenttype'
+														and shipment_mode_id='$shipmentmode'
+														and mode_of_transport_id='$modeoftransport'
+														and shipper_id='$shipperid'
+														$pouchsizecondition
+														limit 1");
 
-								$checkshipperratefreight = query("select * from shipper_rate_freight_charge where shipper_rate_id='$shipperrateid' and from_kg<=$multiplier and to_kg>=$multiplier order by to_kg asc limit 1");
-								if(getNumRows($checkshipperratefreight)==1){
-									while($srfobj=fetch($checkshipperratefreight)){
-										
-
-										if($freightchargecomputation==1){
-											$freightrate = $srfobj->freight_charge*$multiplier;
-										}
-										else if($freightchargecomputation==2){
-											$freightrate = $srfobj->freight_charge;
-										}
-									}
-								}else{
-									$checkshipperratefreight = query("select * from shipper_rate_freight_charge where shipper_rate_id='$shipperrateid' and from_kg<=$multiplier order by to_kg desc limit 1");
-									while($srfobj=fetch($checkshipperratefreight)){
-										$maxkg = $srfobj->to_kg;
-										$excesskg = $multiplier-$maxkg;
-										$excesskg = $excesskg>0?$excesskg:0;
-										$excesscharge = $excesskg*$srfobj->excess_weight_charge;
-										$excesscharge = round($excesscharge,$decimalplaces);
-										
-
-										if($freightchargecomputation==1){
-											$freightrate = ($srfobj->freight_charge*$multiplier)+$excesscharge;
-										}
-										else if($freightchargecomputation==2){
-											$freightrate = $srfobj->freight_charge+$excesscharge;
-										}
-									}
-								}
-
-							}
-
-							if($handlinginstruction!=''&&$fixedrateflag==0){
-								$gettotalhandlingcharges = query("select * from shipper_rate_handling_instruction where shipper_rate_id='$shipperrateid' and handling_instruction_id in $handlinginstruction");
-								while($hiobj=fetch($gettotalhandlingcharges)){
-									if($hiobj->percentage_flag==1){
-										$percentage = ($hiobj->percentage/100)*$freightrate;
-										$totalhandlingcharges = $totalhandlingcharges + round($percentage,$decimalplaces);
-									}
-									else{
-										$totalhandlingcharges = $totalhandlingcharges + round($hiobj->fixed_charge,$decimalplaces);
-									}
-									
-								}
-
-							}
-
-							$oda = $odaflag!=1?0:$oda;
-							$shipperoda = $odaflag!=1?0:$shipperoda;
-							$totalrate = round($valuation,$decimalplaces)+round($freightrate,$decimalplaces)+round($insurancerate,$decimalplaces)+round($fuelrate,$decimalplaces)+round($bunkerrate,$decimalplaces)+round($pulloutfee,$decimalplaces)+round($fixedrateamount,$decimalplaces)+round($totalhandlingcharges,$decimalplaces)+round($oda,$decimalplaces)+$totalshipperfixedcharges;
-
-						}
-						$ratefrom = 'SHIPPER';
-					}
-					else{//no shipper rate, check published rate instead
-
-						$checkpublishedraters = query("select * from published_rate where origin_id='$origin' and destination_id='$destination' and mode_of_transport_id='$modeoftransport' and services_id='$services' and rush_flag='$rushflag' and pull_out_flag='$pulloutflag' and waybill_type='$waybilltype' limit 1");
-						if(getNumRows($checkpublishedraters)==1){
-							while($obj=fetch($checkpublishedraters)){
-
-							
-								$fixedrateflag = $obj->fixed_rate_flag;
-
-								$freightcomputation = $obj->freight_computation;
-								$minimumrate = $obj->minimum_rate;
-
-								$rtvaluation = $obj->valuation>=0?$obj->valuation:0;
-								$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
-								$rtinsurancerate = $obj->insurance_rate>=0?$obj->insurance_rate:0;
-								$rtfuelrate = $obj->fuel_rate>=0?$obj->fuel_rate:0;
-								$rtbunkerrate = $obj->bunker_rate>=0?$obj->bunker_rate:0;
-
-								$pulloutfee = $obj->pull_out_fee>=0?$obj->pull_out_fee:0;
-							    $fixedrateamount = $obj->fixed_rate_amount>=0?$obj->fixed_rate_amount:0;
-
-								if(strtoupper($freightcomputation)=='AD VALOREM'){
-									$multiplier = $declaredvalue;
-									$freightrate = $multiplier*($rtfreightrate/100);
-								}
-								else if(strtoupper($freightcomputation)=='NO. OF PACKAGE'){
-									$multiplier = $numberofpackage;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='CBM'){
-									$multiplier = $cbm;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='VOLUMETRIC'){
-									$multiplier = $vw;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='ACTUAL WEIGHT'){
-									$multiplier = $actualweight;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='COLLECTION FEE'){
-									$multiplier = $amountforcollection;
-									$freightrate = 0;//$multiplier*($rtcollectionpercentage/100);
-								}
-								else if(strtoupper($freightcomputation)=='DEFAULT'){
-									$mode = getInfo("mode_of_transport","description","where id='$modeoftransport'");
-									if(strpos(strtoupper($mode), 'SEA') !== false){
-										if($actualweight>$cbm){
-											$multiplier = $actualweight;
-										}
-										else{
-											$multiplier = $cbm;
-										} 
-									}
-									else{
-										if($actualweight>$vw){
-											$multiplier = $actualweight;
-										}
-										else{
-											$multiplier = $vw;
-										}	
-									}
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else{
-									$chargeableweight = 0;
-									$multiplier = $chargeableweight;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-
-								$valuation = $declaredvalue*($rtvaluation/100);
-								$insurancerate = $multiplier*$rtinsurancerate;
-								$fuelrate = $multiplier*$rtfuelrate;
-								$bunkerrate = $multiplier*$rtbunkerrate;
-								$chargeableweight = $multiplier;
-
-								//$totalrate = $valuation+$freightrate+$insurancerate+$fuelrate+$bunkerrate;
-								$oda = $baseoda;
-								$oda = $odaflag!=1?0:$oda;
-								$shipperoda = $odaflag!=1?0:$shipperoda;
-								$totalrate = round($valuation,$decimalplaces)+round($freightrate,$decimalplaces)+round($insurancerate,$decimalplaces)+round($fuelrate,$decimalplaces)+round($bunkerrate,$decimalplaces)+round($pulloutfee,$decimalplaces)+round($fixedrateamount,$decimalplaces)+round($totalhandlingcharges,$decimalplaces)+round($oda,$decimalplaces)+$totalshipperfixedcharges;
-
-							}
-							$ratefrom = 'PUBLISHED';
-						}
-						else{
-							$chargeableweight = 0;
-						}
-
-					}
-				}
-				else if($waybilltype=='DOCUMENT'&&$origin!=''&&$origin!='NULL'&&$destination!=''&&$destination!='NULL'&&$pouchsize!=''&&$pouchsize!='NULL'){
-					$checkshipperraters = query("select * from shipper_rate where origin_id='$origin' and destination_id='$destination' and rush_flag='$rushflag' and shipper_id='$shipperid' and waybill_type='$waybilltype' and pouch_size_id='$pouchsize' and express_transaction_type='$expresstransactiontype' limit 1");
-					if(getNumRows($checkshipperraters)==1){// has shipper rate
-						while($obj=fetch($checkshipperraters)){
-
-							$returndocumentfee = $obj->return_document_fee;
-							$waybillfee = $obj->waybill_fee;
-							$securityfee = $obj->security_fee;
-							$docstampfee = $obj->doc_stamp_fee;
-							$totalshipperfixedcharges = $returndocumentfee+$waybillfee+$securityfee+$docstampfee;
-
-							
-
-							$shipperrateid = $obj->id;
-							$fixedrateflag = $obj->fixed_rate_flag;
-							$minimumrate = $obj->minimum_rate;
-
-							$rtvaluation = $obj->valuation>=0?$obj->valuation:0;
-							$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
-							$rtinsurancerate = $obj->insurance_rate>=0?$obj->insurance_rate:0;
-							$rtfuelrate = $obj->fuel_rate>=0?$obj->fuel_rate:0;
-							$rtbunkerrate = $obj->bunker_rate>=0?$obj->bunker_rate:0;
-
-							$pulloutfee = $obj->pull_out_fee>=0?$obj->pull_out_fee:0;
-							$fixedrateamount = $obj->fixed_rate_amount>=0?$obj->fixed_rate_amount:0;
-							
-							if($fixedrateflag==0){
-								$shipperoda = $obj->oda_rate>=0?$obj->oda_rate:0;
-								//$oda = $baseoda>0?($baseoda*(1+($shipperoda/100))):0;
-								$oda = $shipperoda;
-							}
-
-							$advaloremflag = $obj->ad_valorem_flag;
-							if($advaloremflag==1){
-								$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate/100:0;
-							}
-
-
-
-							
-							$multiplier = $declaredvalue;
-							$freightrate = $multiplier*$rtfreightrate;
-							$valuation = $declaredvalue*($rtvaluation/100);
-							$insurancerate = $multiplier*$rtinsurancerate;
-							$fuelrate = $multiplier*$rtfuelrate;
-							$bunkerrate = $multiplier*$rtbunkerrate;
-							$chargeableweight = $multiplier;
-
-							
-
-
-							$oda = $odaflag!=1?0:$oda;
-							$shipperoda = $odaflag!=1?0:$shipperoda;
-							$totalrate = round($valuation,$decimalplaces)+round($freightrate,$decimalplaces)+round($insurancerate,$decimalplaces)+round($fuelrate,$decimalplaces)+round($bunkerrate,$decimalplaces)+round($pulloutfee,$decimalplaces)+round($fixedrateamount,$decimalplaces)+round($totalhandlingcharges,$decimalplaces)+round($oda,$decimalplaces)+$totalshipperfixedcharges;
-
-						}
-						$ratefrom = 'SHIPPER';
-					}
-					else{//no shipper rate, check published rate instead
-
-						$checkpublishedraters = query("select * from published_rate where origin_id='$origin' and destination_id='$destination' and rush_flag='$rushflag' and waybill_type='$waybilltype' and pouch_size_id='$pouchsize' and express_transaction_type='$expresstransactiontype' limit 1");
-						if(getNumRows($checkpublishedraters)==1){
-							while($obj=fetch($checkpublishedraters)){
-								$fixedrateflag = $obj->fixed_rate_flag;
-								$minimumrate = $obj->minimum_rate;
-
-								$rtvaluation = $obj->valuation>=0?$obj->valuation:0;
-								$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
-								$rtinsurancerate = $obj->insurance_rate>=0?$obj->insurance_rate:0;
-								$rtfuelrate = $obj->fuel_rate>=0?$obj->fuel_rate:0;
-								$rtbunkerrate = $obj->bunker_rate>=0?$obj->bunker_rate:0;
-
-								$pulloutfee = $obj->pull_out_fee>=0?$obj->pull_out_fee:0;
-								$fixedrateamount = $obj->fixed_rate_amount>=0?$obj->fixed_rate_amount:0;
-
-								
-								$multiplier = $declaredvalue;
-								$freightrate = $multiplier*$rtfreightrate;
-								
-								$valuation = $declaredvalue*($rtvaluation/100);
-								$insurancerate = $multiplier*$rtinsurancerate;
-								$fuelrate = $multiplier*$rtfuelrate;
-								$bunkerrate = $multiplier*$rtbunkerrate;
-								$chargeableweight = $multiplier;
-
-								//$totalrate = $valuation+$freightrate+$insurancerate+$fuelrate+$bunkerrate;
-								$oda = $baseoda;
-								$oda = $odaflag!=1?0:$oda;
-								$shipperoda = $odaflag!=1?0:$shipperoda;
-								$totalrate = round($valuation,$decimalplaces)+round($freightrate,$decimalplaces)+round($insurancerate,$decimalplaces)+round($fuelrate,$decimalplaces)+round($bunkerrate,$decimalplaces)+round($pulloutfee,$decimalplaces)+round($fixedrateamount,$decimalplaces)+round($totalhandlingcharges,$decimalplaces)+round($oda,$decimalplaces)+$totalshipperfixedcharges;
-
-							}
-							$ratefrom = 'PUBLISHED';
-						}
-						else{
-							$chargeableweight = 0;
-						}
-
-					}
-				}
-				else{
-					$chargeableweight = 0;
-					$oda = $baseoda;
-
-					$oda = $odaflag!=1?0:$oda;
-					$shipperoda = $odaflag!=1?0:$shipperoda;
-					$totalrate = $baseoda+$returndocumentfee+$waybillfee+$securityfee+$docstampfee;
-				}*/
-
-
-
-
-			if(($waybilltype=='PARCEL'||$waybilltype=='DOCUMENT')&&$origin!=''&&$origin!='NULL'&&$zone!=''&&$zone!='NULL'&&$tpl!=''&&$tpl!='NULL'&&$pouchsize!=''&&$pouchsize!='NULL'){
-
-
-					$checkshipperraters = query("select * 
-							                     from shipper_rate 
-							                     where origin_id='$origin' and 
-							                          zone_id='$zone' and 
-							                          third_party_logistic_id='$tpl' and
-							                          waybill_type='$waybilltype' and 
-							                          shipper_id='$shipperid '$pouchsizecondition limit 1");
 					if(getNumRows($checkshipperraters)==1){// has shipper rate
 						
 						
@@ -2204,6 +1838,13 @@
 								}
 								$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
 								$fixedrateflag = $obj->fixed_rate_flag;
+
+								// ADDITIONAL RATES 
+								$valuation       = $obj->valuation>= 0?$obj->valuation:0;
+								$insurancerate   = $obj->insurance_rate>= 0?$obj->insurance_rate:0;
+								$fuelrate        = $obj->fuel_rate>=0?$obj->fuel_rate:0;
+								$bunkerrate      = $obj->bunker_rate>=0?$obj->bunker_rate:0;
+								$minimumrate     = $obj->minimum_rate>=0?$obj->minimum_rate:0;
 
 								if($zonetype=='DOMESTIC'){
 									$multiplier = ceil($multiplier);
@@ -2252,7 +1893,16 @@
 								}
 
 							
-								$totalrate = round($valuation,$decimalplaces)+round($freightrate,$decimalplaces)+round($insurancerate,$decimalplaces)+round($fuelrate,$decimalplaces)+round($bunkerrate,$decimalplaces)+round($pulloutfee,$decimalplaces)+round($fixedrateamount,$decimalplaces)+round($totalhandlingcharges,$decimalplaces)+round($oda,$decimalplaces)+$totalshipperfixedcharges;
+								$totalrate = round($valuation,$decimalplaces)
+										   +round($freightrate,$decimalplaces)
+										   +round($insurancerate,$decimalplaces)
+										   +round($fuelrate,$decimalplaces)
+										   +round($bunkerrate,$decimalplaces)
+										   +round($pulloutfee,$decimalplaces)
+										   +round($fixedrateamount,$decimalplaces)
+										   +round($totalhandlingcharges,$decimalplaces)
+										   +round($oda,$decimalplaces)
+										   +$totalshipperfixedcharges;
 
 							}
 							$ratefrom = 'SHIPPER';
@@ -2260,12 +1910,16 @@
 					}
 					else{//no shipper rate, check published rate instead
 
-						$checkpublishedraters = query("select * 
-							                           from published_rate 
-							                           where origin_id='$origin' and 
-							                                 zone_id='$zone' and 
-							                                 third_party_logistic_id='$tpl' and
-							                                 waybill_type='$waybilltype' $pouchsizecondition limit 1");
+						$checkpublishedraters = query("select * from published_rate 
+														where origin_id='$origin' 
+														and zone_id='$zone'
+														and third_party_logistic_id='$tpl'
+														and waybill_type='$waybilltype'
+														and shipment_type_id='$shipmenttype'
+														and shipment_mode_id='$shipmentmode'
+														and mode_of_transport_id='$modeoftransport'
+														$pouchsizecondition
+														limit 1");
 
 						
 						if(getNumRows($checkpublishedraters)==1){
@@ -2278,6 +1932,13 @@
 								}
 								$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
 								$fixedrateflag = $obj->fixed_rate_flag;
+
+								// ADDITIONAL RATES 
+								$valuation       = $obj->valuation>= 0?$obj->valuation:0;
+								$insurancerate   = $obj->insurance_rate>= 0?$obj->insurance_rate:0;
+								$fuelrate        = $obj->fuel_rate>=0?$obj->fuel_rate:0;
+								$bunkerrate      = $obj->bunker_rate>=0?$obj->bunker_rate:0;
+								$minimumrate     = $obj->minimum_rate>=0?$obj->minimum_rate:0;
 
 								if($zonetype=='DOMESTIC'){
 									$multiplier = ceil($multiplier);
@@ -2324,81 +1985,6 @@
 									
 								}
 
-							/*
-							  	$freightcomputation = $obj->freight_computation;
-								$minimumrate = $obj->minimum_rate;
-
-								$rtvaluation = $obj->valuation>=0?$obj->valuation:0;
-								$rtfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
-								$rtinsurancerate = $obj->insurance_rate>=0?$obj->insurance_rate:0;
-								$rtfuelrate = $obj->fuel_rate>=0?$obj->fuel_rate:0;
-								$rtbunkerrate = $obj->bunker_rate>=0?$obj->bunker_rate:0;
-
-								$pulloutfee = $obj->pull_out_fee>=0?$obj->pull_out_fee:0;
-							    $fixedrateamount = $obj->fixed_rate_amount>=0?$obj->fixed_rate_amount:0;
-
-								if(strtoupper($freightcomputation)=='AD VALOREM'){
-									$multiplier = $declaredvalue;
-									$freightrate = $multiplier*($rtfreightrate/100);
-								}
-								else if(strtoupper($freightcomputation)=='NO. OF PACKAGE'){
-									$multiplier = $numberofpackage;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='CBM'){
-									$multiplier = $cbm;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='VOLUMETRIC'){
-									$multiplier = $vw;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='ACTUAL WEIGHT'){
-									$multiplier = $actualweight;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else if(strtoupper($freightcomputation)=='COLLECTION FEE'){
-									$multiplier = $amountforcollection;
-									$freightrate = 0;//$multiplier*($rtcollectionpercentage/100);
-								}
-								else if(strtoupper($freightcomputation)=='DEFAULT'){
-									$mode = getInfo("mode_of_transport","description","where id='$modeoftransport'");
-									if(strpos(strtoupper($mode), 'SEA') !== false){
-										if($actualweight>$cbm){
-											$multiplier = $actualweight;
-										}
-										else{
-											$multiplier = $cbm;
-										} 
-									}
-									else{
-										if($actualweight>$vw){
-											$multiplier = $actualweight;
-										}
-										else{
-											$multiplier = $vw;
-										}	
-									}
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-								else{
-									$chargeableweight = 0;
-									$multiplier = $chargeableweight;
-									$freightrate = $multiplier*$rtfreightrate;
-								}
-
-								$valuation = $declaredvalue*($rtvaluation/100);
-								$insurancerate = $multiplier*$rtinsurancerate;
-								$fuelrate = $multiplier*$rtfuelrate;
-								$bunkerrate = $multiplier*$rtbunkerrate;
-								$chargeableweight = $multiplier;
-
-								//$totalrate = $valuation+$freightrate+$insurancerate+$fuelrate+$bunkerrate;
-								$oda = $baseoda;
-								$oda = $odaflag!=1?0:$oda;
-								$shipperoda = $odaflag!=1?0:$shipperoda;
-
-							*/
 								$totalrate = round($valuation,$decimalplaces)+round($freightrate,$decimalplaces)+round($insurancerate,$decimalplaces)+round($fuelrate,$decimalplaces)+round($bunkerrate,$decimalplaces)+round($pulloutfee,$decimalplaces)+round($fixedrateamount,$decimalplaces)+round($totalhandlingcharges,$decimalplaces)+round($oda,$decimalplaces)+$totalshipperfixedcharges;
 
 							}
@@ -2413,14 +1999,16 @@
 
 
 
-			$checksupplierraters = query("select * 
-							              from supplier_rate 
-							              where origin_id='$origin' and 
-							                    zone_id='$zone' and 
-							                    third_party_logistic_id='$tpl' and
-							                    waybill_type='$waybilltype' 
-							                    $pouchsizecondition 
-							              limit 1");
+			$checksupplierraters = query("select * from supplier_rate 
+														where origin_id='$origin' 
+														and zone_id='$zone'
+														and third_party_logistic_id='$tpl'
+														and waybill_type='$waybilltype'
+														and shipment_type_id='$shipmenttype'
+														and shipment_mode_id='$shipmentmode'
+														and mode_of_transport_id='$modeoftransport'
+														$pouchsizecondition
+														limit 1");
 
 						
 			if(getNumRows($checksupplierraters)==1){
@@ -2433,6 +2021,13 @@
 					}
 					$rtsupplierfreightrate = $obj->freight_rate>=0?$obj->freight_rate:0;
 					$supplierfixedrateflag = $obj->fixed_rate_flag;
+
+					// ADDITIONAL RATES 
+					$valuation       = $obj->valuation>= 0?$obj->valuation:0;
+					$insurancerate   = $obj->insurance_rate>= 0?$obj->insurance_rate:0;
+					$fuelrate        = $obj->fuel_rate>=0?$obj->fuel_rate:0;
+					$bunkerrate      = $obj->bunker_rate>=0?$obj->bunker_rate:0;
+					$minimumrate     = $obj->minimum_rate>=0?$obj->minimum_rate:0;
 
 					if($zonetype=='DOMESTIC'){
 						$suppliermultiplier = ceil($suppliermultiplier);
@@ -2491,12 +2086,6 @@
 			else{
 				$chargeableweight = 0;
 			}
-
-				
-				
-
-
-
 			
 
 			$response = array(

@@ -391,6 +391,8 @@ function computeRatesWB() {
 		var vat = 0;
 		var origin = $(contentWB + ' .waybill-origin').val();
 		var destination = $(contentWB + ' .waybill-destination').val();
+		var shipmenttype = $(contentWB + ' .waybill-shipmenttype').val();
+        var shipmentmode = $(contentWB + ' .waybill-shipmentmode').val();
 		var modeoftransport = $(contentWB + ' .waybill-modeoftransport').val();
 		var services = $(contentWB + ' .waybill-services').val();
 		var vwcbm = $(contentWB + ' .waybill-vwcbm').val();
@@ -411,6 +413,16 @@ function computeRatesWB() {
 		var handlinginstruction = $(contentWB + ' .waybill-handlinginstruction').val();
 		var tpl = $(contentWB + ' .waybill-3pl').val();
 
+		// console.table({
+		// 	shipperid: shipperid,
+        //     shipmenttype: shipmenttype,
+        //     shipmentmode: shipmentmode,
+        //     modeoftransport: modeoftransport,
+        //     waybilltype: waybilltype,
+        //     origin: origin,
+        //     tpl: tpl
+        // });
+
 		$.post(
 			server + 'waybill.php',
 			{
@@ -418,6 +430,8 @@ function computeRatesWB() {
 				tpl: tpl,
 				origin: origin,
 				destination: destination,
+				shipmenttype: shipmenttype,   
+                shipmentmode: shipmentmode,
 				modeoftransport: modeoftransport,
 				services: services,
 				cbm: vwcbm,
@@ -6468,3 +6482,83 @@ $(document)
 			}
 		}
 	});
+
+
+	/************************************* AGENT DROPDOWN SELECTION FOR SHIPMENT TYPE *************************************************/
+
+
+	function reloadAgentDropdown(shipmentTypeId) {
+
+		var $agentSelect = $(contentWB + ' .waybill-agent');
+
+		// Clear current selection & options
+		$agentSelect.empty().trigger('change');
+
+		// Only re-initialise when a shipment type has actually been chosen
+		if (!shipmentTypeId || shipmentTypeId === '' ||
+			shipmentTypeId === 'null' || shipmentTypeId === 'NULL') {
+			return;
+		}
+
+		// If Select2 is already attached, destroy it so we can re-init
+		// with the new ajax URL (some versions require this step).
+		if ($agentSelect.data('select2')) {
+			$agentSelect.select2('destroy');
+		}
+
+		// Re-initialise Select2 with a filtered AJAX source.
+		$agentSelect.select2({
+			ajax: {
+				url: 'loadables/dropdown/agent-shipment-type.php',
+				dataType: 'json',
+				delay: 250,
+				data: function (params) {
+					return {
+						q: params.term || '',                 
+						shipment_type_id: shipmentTypeId,      
+						page: params.page || 1
+					};
+				},
+				processResults: function (data) {
+					return { results: data };
+				},
+				cache: true
+			},
+			placeholder: '',
+			width: '100%'
+		});
+	}
+
+$(document)
+    .off('change', contentWB + ' .waybill-shipmenttype')
+    .on ('change', contentWB + ' .waybill-shipmenttype', function () {
+
+        var shipmentTypeId = $(this).val();
+        if (processWB === 'add' || processWB === 'edit') {
+            reloadAgentDropdown(shipmentTypeId);
+        }
+        computeRatesWB();
+    });
+
+
+$(document)
+    .off('click.agentFilter', contentWB + ' #waybill-trans-newbtn:not(".disabled")')
+    .on ('click.agentFilter', contentWB + ' #waybill-trans-newbtn:not(".disabled")', function () {
+        reloadAgentDropdown('');
+    });
+
+
+	function preselectAgent(agentId, agentName) {
+		var $agentSelect = $(contentWB + ' .waybill-agent');
+
+		if (!agentId || agentId === '' || agentId === 'null' || agentId === 'NULL') {
+			$agentSelect.empty().trigger('change');
+			return;
+		}
+
+		var newOption = new Option(agentName, agentId, true, true);
+		$agentSelect.empty().append(newOption).trigger('change');
+	}
+
+
+	/************************************* AGENT DROPDOWN SELECTION FOR SHIPMENT TYPE END *************************************************/
