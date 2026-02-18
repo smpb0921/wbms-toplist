@@ -88,6 +88,7 @@ $(document).off('change',tabagent+' .defaultcontactflag').on('change',tabagent+'
 $(document).off('click','.agentmodal-savebtn:not(".disabled")').on('click','.agentmodal-savebtn:not(".disabled")',function(){
 	var modal = '#'+$(this).closest('.modal').attr('id'),
 		code = $(modal+' .code').val(),
+		shipmenttype = $(modal+' .shipmenttype').val(),
 		companyname = $(modal+' .companyname').val(),
 		area = $(modal+' .area').val(),
 		remarks = $(modal+' .remarks').val(),
@@ -120,6 +121,11 @@ $(document).off('click','.agentmodal-savebtn:not(".disabled")').on('click','.age
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide code.</div></div>");
 		button.removeAttr('disabled').removeClass('disabled');
 	}
+	else if(shipmenttype==''||shipmenttype==null||shipmenttype=='NULL'||shipmenttype=='null'){
+		$(modal+' .shipmenttype').select2('open');
+		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select shipment type.</div></div>");
+		button.removeAttr('disabled').removeClass('disabled');
+	} 
 	else if(companyname==''){
 		$(modal+' .companyname').focus();
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide company name.</div></div>");
@@ -130,6 +136,7 @@ $(document).off('click','.agentmodal-savebtn:not(".disabled")').on('click','.age
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please provide an area.</div></div>");
 		button.removeAttr('disabled').removeClass('disabled');
 	}
+	
 	/*else if(province==''||province==null||province=='NULL'||province=='null'){
 		$(modal+' .province').focus();
 		$(modal+' .errordiv').html("<div class='message'><div class='message-content'><span class='closemessage'>&times;</span>Please select region/province.</div></div>");
@@ -177,7 +184,7 @@ $(document).off('click','.agentmodal-savebtn:not(".disabled")').on('click','.age
 
 		
 		
-		$.post(server+'agent.php',{AgentSaveEdit:'j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@',source:source,id:id,code:code,companyname:companyname,area:area,remarks:remarks,street:street,district:district,city:city,province:province,zipcode:zipcode,country:country,contact:contact,email:email,phonenumber:phonenumber,mobilenumber:mobilenumber,defaultflag:defaultflag},function(data){
+		$.post(server+'agent.php',{AgentSaveEdit:'j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@',source:source,id:id,shipmenttypeee:shipmenttype,code:code,companyname:companyname,area:area,remarks:remarks,street:street,district:district,city:city,province:province,zipcode:zipcode,country:country,contact:contact,email:email,phonenumber:phonenumber,mobilenumber:mobilenumber,defaultflag:defaultflag},function(data){
 				if(data.trim()=='success'){
 					$(modal).modal('hide');
 					$(modal).on('hidden.bs.modal',function(){
@@ -246,6 +253,12 @@ $(document).off('click','.editagentbtn').on('click','.editagentbtn',function(){
 		    }
 		    else{
 		        $(modal+" .district").empty().trigger('change');
+		    }
+			if(rsp["shipmenttype"]!=null){
+		        $(modal+" .shipmenttype").empty().append('<option selected value="'+rsp["shipmenttypeid"]+'">'+rsp["shipmenttype"]+'</option>').trigger('change');
+		    }
+		    else{
+		        $(modal+" .shipmenttype").empty().trigger('change');
 		    }
 		    if(rsp["city"]!=null){
 		        $(modal+" .city").empty().append('<option selected value="'+rsp["city"]+'">'+rsp["city"]+'</option>').trigger('change');
@@ -319,6 +332,7 @@ $(document).off('show.bs.modal',tabagent+' #addagentmodal').on('show.bs.modal',t
     $("#addagentmodal .countriesdropdownselect").empty().append('<option selected value="Philippines">Philippines</option>').trigger('change');
     
 });
+
 
 
 /************************************* UPLOAD *************************************************/

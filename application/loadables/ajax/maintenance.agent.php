@@ -48,10 +48,12 @@
 				           agent.area,
 				           agent.remarks,
 				           agent.created_date,
+						   shipment_type.description as shipmenttype,
 						   concat(cuser.first_name,' ',cuser.last_name) as created_by,
 						   agent.updated_date,
 						   concat(uuser.first_name,' ',uuser.last_name) as updated_by
 				    from agent
+					left join shipment_type on shipment_type.id=agent.shipment_type_id
 					left join user as cuser on cuser.id=agent.created_by
 					left join user as uuser on uuser.id=agent.updated_by
 					order by agent.company_name asc
@@ -105,6 +107,7 @@
 		$createddate = $obj->created_date;
 		$updatedby = utfEncode($obj->updated_by);
 		$updateddate = $obj->updated_date;
+		$shipmenttypeee = utfEncode($obj->shipmenttype);
 
 		$editbtn = (userAccess(USERID,'.editagentbtn')==false)?"<img src='../resources/flexigrid/images/edit.png' rowid='$id' title='Edit Agent' class='editagentbtn pointer' data-toggle='modal' href='#editagentmodal' height='20px'>":'';
 
@@ -116,6 +119,7 @@
 													 $code,
 													 $companyname,
 													 $area,
+													 $shipmenttypeee,
 													 $remarks,
 													 $street,
 													 $district,

@@ -185,6 +185,12 @@
 								<fieldset>
 									<legend>General Information</legend>
 									<div class="form-group">
+										<label class='control-label col-md-2'>Shipment Type*</label>
+										<div class='col-md-8'>
+											<select class='form-input form-control shipmenttype shipmenttypedropdownselect noresetfld'></select>
+										</div>
+										</div>
+									<div class="form-group">
 										<label class='control-label col-md-2'>Code*</label>
 										<div class='col-md-4'>
 											<input type='text' class='form-input form-control inputtxtfld code'>
@@ -369,6 +375,12 @@
 							<div class='row'>
 								<fieldset>
 									<legend>General Information</legend>
+									<div class="form-group">
+											<label class='control-label col-md-2'>Shipment Type*</label>
+											<div class='col-md-8'>
+												<select class='form-input form-control shipmenttype shipmenttypedropdownselect noresetfld'></select>
+										</div>
+										</div>
 									<div class="form-group">
 										<label class='control-label col-md-2'>Code*</label>
 										<div class='col-md-4'>
@@ -642,6 +654,29 @@
 	                width:'100%'
 	    });
 
+		$(tabagent+" .shipmenttypedropdownselect").select2({
+	            ajax: {
+	                    url: "loadables/dropdown/shipment-type.php",
+	                    dataType: 'json',
+	                    delay: 100,
+	                    data: function (params) {
+	                        return {
+	                            q: params.term // search term
+	                        };
+	                    },
+	                    processResults: function (data) {
+	                        // parse the results into the format expected by Select2.
+	                        // since we are using custom formatting functions we do not need to
+	                        // alter the remote JSON data
+	                        return {
+	                            results: data
+	                        };
+	                    },
+	                    cache: true
+	                },
+	                minimumInputLength: 0
+	    });
+
 	    $(tabagent+" .addresscitydropdownselect").select2({
 	            ajax: {
 	                    url: "loadables/dropdown/address-city.php",
@@ -770,6 +805,7 @@
 						{display: 'Code', name : 'code', width : 100, sortable : true, align: 'left'},
 						{display: 'Company Name', name : 'company_name', width : 250, sortable : true, align: 'left'},
 						{display: 'Area', name : 'area', width : 130, sortable : true, align: 'left'},
+						{display: 'Shipment Type', name : 'shipmenttype', width : 130, sortable : true, align: 'left'},
 						{display: 'Remarks', name : 'remarks', width : 130, sortable : true, align: 'left'},			
 						{display: 'Street', name : 'company_street_address', width : 150, sortable : true, align: 'left', hide: true},
 						{display: 'District', name : 'company_district', width : 150, sortable : true, align: 'left', hide: true},
@@ -814,7 +850,6 @@
 
 		function uploadAgent(){
 			$('#uploadagentmodal').modal('show');
-		
 		}
 
 		function addAgent(){

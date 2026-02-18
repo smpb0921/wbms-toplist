@@ -9,6 +9,7 @@
 
 	if(isset($_POST['AgentSaveEdit'])){
 		if($_POST['AgentSaveEdit']=='j$isnDPo#P3sll3p23a3!@3kzlsO!mslo#k@'){
+			$shipmenttype = escapeString($_POST['shipmenttypeee']);
 			$source = escapeString($_POST['source']);
 			$code = escapeString($_POST['code']);
 			$companyname = escapeString($_POST['companyname']);
@@ -48,14 +49,14 @@
 				$systemlog = new system_log();
 
 				if($source=='add'){
-					$agentclass->insert(array('',$code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,$userid,$now,'NULL','NULL'));
+					$agentclass->insert(array('',$code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,$userid,$now,'NULL','NULL',$shipmenttype));
 					$id = $agentclass->getInsertId();
-					$systemlog->logAddedInfo($agentclass,array($id,$code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,$userid,$now,'NULL','NULL'),'AGENT','New Agent Added',$userid,$now);
+					$systemlog->logAddedInfo($agentclass,array($id,$code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,$userid,$now,'NULL','NULL',$shipmenttype),'AGENT','New Agent Added',$userid,$now);
 				}
 				else if($source=='edit'){
 					$id = escapeString($_POST['id']);
-					$systemlog->logEditedInfo($agentclass,$id,array($id,$code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,'','',$userid,$now),'AGENT','Edited Agent Info',$userid,$now);/// log should be before update is made
-					$agentclass->update($id,array($code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,'NOCHANGE','NOCHANGE',$userid,$now));
+					$systemlog->logEditedInfo($agentclass,$id,array($id,$code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,'','',$userid,$now,$shipmenttype),'AGENT','Edited Agent Info',$userid,$now);/// log should be before update is made
+					$agentclass->update($id,array($code,$companyname,$street,$district,$city,$province,$zipcode,$country,$area,$remarks,'NOCHANGE','NOCHANGE',$userid,$now,$shipmenttype));
 				}
 
 				$contactdata = array();
@@ -93,7 +94,7 @@
 
 			$rs = query("       select agent.id,
 							    	   agent.code,
-							           agent.company_name,
+							           agent.shipment_type_id,
 							           agent.company_street_address,
 							           agent.company_district,
 							           agent.company_city,
@@ -101,9 +102,12 @@
 							           agent.company_zip_code,
 							           agent.company_country,
 							           agent.area,
-							           agent.remarks
-							    from agent
+							           agent.remarks,
+									   agent.company_name,
+									   shipment_type.description as shipmenttype
+							    from agent left join shipment_type on shipment_type.id=agent.shipment_type_id
 								where agent.id='$id'
+								
 				 	    ");
 
 			if(getNumRows($rs)==1){
@@ -111,6 +115,8 @@
 				while($obj=fetch($rs)){
 					$dataarray = array(
 										   "id"=>utfEncode($obj->id),
+										   "shipmenttypeid"=>$obj->shipment_type_id,
+										   "shipmenttype"=>utfEncode($obj->shipmenttype),
 										   "code"=>utfEncode($obj->code),
 										   "companyname"=>utfEncode($obj->company_name),
 										   "area"=>utfEncode($obj->area),

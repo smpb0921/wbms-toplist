@@ -16,6 +16,7 @@ class agent extends table{
 	var $created_date;
 	var $updated_by;
 	var $updated_date;
+	var $shipment_type_id;
 
 }
 
