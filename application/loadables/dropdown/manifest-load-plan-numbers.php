@@ -22,7 +22,7 @@
 		$qry = "select id,
 		                       load_plan_number
 		            from txn_load_plan 
-		            where load_plan_number like '%".$search."%' $ldpstat and load_plan_number not in (select load_plan_number from txn_manifest where status='LOGGED')
+		            where load_plan_number like '%".$search."%' $ldpstat and load_plan_number not in (select load_plan_number from txn_manifest where status!='VOID' and load_plan_number is not null)
 		            order by load_plan_number asc
 		            limit 40";
 	}
@@ -30,7 +30,7 @@
 		$qry = "select id,
 		                       load_plan_number
 		            from txn_load_plan 
-		            where load_plan_number not in (select load_plan_number from txn_manifest where status='LOGGED') $ldpstat
+		            where load_plan_number not in (select load_plan_number from txn_manifest where status!='VOID' and load_plan_number is not null) $ldpstat
 		            order by load_plan_number asc
 		            limit 50";
 	}
